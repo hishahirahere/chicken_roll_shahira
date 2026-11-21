@@ -40,7 +40,7 @@
     <div class="page-header-icon"><i class="bi bi-person-badge-fill"></i></div>
     <div>
       <h1 class="page-title">Stok Kasir</h1>
-      <p class="page-subtitle">Pantau stok yang sedang dipegang tiap kasir. Bertambah saat kamu memberi paket (di Manajemen Stok) dan berkurang otomatis tiap ada pembayaran.</p>
+      <p class="page-subtitle">Pantau stok yang sedang dipegang tiap kasir. Bertambah saat kamu memberi Paket Ayam atau Bahan Pendukung (di Manajemen Stok) dan berkurang otomatis tiap ada pembayaran.</p>
     </div>
   </div>
 

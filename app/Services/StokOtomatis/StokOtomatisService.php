@@ -273,7 +273,7 @@ class StokOtomatisService
         $row = $this->barisStokKasir((int) $k['kasir_id'], (int) $bahan->id);
         $h = PerhitunganStok::pakaiPorsi((float) $row->stok, (float) $row->sisa_porsi_aktif, $kap, (float) $porsi);
 
-        $rincian = $this->angka($h['porsi_terpakai']) . ' porsi dipakai';
+        $rincian = $this->angka($h['porsi_terpakai']) . ' kali pakai';
         if ($h['dibuka'] > 0) {
             $rincian .= ' · membuka ' . $h['dibuka'] . ' bungkus baru';
         }
@@ -296,6 +296,74 @@ class StokOtomatisService
     // ------------------------------------------------------------------
 
     /**
+     * Isi 1 PAKET AYAM = (kg ayam per ukuran x jumlah ukuran aktif) kg, default 3 kg.
+     * Paket hanya berisi bahan yang habisnya barengan: ayam, tepung (melumuri ayam), dan kemasan (1 pcs = 1 dus).
+     */
+    public function kgPerPaket(?array $set = null): int
+    {
+        $set = $set ?? $this->pengaturan();
+        $jumlahUkuran = DB::table('ukuran')->where('status', 'aktif')->count() ?: DB::table('ukuran')->count();
+
+        return max(1, (int) ceil((float) $set['paket_kg_per_ukuran']) * max(1, $jumlahUkuran));
+    }
+
+    /**
+     * PAKET AYAM: total kg ayam harus kelipatan isi paket (mis. 3, 6, 9 kg); pembagian ke tiap ukuran BEBAS.
+     * Tepung & kemasan ikut paket. Filling / saus / bumbu TIDAK ikut (lihat beriBahanPendukung).
+     */
+    public function beriPaketAyam(int $kasirId, string $tanggal, array $kg, array $kemasan, int $adminId, ?string $catatan = null, array $tepung = []): array
+    {
+        $this->siapkan($adminId);
+        $perPaket = $this->kgPerPaket();
+        $totalKg  = (int) array_sum(array_map('intval', array_filter($kg, fn ($v) => (float) $v > 0)));
+
+        if ($totalKg <= 0) {
+            throw ValidationException::withMessages(['paket' => 'Isi minimal 1 paket ayam (' . $perPaket . ' kg).']);
+        }
+        if ($totalKg % $perPaket !== 0) {
+            throw ValidationException::withMessages(['paket' => 'Total ayam ' . $totalKg . ' kg bukan kelipatan paket. 1 paket = ' . $perPaket . ' kg, jadi isi ' . $perPaket . ', ' . ($perPaket * 2) . ', ' . ($perPaket * 3) . ' kg dst. (pembagian per ukuran bebas).']);
+        }
+
+        // Tepung & kemasan TIDAK bisa diubah admin: otomatis mengikuti jumlah paket dan ayam per ukuran.
+        // (angka yang dikirim form diabaikan, jadi tidak bisa diakali lewat form)
+        $jumlahPaket = intdiv($totalKg, $perPaket);
+        $set     = $this->pengaturan();
+        $standar = $this->standar();
+        $tepung  = [
+            'premix_basah' => $jumlahPaket * (int) ceil((float) $set['paket_premix_basah_botol']),
+            'tepung_roti'  => $jumlahPaket * (int) ceil((float) $set['paket_tepung_roti_bungkus']),
+        ];
+        $kemasan = [];
+        foreach ($kg as $ukuranId => $kgUkuran) {
+            if ((float) $kgUkuran > 0) {
+                $kemasan[(int) $ukuranId] = (int) floor((float) $kgUkuran * ($standar[(int) $ukuranId]['hasil_pcs_per_kg'] ?? 0) + 1e-9);
+            }
+        }
+
+        $hasil = $this->beriPaket($kasirId, $tanggal, $kg, [], $kemasan, $adminId, $catatan, $tepung, 'ayam');
+        $hasil['paket'] = $jumlahPaket;
+
+        return $hasil;
+    }
+
+    /**
+     * BAHAN PENDUKUNG (filling, saus celup, bumbu tabur): diambil bebas per rasa dan per bungkus, kapan saja kasir
+     * butuh. Tidak terikat paket ayam karena habisnya tergantung rasa yang laku.
+     * Gudang berkurang dalam bungkus, stok kasir bertambah dalam kali pakai (bungkus x kapasitas).
+     *
+     * @param array $bungkus [bahan_baku_id => jumlah bungkus]
+     */
+    public function beriBahanPendukung(int $kasirId, string $tanggal, array $bungkus, int $adminId, ?string $catatan = null): array
+    {
+        $bungkus = array_filter($bungkus, fn ($v) => (float) $v > 0);
+        if (! $bungkus) {
+            throw ValidationException::withMessages(['paket' => 'Isi minimal satu filling, saus celup, atau bumbu tabur.']);
+        }
+
+        return $this->beriPaket($kasirId, $tanggal, [], $bungkus, [], $adminId, $catatan, [], 'pendukung');
+    }
+
+    /**
      * Beri satu paket ke kasir.
      *  - Stok dapur berkurang dalam satuan bahan (kg ayam, bungkus tepung, bungkus filling, ...)
      *  - Tepung premix basah (BOTOL, 1 botol = 1 liter) & tepung roti (BUNGKUS, 1 bungkus = 1 kg) = isi paket tetap, tidak dihitung dari ayam
@@ -309,8 +377,9 @@ class StokOtomatisService
      * @return array ringkasan untuk pesan sukses
      * @throws ValidationException bila stok gudang tidak cukup atau bahan utama belum diatur
      */
-    public function beriPaket(int $kasirId, string $tanggal, array $kg, array $bungkus, array $kemasan, int $adminId, ?string $catatan = null, array $tepung = []): array
+    public function beriPaket(int $kasirId, string $tanggal, array $kg, array $bungkus, array $kemasan, int $adminId, ?string $catatan = null, array $tepung = [], string $jenis = 'ayam'): array
     {
+        $pendukung = $jenis === 'pendukung';
         $this->siapkan($adminId);
         $set     = $this->pengaturan();
         $alokasi = [];
@@ -334,7 +403,7 @@ class StokOtomatisService
             throw ValidationException::withMessages(['paket' => 'Isi minimal satu bahan pada paket.']);
         }
 
-        return DB::transaction(function () use ($kasirId, $tanggal, $alokasi, $bungkus, $kemasan, $tepungBungkus, $adminId, $catatan, $set) {
+        return DB::transaction(function () use ($kasirId, $tanggal, $alokasi, $bungkus, $kemasan, $tepungBungkus, $adminId, $catatan, $set, $pendukung) {
             $kasir = DB::table('users')->where('id', $kasirId)->where('role', 'kasir')->first();
             if (! $kasir) {
                 throw ValidationException::withMessages(['kasir_id' => 'Kasir tidak ditemukan.']);
@@ -377,7 +446,7 @@ class StokOtomatisService
                     continue;
                 }
                 $bahanBungkus[$b->id] = $n;
-                $perlu[$b->id] = [($perlu[$b->id][0] ?? 0) + $n, 'Paket ke kasir'];
+                $perlu[$b->id] = [($perlu[$b->id][0] ?? 0) + $n, $pendukung ? 'Bahan pendukung ke kasir' : 'Paket ke kasir'];
             }
 
             // Kemasan dibedakan per ukuran: tiap ukuran punya bahan kemasannya sendiri
@@ -413,7 +482,7 @@ class StokOtomatisService
             $konteks = [
                 'sumber' => 'paket', 'transaksi_id' => null, 'produksi_id' => null,
                 'user_id' => $adminId, 'kasir_id' => $kasirId, 'tanggal' => $tanggal,
-                'label' => 'Paket ke kasir ' . $kasir->name . ($catatan ? ' · ' . $catatan : ''),
+                'label' => ($pendukung ? 'Bahan pendukung ke kasir ' : 'Paket ayam ke kasir ') . $kasir->name . ($catatan ? ' · ' . $catatan : ''),
             ];
             foreach ($perlu as $bahanId => [$jumlah, $rincian]) {
                 $b = $gudang[$bahanId];
@@ -432,7 +501,7 @@ class StokOtomatisService
                 }
             }
             foreach ($bahanBungkus as $bahanId => $n) {
-                $this->tambahStokKasirBahan($kasirId, (int) $bahanId, (float) $n, $set);
+                $this->tambahStokKasirBahan($kasirId, (int) $bahanId, (float) $n, $set, $pendukung ? 'Bahan pendukung dari admin' : 'Paket dari admin');
             }
             // Kemasan (per ukuran) masuk ke stok kasir
             foreach ($kemasanBahan as $bahanId => $n) {
@@ -730,7 +799,7 @@ class StokOtomatisService
         }
 
         DB::table('stok_kasir')->where('id', $row->id)->update(['stok' => $stok, 'acuan' => round($setara, 4), 'updated_at' => now()]);
-        $this->tulisRiwayatKasir($kasirId, $bahanId, 'masuk', str_starts_with($ket, 'Paket') ? 'paket' : 'kirim', $jumlah, $stok, $ket, null, now()->toDateString());
+        $this->tulisRiwayatKasir($kasirId, $bahanId, 'masuk', str_starts_with($ket, 'Paket') ? 'paket' : (str_starts_with($ket, 'Bahan pendukung') ? 'pendukung' : 'kirim'), $jumlah, $stok, $ket, null, now()->toDateString());
     }
 
     // ------------------------------------------------------------------
@@ -891,6 +960,18 @@ class StokOtomatisService
     private function tulisRiwayatKasir(int $kasirId, int $bahanId, string $jenis, string $sumber, float $jumlah, float $stokSesudah,
         ?string $keterangan, ?string $rincian, string $tanggal, ?int $transaksiId = null): void
     {
+        // Filling / saus / bumbu: di tangan kasir satuannya KALI PAKAI (bukan bungkus/gram/kg).
+        // Jumlah (bungkus) dikali kapasitas; sisa = bungkus utuh + sisa porsi di bungkus berjalan.
+        $bahan = DB::table('bahan_baku')->where('id', $bahanId)->first();
+        if ($bahan && $this->bahanBerbungkus($bahan)) {
+            $kap = $this->kapasitasBungkus($bahan, $this->pengaturan());
+            if ($kap > 0) {
+                $baris = DB::table('stok_kasir')->where('user_id', $kasirId)->where('bahan_baku_id', $bahanId)->first();
+                $jumlah = round($jumlah * $kap);
+                $stokSesudah = round(($baris ? (float) $baris->stok : $stokSesudah) * $kap + ($baris ? (float) $baris->sisa_porsi_aktif : 0));
+            }
+        }
+
         DB::table('riwayat_stok_kasir')->insert([
             'user_id' => $kasirId, 'bahan_baku_id' => $bahanId, 'jenis' => $jenis, 'sumber' => $sumber,
             'jumlah' => round($jumlah, 4), 'stok_sesudah' => round($stokSesudah, 4), 'transaksi_id' => $transaksiId,
@@ -913,7 +994,12 @@ class StokOtomatisService
                 ->join('bahan_baku as b', 'b.id', '=', 'r.bahan_baku_id')
                 ->where('r.user_id', $kasirId)->whereIn('b.peran', $peran)
                 ->orderByDesc('r.id')->limit($batas)
-                ->get(['r.*', 'b.nama_bahan', 'b.satuan']);
+                ->get(['r.*', 'b.nama_bahan', 'b.satuan', 'b.peran'])
+                ->each(function ($r) {
+                    if (in_array($r->peran, ['filling', 'saus', 'bumbu'], true)) {
+                        $r->satuan = 'kali pakai';
+                    }
+                });
         }
 
         return $hasil;

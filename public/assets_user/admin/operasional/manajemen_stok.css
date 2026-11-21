@@ -183,18 +183,25 @@
   .pk-input, .pk-hasil { grid-column:2; }
 }
 
-/* ===== Modal bisa di-scroll (Stok Masuk, Stok Keluar Lain, Beri Paket) ===== */
+/* ===== Modal bisa di-scroll (Stok Masuk, Stok Keluar Lain, Beri Paket, Beri Bahan Pendukung) ===== */
 #modalStok .modal-dialog,
-#modalPaket .modal-dialog { max-height: calc(100vh - 2rem); height: auto; }
+#modalPaket .modal-dialog,
+#modalPendukung .modal-dialog { max-height: calc(100vh - 2rem); height: auto; }
 #modalStok .modal-content,
-#modalPaket .modal-content { display: flex; flex-direction: column; max-height: calc(100vh - 2rem); overflow: hidden; }
+#modalPaket .modal-content,
+#modalPendukung .modal-content { display: flex; flex-direction: column; max-height: calc(100vh - 2rem); overflow: hidden; }
 #modalStok .modal-content > form,
-#modalPaket .modal-content > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-#modalPaket .form-label { font-size: .85rem; font-weight: 700; color: var(--ms-text); }
-#modalPaket .form-control, #modalPaket .form-select, #modalPaket .input-group-text { border-color: var(--ms-border); }
-#modalPaket .form-control, #modalPaket .form-select { border-radius: .7rem; }
-#modalPaket .input-group .form-control { border-radius: .7rem 0 0 .7rem; }
-#modalPaket .input-group-text { background: var(--ms-soft); color: var(--ms-muted); font-weight: 700; border-radius: 0 .7rem .7rem 0; }
+#modalPaket .modal-content > form,
+#modalPendukung .modal-content > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+#modalPaket .form-label, #modalPendukung .form-label { font-size: .85rem; font-weight: 700; color: var(--ms-text); }
+#modalPaket .form-control, #modalPaket .form-select, #modalPaket .input-group-text,
+#modalPendukung .form-control, #modalPendukung .form-select, #modalPendukung .input-group-text { border-color: var(--ms-border); }
+#modalPaket .form-control, #modalPaket .form-select,
+#modalPendukung .form-control, #modalPendukung .form-select { border-radius: .7rem; }
+#modalPaket .input-group .form-control,
+#modalPendukung .input-group .form-control { border-radius: .7rem 0 0 .7rem; }
+#modalPaket .input-group-text,
+#modalPendukung .input-group-text { background: var(--ms-soft); color: var(--ms-muted); font-weight: 700; border-radius: 0 .7rem .7rem 0; }
 
 
 /* ===== Tab kelompok bahan (Bahan Utama, Filling, Saus, Bumbu, Operasional) ===== */
@@ -224,3 +231,16 @@
 .ms-act.out { background: #fef3c7; color: #92400e; }
 .ms-act.edit { background: #e0e7ff; color: #3730a3; }
 .ms-act.del { background: #fee2e2; color: #b91c1c; }
+
+/* Tombol aksi ke kasir digabung dalam satu dropdown */
+.ms-dropdown-beri { border: 1px solid var(--ms-border); border-radius: 14px; padding: .4rem; box-shadow: 0 14px 30px -18px rgba(0,0,0,.35); min-width: 220px; }
+.ms-dropdown-beri .dropdown-item { display: flex; align-items: center; gap: .6rem; border-radius: 10px; padding: .55rem .8rem; font-weight: 700; font-size: .9rem; color: var(--ms-text); }
+.ms-dropdown-beri .dropdown-item:hover { background: var(--ms-soft); }
+.ms-dropdown-beri .dropdown-item i { color: #2563eb; }
+
+/* Baris tombol di form paket / bahan pendukung: tanpa kotak biru */
+.pk-bar.pk-bar-polos { background: transparent; border: 0; padding: 0; justify-content: flex-start; margin-bottom: .9rem; }
+
+/* Tepung & kemasan di form paket: terkunci */
+#modalPaket .pk-input input[readonly] { background: #f3ebe0; color: #5a4636; font-weight: 800; cursor: default; pointer-events: none; }
+#modalPaket .pk-sec h6 small i { margin-right: .2rem; }

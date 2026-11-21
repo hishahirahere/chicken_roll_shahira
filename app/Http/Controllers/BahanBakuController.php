@@ -35,6 +35,7 @@ class BahanBakuController extends Controller
         $set = $svc->pengaturan();
         $ukuranPaket = DB::table('ukuran')->where('status', 'aktif')->orderBy('harga')->get();
         $standarPaket = $svc->standar();
+        $kgPerPaket = $svc->kgPerPaket($set);
         $nonaktif = collect()
             ->merge(DB::table('filling')->where('status', 'nonaktif')->pluck('bahan_baku_id'))
             ->merge(DB::table('saus_celup')->where('status', 'nonaktif')->pluck('bahan_baku_id'))
@@ -68,7 +69,7 @@ class BahanBakuController extends Controller
                 return $out;
             })->all();
         return view('admin.operasional.manajemen_stok.index', compact(
-            'kirimStandar', 'permintaanKasir', 'bahanBaku', 'kasirList', 'set', 'ukuranPaket', 'standarPaket', 'bahanPaket', 'gasBahan', 'minyakBahan', 'stokKemasan', 'premixBasah', 'tepungRoti'
+            'kirimStandar', 'permintaanKasir', 'kgPerPaket', 'bahanBaku', 'kasirList', 'set', 'ukuranPaket', 'standarPaket', 'bahanPaket', 'gasBahan', 'minyakBahan', 'stokKemasan', 'premixBasah', 'tepungRoti'
         ));
     }
 
@@ -242,10 +243,10 @@ class BahanBakuController extends Controller
     }
 
     /**
-     * Beri PAKET ke kasir: ayam per ukuran (kg), tepung premix basah (botol 1 liter) & tepung roti (bungkus 1 kg), filling/saus/bumbu (bungkus),
-     * kemasan per ukuran. Semua bilangan bulat.
-     * Minyak & gas TIDAK ikut paket: lewat alur permintaan (kasir minta -> admin kirim -> kasir konfirmasi).
-     * Gudang berkurang per bahan; stok kasir bertambah dalam pcs per ukuran + kali pakai.
+     * Beri PAKET AYAM ke kasir: ayam per ukuran (kg, total kelipatan 1 paket), tepung premix basah (botol 1 liter),
+     * tepung roti (bungkus 1 kg), dan kemasan per ukuran. Semua bilangan bulat.
+     * Filling/saus/bumbu TIDAK ikut paket (lihat beriBahanPendukung); minyak & gas lewat alur permintaan.
+     * Gudang berkurang per bahan; stok kasir bertambah dalam pcs per ukuran.
      */
     public function beriPaket(Request $request, StokOtomatisService $stok)
     {
@@ -257,16 +258,13 @@ class BahanBakuController extends Controller
             'kg.*'      => 'nullable|integer|min:0|max:9999',
             'premix_basah' => 'nullable|integer|min:0|max:9999',
             'tepung_roti'  => 'nullable|integer|min:0|max:9999',
-            'bungkus'   => 'nullable|array',
-            'bungkus.*' => 'nullable|integer|min:0|max:9999',
             'kemasan'   => 'nullable|array',
             'kemasan.*' => 'nullable|integer|min:0|max:99999',
         ]);
 
         try {
-            $hasil = $stok->beriPaket(
-                (int) $v['kasir_id'], $v['tanggal'], $v['kg'] ?? [], $v['bungkus'] ?? [],
-                $v['kemasan'] ?? [],
+            $hasil = $stok->beriPaketAyam(
+                (int) $v['kasir_id'], $v['tanggal'], $v['kg'] ?? [], $v['kemasan'] ?? [],
                 (int) auth()->id(), $v['catatan'] ?? null,
                 ['premix_basah' => (int) ($v['premix_basah'] ?? 0), 'tepung_roti' => (int) ($v['tepung_roti'] ?? 0)]
             );
@@ -275,7 +273,32 @@ class BahanBakuController extends Controller
         }
 
         return redirect()->route('bahan_baku.index')->with('success',
-            'Paket diberikan ke ' . $hasil['kasir'] . ($hasil['pcs'] > 0 ? ': ±' . $hasil['pcs'] . ' pcs produk' : '') . '. Stok dapur sudah dikurangi.'
+            'Paket ayam diberikan ke ' . $hasil['kasir'] . ': ' . $hasil['paket'] . ' paket (±' . $hasil['pcs'] . ' pcs produk). Stok dapur sudah dikurangi.'
+        );
+    }
+
+    /**
+     * Beri BAHAN PENDUKUNG ke kasir: filling, saus celup, bumbu tabur, bebas per rasa dan per bungkus.
+     * Gudang berkurang dalam bungkus, stok kasir bertambah dalam kali pakai.
+     */
+    public function beriBahanPendukung(Request $request, StokOtomatisService $stok)
+    {
+        $v = $request->validate([
+            'kasir_id'  => ['required', Rule::exists('users', 'id')->where('role', 'kasir')],
+            'tanggal'   => 'required|date',
+            'catatan'   => 'nullable|string|max:150',
+            'bungkus'   => 'nullable|array',
+            'bungkus.*' => 'nullable|integer|min:0|max:9999',
+        ]);
+
+        try {
+            $hasil = $stok->beriBahanPendukung((int) $v['kasir_id'], $v['tanggal'], $v['bungkus'] ?? [], (int) auth()->id(), $v['catatan'] ?? null);
+        } catch (ValidationException $e) {
+            return back()->withInput(array_merge($request->all(), ['_modal' => 'pendukung']))->withErrors($e->errors());
+        }
+
+        return redirect()->route('bahan_baku.index')->with('success',
+            'Bahan pendukung diberikan ke ' . $hasil['kasir'] . '. Stok dapur sudah dikurangi, stok kasir bertambah dalam kali pakai.'
         );
     }
 

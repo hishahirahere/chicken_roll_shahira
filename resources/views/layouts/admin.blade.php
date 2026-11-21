@@ -218,7 +218,8 @@
                     ['Input Stok Masuk',  'bi-box-arrow-in-down', 'bahan_baku.index',  ['aksi' => 'masuk']],
                     ['Input Stok Keluar', 'bi-box-arrow-up',      'bahan_baku.index',  ['aksi' => 'keluar']],
                     ['Tambah Bahan Baku', 'bi-plus-square',       'bahan_baku.create', []],
-                    ['Beri Paket ke Kasir', 'bi-send-fill',       'bahan_baku.index',  ['aksi' => 'paket']],
+                    ['Beri Paket Ayam',     'bi-send-fill',       'bahan_baku.index',  ['aksi' => 'paket']],
+                    ['Beri Bahan Pendukung','bi-droplet-fill',    'bahan_baku.index',  ['aksi' => 'pendukung']],
                     ['Kirim Minyak & Gas',  'bi-fuel-pump-fill',  'bahan_baku.index',  ['aksi' => 'kirim']],
                 ],
                 'Data Master' => [
@@ -337,8 +338,8 @@
                         aria-labelledby="profile-dropdown">
                         <li class="dropdown-header">Selamat Datang!</li>
                         <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Akun Saya</a></li>
-                            <hr class="dropdown-divider">
-                        </li>
+                        <li><a class="dropdown-item {{ request()->routeIs('stok.pengaturan*') ? 'active' : '' }}" href="{{ route('stok.pengaturan') }}"><i class="bi bi-sliders"></i> Pengaturan Stok</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

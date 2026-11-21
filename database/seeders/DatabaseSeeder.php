@@ -25,8 +25,8 @@ class DatabaseSeeder extends Seeder
             // 4. Standar pemakaian stok otomatis (pengaturan_stok + standar_produksi)
             PengaturanStokSeeder::class,
 
-            // 5. Paket awal gudang -> kasir, supaya kasir langsung bisa jualan
-            StokKasirSeeder::class,
+            // 5. Stok kasir sengaja TIDAK diisi seeder. Kasir mulai dari 0; admin yang memberi paket ayam,
+            //    bahan pendukung, minyak & gas lewat Manajemen Stok (sama seperti alur nyata di gerai).
         ]);
     }
 }

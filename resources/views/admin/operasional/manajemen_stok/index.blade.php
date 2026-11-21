@@ -31,6 +31,7 @@
     $jenisAwal = old('_modal', request('aksi'));
     $svc = app(\App\Services\StokOtomatis\StokOtomatisService::class);
     $paketTerbuka = old('_modal') === 'paket' || request('aksi') === 'paket';
+    $pendukungTerbuka = old('_modal') === 'pendukung' || request('aksi') === 'pendukung';
     $kirimTerbuka = old('_modal') === 'kirim' || request('aksi') === 'kirim';
     // Isi awal form Kirim Minyak & Gas: dari lonceng (?kasir=ID) pakai permintaan kasir itu, selain itu isi standar
     $kasirKirim = old('kasir_id', request('kasir'));
@@ -133,14 +134,17 @@
           style="background:#16a34a;border:2px solid #16a34a;color:#fff;font-weight:700;">
           <i class="bi bi-box-arrow-in-down"></i> Stok Masuk
         </button>
-        <button type="button" class="btn-custom" data-bs-toggle="modal" data-bs-target="#modalPaket"
-          style="background:#2563eb;border:2px solid #2563eb;color:#fff;font-weight:700;">
-          <i class="bi bi-send-fill"></i> Beri Paket ke Kasir
-        </button>
-        <button type="button" class="btn-custom" data-bs-toggle="modal" data-bs-target="#modalKirim"
-          style="background:#7c3aed;border:2px solid #7c3aed;color:#fff;font-weight:700;">
-          <i class="bi bi-fuel-pump-fill"></i> Kirim Minyak &amp; Gas
-        </button>
+        <div class="dropdown">
+          <button type="button" class="btn-custom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+            style="background:#2563eb;border:2px solid #2563eb;color:#fff;font-weight:700;">
+            <i class="bi bi-send-fill"></i> Beri ke Kasir
+          </button>
+          <ul class="dropdown-menu ms-dropdown-beri">
+            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalPaket"><i class="bi bi-egg-fried"></i> Paket Ayam</button></li>
+            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalPendukung"><i class="bi bi-droplet-fill"></i> Bahan Pendukung</button></li>
+            <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalKirim"><i class="bi bi-fuel-pump-fill"></i> Minyak &amp; Gas</button></li>
+          </ul>
+        </div>
         <button type="button" class="btn-custom" data-bs-toggle="modal" data-bs-target="#modalStok" data-jenis="keluar"
           style="background:#F59E0B;border:2px solid #F59E0B;color:#3b2300;font-weight:700;">
           <i class="bi bi-box-arrow-up"></i> Stok Keluar Lain
@@ -301,12 +305,12 @@
     </div>
   </div>
 
-  {{-- ============ MODAL BERI PAKET KE KASIR ============ --}}
+  {{-- ============ MODAL BERI PAKET AYAM KE KASIR (ayam + tepung + kemasan) ============ --}}
   <div class="modal fade" id="modalPaket" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header-stok paket">
-          <h5><i class="bi bi-send-fill me-2"></i>Beri Paket ke Kasir</h5>
+          <h5><i class="bi bi-send-fill me-2"></i>Beri Paket Ayam ke Kasir</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
         </div>
 
@@ -314,7 +318,7 @@
           @csrf
           <input type="hidden" name="_modal" value="paket">
 
-          @if ($errors->has('paket') || $errors->has('kasir_id'))
+          @if (old('_modal') === 'paket' && ($errors->has('paket') || $errors->has('kasir_id')))
             <div class="pk-error">
               <i class="bi bi-x-octagon-fill"></i>
               <ul>
@@ -342,13 +346,9 @@
             </div>
           </div>
 
-          <div class="pk-bar">
-            <div>
-              <b>Isi paket</b>
-              <small>1 paket standar = {{ rtrim(rtrim(number_format($set['paket_kg_per_ukuran'] * $ukuranPaket->count(), 2, '.', ''), '0'), '.') }} kg ayam. Mau 2 paket? Klik tombolnya 2 kali, atau ubah angkanya.</small>
-            </div>
+          <div class="pk-bar pk-bar-polos">
             <div class="pk-bar-btn">
-              <button type="button" class="btn-custom pk-btn-std" id="paket-std"><i class="bi bi-magic"></i> Paket standar</button>
+              <button type="button" class="btn-custom pk-btn-std" id="paket-std"><i class="bi bi-magic"></i> 1 paket standar</button>
               <button type="button" class="btn-custom pk-btn-std" id="paket-tambah"><i class="bi bi-plus-lg"></i> Tambah 1 paket</button>
               <button type="button" class="btn-custom pk-btn-reset" id="paket-reset">Kosongkan</button>
             </div>
@@ -356,7 +356,7 @@
 
           {{-- 1. Ayam per ukuran --}}
           <section class="pk-sec">
-            <h6><span>1</span> Ayam per ukuran <small>isi kg ayam tiap ukuran, tepung diisi di bagian berikutnya</small></h6>
+            <h6><span>1</span> Ayam per ukuran <small>bagi sesuai kebutuhan kasir</small></h6>
             <div class="pk-rows">
               @foreach ($ukuranPaket as $u)
                 @php $st = $standarPaket[$u->id] ?? null; @endphp
@@ -374,11 +374,12 @@
               @if ($ukuranPaket->isEmpty())<div class="text-muted-green">Belum ada ukuran aktif.</div>@endif
             </div>
             <div class="pk-total" id="paket-total-ayam">Total: 0 kg ayam · 0 pcs</div>
+            <div class="pk-total" id="paket-cek" style="font-weight:600;"></div>
           </section>
 
           {{-- 2. Tepung premix basah (botol 1 liter) & tepung roti (bungkus 1 kg) --}}
           <section class="pk-sec">
-            <h6><span>2</span> Tepung <small>premix basah per botol (1 botol = 1 liter), tepung roti per bungkus (1 bungkus = 1 kg), mengurangi stok dapur</small></h6>
+            <h6><span>2</span> Tepung <small><i class="bi bi-lock-fill"></i> otomatis sesuai jumlah paket</small></h6>
             <div class="pk-rows">
               @foreach ([['premix_basah', 'Tepung premix basah', $premixBasah ?? null, 'botol', 'liter'], ['tepung_roti', 'Tepung roti', $tepungRoti ?? null, 'bungkus', 'kg']] as [$namaInput, $judulTepung, $bhn, $satTepung, $satIsi])
                 <div class="pk-row" data-tepung="{{ $namaInput }}" data-isi="1" data-unit="{{ $satIsi }}">
@@ -386,7 +387,7 @@
                   <div class="pk-nama"><b>{{ $judulTepung }}</b>
                     <small>tersedia: {{ \App\Models\BahanBaku::formatAngka($bhn->stok_saat_ini ?? 0) }} {{ $bhn->satuan ?? $satTepung }}</small></div>
                   <div class="input-group pk-input">
-                    <input type="number" step="1" min="0" name="{{ $namaInput }}" value="{{ old($namaInput) }}" class="form-control" placeholder="0">
+                    <input type="number" step="1" min="0" name="{{ $namaInput }}" value="{{ old($namaInput) }}" class="form-control" placeholder="0" readonly tabindex="-1">
                     <span class="input-group-text">{{ $satTepung }}</span>
                   </div>
                   <span class="pk-hasil" data-hasil-tepung="{{ $namaInput }}">= 0 {{ $satIsi }}</span>
@@ -395,10 +396,92 @@
             </div>
           </section>
 
-          {{-- 2. Filling, saus, bumbu --}}
-          @foreach (['filling' => ['3', 'Filling', 'bi-egg-fried'], 'saus' => ['4', 'Saus celup', 'bi-droplet-fill'], 'bumbu' => ['5', 'Bumbu tabur', 'bi-stars']] as $peran => [$no, $judul, $ik])
+          {{-- 3. Kemasan (minyak & gas lewat tombol Kirim Minyak & Gas) --}}
+          <section class="pk-sec">
+            <h6><span>3</span> Kemasan <small><i class="bi bi-lock-fill"></i> otomatis sesuai pcs tiap ukuran</small></h6>
+            <div class="pk-rows">
+              @foreach ($ukuranPaket as $u)
+                <div class="pk-row" data-kemasan-ukuran="{{ $u->id }}">
+                  <span class="pk-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-box2"></i>@endif</span>
+                  <div class="pk-nama"><b>Kemasan {{ $u->nama_ukuran }}</b>
+                    <small>tersedia: {{ \App\Models\BahanBaku::formatAngka($stokKemasan[$u->id] ?? 0) }} pcs</small></div>
+                  <div class="input-group pk-input">
+                    <input type="number" step="1" min="0" name="kemasan[{{ $u->id }}]" value="{{ old("kemasan.$u->id") }}" class="form-control" placeholder="0" readonly tabindex="-1">
+                    <span class="input-group-text">pcs</span>
+                  </div>
+                  <span class="pk-hasil"></span>
+                </div>
+              @endforeach
+            </div>
+          </section>
+
+          <div class="mb-4 mt-3">
+            <label class="form-label">Catatan <span class="text-muted-green fw-normal">— opsional</span></label>
+            <input type="text" name="catatan" maxlength="150" value="{{ old('catatan') }}" class="form-control" placeholder="Contoh: Paket sore">
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn-custom flex-fill justify-content-center" data-bs-dismiss="modal"
+              style="background:#FFFFFF;border:2px solid #7A1E1E;color:#7A1E1E;font-weight:700;">Batal</button>
+            <button type="submit" class="btn-custom btn-custom-primary flex-fill justify-content-center"><i class="bi bi-send-fill"></i> Berikan Paket Ayam</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{-- ============ MODAL BERI BAHAN PENDUKUNG (filling, saus celup, bumbu tabur) ============ --}}
+  <div class="modal fade" id="modalPendukung" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header-stok paket">
+          <h5><i class="bi bi-droplet-fill me-2"></i>Beri Bahan Pendukung ke Kasir</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+
+        <form id="form-pendukung" method="POST" action="{{ route('stok.pendukung') }}" class="p-4">
+          @csrf
+          <input type="hidden" name="_modal" value="pendukung">
+
+          @if (old('_modal') === 'pendukung' && ($errors->has('paket') || $errors->has('kasir_id')))
+            <div class="pk-error">
+              <i class="bi bi-x-octagon-fill"></i>
+              <ul>
+                @foreach ($errors->get('paket') as $e)
+                  @foreach ((array) $e as $m)<li>{{ $m }}</li>@endforeach
+                @endforeach
+                @foreach ($errors->get('kasir_id') as $m)<li>{{ $m }}</li>@endforeach
+              </ul>
+            </div>
+          @endif
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-7">
+              <label class="form-label">Kasir penerima</label>
+              <select name="kasir_id" class="form-select" required>
+                <option value="">— Pilih kasir —</option>
+                @foreach ($kasirList as $k)
+                  <option value="{{ $k->id }}" @selected(old('_modal') === 'pendukung' && old('kasir_id') == $k->id)>{{ $k->name }}</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Tanggal</label>
+              <input type="date" name="tanggal" id="pendukung-tanggal" value="{{ old('_modal') === 'pendukung' ? old('tanggal') : '' }}" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="pk-bar pk-bar-polos">
+            <div class="pk-bar-btn">
+              <button type="button" class="btn-custom pk-btn-std" id="pendukung-std"><i class="bi bi-magic"></i> Isi standar</button>
+              <button type="button" class="btn-custom pk-btn-reset" id="pendukung-reset">Kosongkan</button>
+            </div>
+          </div>
+
+          {{-- Filling, saus, bumbu: bebas per rasa --}}
+          @foreach (['filling' => ['1', 'Filling', 'bi-egg-fried'], 'saus' => ['2', 'Saus celup', 'bi-droplet-fill'], 'bumbu' => ['3', 'Bumbu tabur', 'bi-stars']] as $peran => [$no, $judul, $ik])
             <section class="pk-sec">
-              <h6><span>{{ $no }}</span> {{ $judul }} <small>jumlah bungkus, dipakai per porsi (kali pakai)</small></h6>
+              <h6><span>{{ $no }}</span> {{ $judul }} <small>isi hanya rasa yang dibutuhkan, 1 bungkus = beberapa kali pakai</small></h6>
               <div class="pk-rows">
                 @forelse ($bahanPaket[$peran] ?? [] as $b)
                   <div class="pk-row" data-bahan="{{ $b->id }}" data-peran="{{ $peran }}" data-kap="{{ $b->kap }}">
@@ -418,34 +501,15 @@
             </section>
           @endforeach
 
-          {{-- 5. Kemasan (minyak & gas lewat tombol Kirim Minyak & Gas) --}}
-          <section class="pk-sec">
-            <h6><span>6</span> Kemasan per ukuran <small>minyak &amp; gas lewat tombol "Kirim Minyak &amp; Gas"</small></h6>
-            <div class="pk-rows">
-              @foreach ($ukuranPaket as $u)
-                <div class="pk-row" data-kemasan-ukuran="{{ $u->id }}">
-                  <span class="pk-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-box2"></i>@endif</span>
-                  <div class="pk-nama"><b>Kemasan {{ $u->nama_ukuran }}</b>
-                    <small>tersedia: {{ \App\Models\BahanBaku::formatAngka($stokKemasan[$u->id] ?? 0) }} pcs</small></div>
-                  <div class="input-group pk-input">
-                    <input type="number" step="1" min="0" name="kemasan[{{ $u->id }}]" value="{{ old("kemasan.$u->id") }}" class="form-control" placeholder="0">
-                    <span class="input-group-text">pcs</span>
-                  </div>
-                  <span class="pk-hasil"></span>
-                </div>
-              @endforeach
-            </div>
-          </section>
-
           <div class="mb-4 mt-3">
             <label class="form-label">Catatan <span class="text-muted-green fw-normal">— opsional</span></label>
-            <input type="text" name="catatan" maxlength="150" value="{{ old('catatan') }}" class="form-control" placeholder="Contoh: Paket sore">
+            <input type="text" name="catatan" maxlength="150" value="{{ old('_modal') === 'pendukung' ? old('catatan') : '' }}" class="form-control" placeholder="Contoh: Saus Barbeque menipis">
           </div>
 
           <div class="d-flex gap-2">
             <button type="button" class="btn-custom flex-fill justify-content-center" data-bs-dismiss="modal"
               style="background:#FFFFFF;border:2px solid #7A1E1E;color:#7A1E1E;font-weight:700;">Batal</button>
-            <button type="submit" class="btn-custom btn-custom-primary flex-fill justify-content-center"><i class="bi bi-send-fill"></i> Berikan Paket</button>
+            <button type="submit" class="btn-custom btn-custom-primary flex-fill justify-content-center"><i class="bi bi-droplet-fill"></i> Berikan Bahan</button>
           </div>
         </form>
       </div>
@@ -532,9 +596,10 @@
     })->values()->all();
   @endphp
   <script>
-    window.stokConfig = { autoJenis: @json($jenisAwal), bukaPaket: @json($paketTerbuka) };
+    window.stokConfig = { autoJenis: @json($jenisAwal), bukaPaket: @json($paketTerbuka), bukaPendukung: @json($pendukungTerbuka) };
     window.paketConfig = {
       set: @json($set),
+      kgPerPaket: @json($kgPerPaket),
       ukuran: @json($paketUkuran),
     };
     // Form Kirim Minyak & Gas: pilih kasir -> isi otomatis sesuai permintaan kasir itu (kalau ada), selain itu isi standar

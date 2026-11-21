@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Services\StokOtomatis\StokOtomatisService;
 
-
+/**
+ * Halaman admin "Stok Kasir": memantau stok yang sedang dipegang tiap kasir
+ * (hanya dilihat, tidak bisa diubah). Stok bertambah lewat "Beri Paket ke Kasir"
+ * di Manajemen Stok dan berkurang otomatis tiap ada pembayaran.
+ */
 class StokKasirAdminController extends Controller
 {
     public function index(StokOtomatisService $stok)

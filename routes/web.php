@@ -16,6 +16,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\StatusMasterController;
 use App\Http\Controllers\StokKasirController;
 use App\Http\Controllers\StokKasirAdminController;
+use App\Http\Controllers\StokOtomatisController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,11 +45,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('bahan_baku', BahanBakuController::class)->except('show');
     Route::post('stok/masuk', [BahanBakuController::class, 'stokMasuk'])->name('stok.masuk');
     Route::post('stok/keluar', [BahanBakuController::class, 'stokKeluar'])->name('stok.keluar');
-    Route::post('stok/paket', [BahanBakuController::class, 'beriPaket'])->name('stok.paket');
+    Route::post('stok/paket', [BahanBakuController::class, 'beriPaket'])->name('stok.paket');                      // paket ayam (+tepung, kemasan)
+    Route::post('stok/pendukung', [BahanBakuController::class, 'beriBahanPendukung'])->name('stok.pendukung');      // filling, saus, bumbu per rasa
 
     // Kirim minyak & gas ke kasir (form seperti Beri Paket; kasir konfirmasi diterima)
     Route::post('stok/kirim', [BahanBakuController::class, 'kirimMinyakGas'])->name('stok.kirim');
     Route::get('stok/riwayat', [RiwayatStokController::class, 'index'])->name('stok.riwayat');
+
+    // Pengaturan Stok: standar pcs per kg ayam tiap ukuran, isi paket, kapasitas bungkus, hubungan menu -> bahan baku
+    Route::get('stok/pengaturan', [StokOtomatisController::class, 'pengaturan'])->name('stok.pengaturan');
+    Route::put('stok/pengaturan', [StokOtomatisController::class, 'simpanPengaturan'])->name('stok.pengaturan.simpan');
+    Route::post('stok/pengaturan/hubungkan', [StokOtomatisController::class, 'hubungkan'])->name('stok.pengaturan.hubungkan');
 
     // Stok Kasir: pantau stok yang dipegang tiap kasir (halaman terpisah dari Manajemen Stok)
     Route::get('stok-kasir', [StokKasirAdminController::class, 'index'])->name('stok.kasir');

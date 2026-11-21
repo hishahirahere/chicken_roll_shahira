@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * "Stok Saya": stok yang sedang dipegang kasir, dalam bentuk pcs per ukuran dan kali pakai.
+ * Produk/bahan bertambah saat admin memberi paket dan berkurang otomatis tiap pembayaran.
+ * Minyak & gas manual: kasir mencatat pemakaian, minta ke admin, lalu konfirmasi saat barang diterima.
+ */
 class StokKasirController extends Controller
 {
     public function index(StokOtomatisService $stok)

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class BumbuTaburSeeder extends Seeder
 {
-    /** Rasa bumbu tabur menu asli. */
     public const DAFTAR = ['Balado', 'BBQ', 'Bubuk Cabe', 'Garlic', 'Jagung Manis', 'Keju'];
 
     public function run(): void

@@ -42,7 +42,7 @@ class BahanBakuSeeder extends Seeder
         }
 
         // Kemasan per ukuran: [stok awal, stok minimum] contoh, ganti sesuai stok asli
-        $stokKemasan = ['slim' => [300, 50], 'reguler' => [250, 50], 'jumbo' => [150, 30]];
+        $stokKemasan = ['slim' => [500, 50], 'reguler' => [500, 50], 'jumbo' => [500, 50]];
         foreach (DB::table('ukuran')->orderBy('harga')->get() as $u) {
             [$stok, $min] = $stokKemasan[strtolower($u->nama_ukuran)] ?? [200, 50];
             $bahanId = $this->buatBahan('Kemasan ' . $u->nama_ukuran, 'pcs', 'kemasan', $stok, $min, $adminId);
@@ -54,7 +54,6 @@ class BahanBakuSeeder extends Seeder
         app(StokOtomatisService::class)->segarkanSemuaStatus();
     }
 
-    /** Buat bahan kalau belum ada (stok awal + riwayat "Stok awal"). Mengembalikan id bahan. */
     private function buatBahan(string $nama, string $satuan, string $peran, int $stok, int $min, ?int $adminId): int
     {
         $ada = DB::table('bahan_baku')->whereRaw('LOWER(nama_bahan) = ?', [mb_strtolower($nama)])->first();

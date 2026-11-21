@@ -52,7 +52,7 @@
     <div class="ks-alert">
       <i class="bi bi-exclamation-triangle-fill"></i>
       <div>
-        <b>{{ $ringkas['habis'] > 0 ? 'Ada yang habis, minta paket baru ke admin.' : 'Ada yang mulai menipis, siapkan minta paket lagi.' }}</b>
+        <b>{{ $ringkas['habis'] > 0 ? 'Ada yang habis, ambil ke admin (ayam: paket, rasa: bahan pendukung).' : 'Ada yang mulai menipis, siapkan ambil ke admin sebelum habis.' }}</b>
         <span class="ks-alert-list">
           @foreach ($peluang->take(6) as $b)
             <span class="ks-pill">{{ $b->nama }} · {{ $b->status === 'habis' ? 'habis' : 'sisa ' . $n($b->jumlah) . ' ' . $b->satuan }}</span>

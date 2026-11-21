@@ -60,6 +60,9 @@ class StokOtomatisController extends Controller
             'liter_per_jerigen'     => 'required|integer|min:1|max:999',
             'batas_menipis_persen'  => 'required|integer|min:1|max:90',
 
+            'hasil_pcs_per_kg'     => 'nullable|array',
+            'hasil_pcs_per_kg.*'   => 'required|integer|min:1|max:999',
+
             'peran'                => 'nullable|array',
             'peran.*'              => 'nullable|integer|exists:bahan_baku,id',
             'hubungan'             => 'nullable|array',
@@ -81,11 +84,23 @@ class StokOtomatisController extends Controller
                 );
             }
 
-            // 2) Hasil pcs per 1 kg ayam (25 / 20 / 15) sudah baku, tidak diubah dari form.
+            // 2) Hasil pcs per 1 kg ayam per ukuran (bilangan bulat, dipakai saat memberi paket).
             //    Tepung tidak dihitung dari ayam: premix basah (botol) & tepung roti (bungkus) = isi paket tetap.
+            foreach (($v['hasil_pcs_per_kg'] ?? []) as $ukuranId => $pcs) {
+                if (! DB::table('ukuran')->where('id', $ukuranId)->exists()) {
+                    continue;
+                }
+                DB::table('standar_produksi')->updateOrInsert(
+                    ['ukuran_id' => (int) $ukuranId],
+                    ['hasil_pcs_per_kg' => (int) $pcs, 'updated_at' => now(), 'created_at' => now()]
+                );
+            }
 
             // 3) Bahan utama (ayam, tepung, minyak, gas, kemasan): 1 bahan per peran
             foreach (array_keys(StokOtomatisService::PERAN_UTAMA) as $peran) {
+                if (! isset($v['peran']) || ! array_key_exists($peran, $v['peran'])) {
+                    continue; // bagian ini tidak dikirim: pemetaan lama dibiarkan
+                }
                 $dipilih = $v['peran'][$peran] ?? null;
                 DB::table('bahan_baku')->where('peran', $peran)->update(['peran' => null]);
                 if ($dipilih) {

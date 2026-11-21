@@ -21,7 +21,7 @@
     <div class="page-header-icon"><i class="bi bi-sliders"></i></div>
     <div>
       <h1 class="page-title">Pengaturan Stok</h1>
-      <p class="page-subtitle">Semua angka standar pemakaian bahan baku. Ubah di sini kalau standar berubah, tanpa menyentuh kode.</p>
+      <p class="page-subtitle">Atur standar pemakaian bahan.</p>
     </div>
   </div>
 
@@ -54,80 +54,92 @@
 
     {{-- ===== 1. Ayam per ukuran ===== --}}
     <section class="so-card">
-      <header class="so-head"><span class="so-num">1</span><div><h2>Ayam per ukuran</h2>
-        <p>Hasil pcs per <b>1 kg ayam</b>. Tepung premix basah &amp; tepung roti <b>tidak</b> dihitung dari ayam: keduanya isi paket tetap (premix basah per botol 1 liter, tepung roti per bungkus 1 kg), diatur di bagian "Paket standar".</p></div></header>
-      <div class="so-scroll">
-        <table class="so-table">
-          <thead><tr><th>Ukuran</th><th>1 kg ayam jadi (pcs)</th></tr></thead>
-          <tbody>
-            @forelse ($ukuran as $u)
-              @php $s = $standar[$u->id] ?? ['hasil_pcs_per_kg' => '']; @endphp
-              <tr>
-                <td><span class="so-item"><span class="so-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-image"></i>@endif</span><b>{{ $u->nama_ukuran }}</b></span></td>
-                <td><span class="so-lock"><i class="bi bi-lock-fill"></i> {{ $s['hasil_pcs_per_kg'] === '' ? '-' : $n($s['hasil_pcs_per_kg']) }} pcs</span></td>
-              </tr>
-            @empty
-              <tr><td colspan="2" class="text-center text-muted-green p-4">Belum ada ukuran. Tambahkan dulu di Master Ukuran.</td></tr>
-            @endforelse
-          </tbody>
-        </table>
+      <header class="so-head"><span class="so-num">1</span><div><h2>Ayam jadi berapa potong</h2>
+        <p>Hasil potong dari 1 kg ayam tiap ukuran.</p></div></header>
+      <div class="so-rows">
+        @forelse ($ukuran as $u)
+          @php $s = $standar[$u->id]['hasil_pcs_per_kg'] ?? null; @endphp
+          <div class="so-row">
+            <span class="so-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-image"></i>@endif</span>
+            <div class="so-row-nama"><b>{{ $u->nama_ukuran }}</b><small>1 kg ayam jadi</small></div>
+            <div class="input-group so-row-input"><input type="number" step="1" min="1" required name="hasil_pcs_per_kg[{{ $u->id }}]" value="{{ old('hasil_pcs_per_kg.' . $u->id, $s !== null ? $n($s) : '') }}" placeholder="isi" class="form-control"><span class="input-group-text">potong</span></div>
+          </div>
+        @empty
+          <div class="so-empty">Belum ada ukuran. Tambahkan dulu di Master Ukuran.</div>
+        @endforelse
       </div>
-      <p class="so-note"><i class="bi bi-lock"></i> Hasil per 1 kg ayam (Slim 25, Reguler 20, Jumbo 15) sudah baku dan <b>tidak bisa diubah</b>. Hasil ini dipakai saat memberi paket: kg ayam per ukuran diubah jadi stok pcs di kasir.</p>
     </section>
 
     {{-- ===== 2. Bungkus ===== --}}
     <section class="so-card">
-      <header class="so-head"><span class="so-num">2</span><div><h2>Filling, saus celup &amp; bumbu tabur</h2>
-        <p>Satuan <b>bungkus</b>, dihitung per <b>porsi</b>. 1 produk memakai 1 porsi tiap bahan yang dipilih pelanggan.</p></div></header>
+      <header class="so-head"><span class="so-num">2</span><div><h2>1 bungkus bisa dipakai berapa kali</h2>
+        <p>Jumlah kali pakai tiap bungkus.</p></div></header>
       <div class="so-grid3">
         @foreach ([['kapasitas_filling', 'Filling', 'bi-egg-fried'], ['kapasitas_saus', 'Saus celup', 'bi-droplet-fill'], ['kapasitas_bumbu', 'Bumbu tabur', 'bi-stars']] as [$k, $label, $ik])
-          <label class="so-field"><span><i class="bi {{ $ik }}"></i> {{ $label }}</span>
-            <div class="input-group"><input type="number" step="1" min="1" required name="{{ $k }}" value="{{ old($k, $n($set[$k])) }}" class="form-control"><span class="input-group-text">kali pakai / bungkus</span></div>
+          <label class="so-tile">
+            <span class="so-tile-ic"><i class="bi {{ $ik }}"></i></span>
+            <span class="so-tile-t">{{ $label }}</span>
+            <div class="input-group"><input type="number" step="1" min="1" required name="{{ $k }}" value="{{ old($k, $n($set[$k])) }}" class="form-control"><span class="input-group-text">kali pakai</span></div>
+            <small>per 1 bungkus</small>
           </label>
         @endforeach
       </div>
-      <p class="so-note"><i class="bi bi-lightbulb"></i> Contoh: 1 bungkus = 12 porsi, sudah dipakai 10 porsi, maka sistem otomatis menampilkan <b>sisa 2 porsi</b> di bungkus yang berjalan. Bungkus baru baru dibuka setelah sisa habis.</p>
     </section>
 
-    {{-- ===== 3. Kemasan ===== --}}
+    {{-- ===== 3. Isi paket standar ===== --}}
     <section class="so-card">
-      <header class="so-head"><span class="so-num">3</span><div><h2>Kemasan</h2>
-        <p>Kemasan dibedakan per ukuran (Slim, Reguler, Jumbo): kalau yang terjual Slim, kemasan Slim yang berkurang. Kemasan di paket ke kasir otomatis sama dengan jumlah pcs tiap ukuran. <b>Minyak &amp; gas tidak dihitung otomatis</b>: dikirim admin lewat tombol "Kirim Minyak &amp; Gas" di Manajemen Stok, selalu sebesar <b>porsi tetap</b> (lihat "Paket standar"). Kasir tidak bisa memilih jumlah, dan baru bisa minta kalau stoknya sudah menipis atau habis.</p></div></header>
-      <div class="so-grid4">
-        <label class="so-field"><span><i class="bi bi-box2"></i> Kemasan per ukuran</span>
-          <div class="input-group"><input type="number" step="1" min="0" required name="kemasan_per_produk" value="{{ old('kemasan_per_produk', $n($set['kemasan_per_produk'])) }}" class="form-control"><span class="input-group-text">pcs / produk</span></div></label>
-      </div>
+      <header class="so-head"><span class="so-num">3</span><div><h2>Isi paket standar untuk kasir</h2>
+        <p>Isi bawaan saat memberi paket ke kasir.</p></div></header>
+      @foreach ([
+        ['Ayam &amp; tepung', [
+          ['paket_kg_per_ukuran', 'Ayam per ukuran', 'kg', 'bi-egg-fried'],
+          ['paket_premix_basah_botol', 'Tepung premix basah', 'botol', 'bi-droplet'],
+          ['paket_tepung_roti_bungkus', 'Tepung roti', 'bungkus', 'bi-basket'],
+        ]],
+        ['Bahan pendukung (tiap rasa)', [
+          ['paket_filling_bungkus', 'Filling', 'bungkus', 'bi-egg-fried'],
+          ['paket_saus_bungkus', 'Saus celup', 'bungkus', 'bi-droplet-fill'],
+          ['paket_bumbu_bungkus', 'Bumbu tabur', 'bungkus', 'bi-stars'],
+        ]],
+        ['Minyak &amp; gas (sekali kirim)', [
+          ['paket_minyak_jerigen', 'Minyak', 'jerigen', 'bi-droplet-half'],
+          ['paket_gas_tabung', 'Gas', 'tabung', 'bi-fire'],
+        ]],
+      ] as [$judulGrup, $isiGrup])
+        <h3 class="so-sub">{!! $judulGrup !!}</h3>
+        <div class="so-grid3">
+          @foreach ($isiGrup as [$k, $label, $sat, $ik])
+            <label class="so-tile">
+              <span class="so-tile-ic"><i class="bi {{ $ik }}"></i></span>
+              <span class="so-tile-t">{{ $label }}</span>
+              <div class="input-group"><input type="number" step="1" min="0" required name="{{ $k }}" value="{{ old($k, $n($set[$k])) }}" class="form-control"><span class="input-group-text">{{ $sat }}</span></div>
+            </label>
+          @endforeach
+        </div>
+      @endforeach
     </section>
 
-    {{-- ===== Paket standar ===== --}}
-    <section class="so-card">
-      <header class="so-head"><span class="so-num">P</span><div><h2>Paket standar ke kasir</h2>
-        <p>Isi awal tombol <b>"Paket standar"</b> di form Beri Paket. Admin tetap bisa mengubah angkanya saat memberi paket.</p></div></header>
-      <div class="so-grid4">
-        @foreach ([
-          ['paket_kg_per_ukuran', 'Ayam per ukuran', 'kg', 'bi-egg-fried', '1'],
-          ['paket_filling_bungkus', 'Filling per jenis', 'bungkus', 'bi-egg-fried', '1'],
-          ['paket_saus_bungkus', 'Saus celup per jenis', 'bungkus', 'bi-droplet-fill', '1'],
-          ['paket_bumbu_bungkus', 'Bumbu tabur per jenis', 'bungkus', 'bi-stars', '1'],
-          ['paket_premix_basah_botol', 'Tepung premix basah (1 botol = 1 liter)', 'botol', 'bi-droplet', '1'],
-          ['paket_tepung_roti_bungkus', 'Tepung roti (1 bungkus = 1 kg)', 'bungkus', 'bi-basket', '1'],
-          ['paket_minyak_jerigen', 'Jatah minyak sekali kirim (1 jerigen = 5 liter)', 'jerigen', 'bi-droplet-half', '1'],
-          ['paket_gas_tabung', 'Jatah gas sekali kirim', 'tabung', 'bi-fire', '1'],
-          ['liter_per_jerigen', 'Isi 1 jerigen minyak', 'liter', 'bi-droplet', '1'],
-          ['batas_menipis_persen', 'Batas "menipis" di kasir', '% sisa', 'bi-exclamation-triangle', '1'],
-        ] as [$k, $label, $sat, $ik, $step])
-          <label class="so-field"><span><i class="bi {{ $ik }}"></i> {{ $label }}</span>
-            <div class="input-group"><input type="number" step="{{ $step }}" min="0" required name="{{ $k }}" value="{{ old($k, $n($set[$k])) }}" class="form-control"><span class="input-group-text">{{ $sat }}</span></div>
-          </label>
-        @endforeach
-      </div>
-      <p class="so-note"><i class="bi bi-info-circle"></i> Contoh: paket standar 1 kg per ukuran = 3 kg ayam = 25 Slim + 20 Reguler + 15 Jumbo = 60 pcs, memakai {{ $n($set['paket_premix_basah_botol']) }} botol premix basah ({{ $n($set['paket_premix_basah_botol']) }} liter) + {{ $n($set['paket_tepung_roti_bungkus']) }} bungkus tepung roti ({{ $n($set['paket_tepung_roti_bungkus']) }} kg). Minyak &amp; gas <b>tidak</b> ikut paket harian: dikirim sebagai jatah tetap ({{ $n($set['paket_minyak_jerigen']) }} jerigen minyak, {{ $n($set['paket_gas_tabung']) }} tabung gas) untuk beberapa hari, dan dikirim lagi saat stok kasir habis. Stok kasir ditandai <b>menipis</b> kalau sisanya tinggal {{ $n($set['batas_menipis_persen']) }}% dari yang terakhir diterima.</p>
-    </section>
+    {{-- ===== Pengaturan lanjutan (jarang diubah) ===== --}}
+    <details class="so-lanjut">
+      <summary><i class="bi bi-gear"></i> Pengaturan lanjutan </summary>
+
+      <section class="so-card">
+        <header class="so-head"><span class="so-num"><i class="bi bi-box2"></i></span><div><h2>Kemasan &amp; batas menipis</h2>
+          </div></header>
+        <div class="so-grid4">
+          <label class="so-field"><span><i class="bi bi-box2"></i> Kemasan per produk</span>
+            <div class="input-group"><input type="number" step="1" min="0" required name="kemasan_per_produk" value="{{ old('kemasan_per_produk', $n($set['kemasan_per_produk'])) }}" class="form-control"><span class="input-group-text">pcs</span></div></label>
+          <label class="so-field"><span><i class="bi bi-droplet"></i> Isi 1 jerigen minyak</span>
+            <div class="input-group"><input type="number" step="1" min="1" required name="liter_per_jerigen" value="{{ old('liter_per_jerigen', $n($set['liter_per_jerigen'])) }}" class="form-control"><span class="input-group-text">liter</span></div></label>
+          <label class="so-field"><span><i class="bi bi-exclamation-triangle"></i> Tandai "menipis" kalau sisa</span>
+            <div class="input-group"><input type="number" step="1" min="1" max="90" required name="batas_menipis_persen" value="{{ old('batas_menipis_persen', $n($set['batas_menipis_persen'])) }}" class="form-control"><span class="input-group-text">%</span></div></label>
+        </div>
+      </section>
 
     {{-- ===== 4. Bahan utama ===== --}}
     <section class="so-card">
-      <header class="so-head"><span class="so-num">4</span><div><h2>Bahan utama</h2>
-        <p>Pilih bahan baku yang dipakai untuk tiap peran.</p></div></header>
+      <header class="so-head"><span class="so-num"><i class="bi bi-diagram-3"></i></span><div><h2>Bahan utama</h2>
+        </div></header>
       <div class="so-grid3">
         @foreach ($peranUtama as $peran => [$namaBawaan, $satuan])
           <label class="so-field"><span>{{ $namaBawaan }}</span>
@@ -143,14 +155,14 @@
 
     {{-- ===== 5. Hubungan menu -> bahan ===== --}}
     <section class="so-card">
-      <header class="so-head"><span class="so-num">5</span><div><h2>Hubungan menu dengan bahan baku</h2>
-        <p>Tiap filling, saus celup, dan bumbu tabur terhubung ke 1 bahan baku. Kolom kanan: porsi per bungkus khusus bahan itu (kosong = ikut standar di atas).</p></div></header>
+      <header class="so-head"><span class="so-num"><i class="bi bi-link-45deg"></i></span><div><h2>Hubungan menu dengan bahan baku</h2>
+        <p>Bahan baku tiap menu dan kali pakai per bungkus.</p></div></header>
 
       @foreach ($grup as [$tabel, $judul, $ikon, $rows, $kolom, $peran])
         <h3 class="so-sub"><i class="bi {{ $ikon }}"></i> {{ $judul }}</h3>
         <div class="so-scroll">
           <table class="so-table">
-            <thead><tr><th>{{ $judul }}</th><th>Bahan baku</th><th style="width:210px">Porsi / bungkus</th></tr></thead>
+            <thead><tr><th>{{ $judul }}</th><th>Bahan baku</th><th style="width:230px">Kali pakai / bungkus</th></tr></thead>
             <tbody>
               @forelse ($rows as $r)
                 @php $bh = $bahanById[$r->bahan_baku_id] ?? null; @endphp
@@ -167,7 +179,7 @@
                   </td>
                   <td>
                     @if ($bh)
-                      <div class="input-group"><input type="number" step="1" min="1" name="porsi_per_bungkus[{{ $bh->id }}]" value="{{ old("porsi_per_bungkus.$bh->id", $bh->porsi_per_bungkus !== null ? $n($bh->porsi_per_bungkus) : '') }}" placeholder="ikut standar" class="form-control"><span class="input-group-text">porsi</span></div>
+                      <div class="input-group"><input type="number" step="1" min="1" name="porsi_per_bungkus[{{ $bh->id }}]" value="{{ old("porsi_per_bungkus.$bh->id", $bh->porsi_per_bungkus !== null ? $n($bh->porsi_per_bungkus) : '') }}" placeholder="ikut standar" class="form-control"><span class="input-group-text">kali</span></div>
                     @else <span class="text-muted-green">—</span> @endif
                   </td>
                 </tr>
@@ -179,6 +191,7 @@
         </div>
       @endforeach
     </section>
+    </details>
 
     <div class="so-save">
       <a href="{{ route('bahan_baku.index') }}" class="btn-custom" style="background:#fff;border:2px solid #7A1E1E;color:#7A1E1E;font-weight:700;"><i class="bi bi-arrow-left"></i> Kembali</a>

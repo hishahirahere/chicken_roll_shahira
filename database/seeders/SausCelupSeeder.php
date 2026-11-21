@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class SausCelupSeeder extends Seeder
 {
-    /** Rasa saus celup menu asli. */
     public const DAFTAR = ['BBQ Spicy', 'Hot Lava', 'Keju', 'Lada Hitam', 'Sadis', 'Teriyaki'];
 
     public function run(): void

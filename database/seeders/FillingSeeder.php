@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class FillingSeeder extends Seeder
 {
-    /** Rasa filling menu asli. */
     public const DAFTAR = ['BBQ', 'BBQ Spicy', 'Garlic', 'Hot Lava', 'Keju', 'Mentai'];
 
     public function run(): void
