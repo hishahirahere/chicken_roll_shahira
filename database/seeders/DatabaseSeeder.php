@@ -1,0 +1,32 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+
+    public function run(): void
+    {
+        $this->call([
+            // 1. Akun admin & kasir
+            UserSeeder::class,
+
+            // 2. Data master menu
+            UkuranSeeder::class,
+            FillingSeeder::class,
+            SausCelupSeeder::class,
+            BumbuTaburSeeder::class,
+
+            // 3. Stok gudang: bahan utama + satu bahan per filling/saus/bumbu (dihubungkan ke menu)
+            BahanBakuSeeder::class,
+
+            // 4. Standar pemakaian stok otomatis (pengaturan_stok + standar_produksi)
+            PengaturanStokSeeder::class,
+
+            // 5. Paket awal gudang -> kasir, supaya kasir langsung bisa jualan
+            StokKasirSeeder::class,
+        ]);
+    }
+}

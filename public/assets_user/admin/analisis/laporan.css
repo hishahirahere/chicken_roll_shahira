@@ -1,0 +1,90 @@
+/* Asal: resources/views/admin/analisis/laporan/index.blade.php */
+:root {
+  --lap-brand: var(--brand-forest-medium, #9c1d1d);
+  --lap-border: var(--border-light, #F0E4D3);
+  --lap-muted: var(--text-muted-green, #8a7267);
+  --lap-text: var(--text-main, #3b1f1a);
+  --lap-soft: #fbf3ec;
+}
+
+/* ---------- Tab jenis laporan ---------- */
+.lap-tabs { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.5rem; border-bottom: 2px solid var(--lap-border); }
+.lap-tab { padding: .7rem 1.3rem; font-weight: 800; font-size: .9rem; color: var(--lap-muted); text-decoration: none; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color .15s; }
+.lap-tab:hover, .lap-tab.active { color: var(--lap-brand); }
+.lap-tab.active { border-bottom-color: var(--lap-brand); }
+
+/* ---------- Ekspor & cetak (kartu di dalam laporan) ---------- */
+.lap-export-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: linear-gradient(100deg, #fff3df 0%, #fffaf1 60%, #fff 100%); border: 1px solid var(--lap-border); border-radius: 1.2rem; }
+.lap-export-title { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+.lap-export-title b { display: block; color: var(--lap-text); font-weight: 800; }
+.lap-export-title small { display: block; color: var(--lap-muted); font-size: .8rem; line-height: 1.35; }
+.lap-export-ic { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: .95rem; background: var(--lap-brand); color: #fff; font-size: 1.2rem; }
+.lap-export-btns { display: flex; gap: .6rem; flex-wrap: wrap; }
+.btn-lap { display: inline-flex; align-items: center; gap: .5rem; padding: .62rem 1.2rem; border-radius: 50rem; font-weight: 800; font-size: .86rem; text-decoration: none; border: 0; color: #fff !important; box-shadow: 0 10px 18px -12px rgba(0, 0, 0, .55); transition: transform .15s, box-shadow .15s, filter .15s; }
+.btn-lap:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 14px 22px -12px rgba(0, 0, 0, .6); }
+.btn-lap-excel { background: linear-gradient(135deg, #22a559, #14733b); }
+.btn-lap-pdf { background: linear-gradient(135deg, #d6303b, #8f1620); }
+.btn-lap-print { background: linear-gradient(135deg, #3b82c4, #1d5fa8); }
+
+/* ---------- Periode & filter ---------- */
+.lap-toolbar { background: var(--lap-soft); border: 1px solid var(--lap-border); border-radius: 1rem; padding: 1rem 1.1rem 1.1rem; margin-bottom: 1.5rem; }
+.per-chips { display: inline-flex; gap: .25rem; padding: .25rem; background: #fff; border: 1px solid var(--lap-border); border-radius: 50rem; flex-wrap: wrap; }
+.per-chip { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem 1rem; border-radius: 50rem; font-weight: 700; font-size: .85rem; text-decoration: none; color: var(--lap-muted); transition: background .15s, color .15s; }
+.per-chip:hover { color: var(--lap-brand); }
+.per-chip.active { background: var(--lap-brand); color: #fff; }
+.per-info { display: inline-flex; align-items: center; gap: .4rem; margin-left: .85rem; font-size: .85rem; color: var(--lap-muted); }
+.per-info b { color: var(--lap-text); }
+.lap-toolbar .form-label { font-size: .8rem; font-weight: 700; color: var(--lap-muted); margin-bottom: .3rem; }
+.lap-toolbar .form-control, .lap-toolbar .form-select { background-color: #fff; border-color: var(--lap-border); border-radius: .7rem; }
+
+/* ---------- Kartu ringkasan ---------- */
+.lap-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
+.lap-stat { display: flex; align-items: center; gap: .9rem; padding: 1rem 1.15rem; background: #fff; border: 1px solid var(--lap-border); border-radius: 1rem; }
+.lap-stat-icon { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: .9rem; background: #fbeee9; color: var(--lap-brand); font-size: 1.3rem; }
+.lap-stat-label { display: block; font-size: .8rem; font-weight: 700; color: var(--lap-muted); }
+.lap-stat-value { display: block; font-size: 1.55rem; font-weight: 800; line-height: 1.2; color: var(--lap-text); }
+.lap-stat.is-main { background: var(--lap-brand); border-color: var(--lap-brand); }
+.lap-stat.is-main .lap-stat-icon { background: rgba(255,255,255,.18); color: #fff; }
+.lap-stat.is-main .lap-stat-label { color: rgba(255,255,255,.8); }
+.lap-stat.is-main .lap-stat-value { color: #fff; }
+
+/* ---------- Tabel ---------- */
+.lap-tablehead { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; font-weight: 800; color: var(--lap-text); }
+.lap-tablehead i { color: var(--lap-brand); margin-right: .3rem; }
+.lap-count { font-size: .78rem; font-weight: 700; color: var(--lap-brand); background: #fbeee9; padding: .2rem .7rem; border-radius: 50rem; }
+.lap-scroll { overflow-x: auto; }
+.lap-scroll .table-custom { min-width: 760px; }
+.lap-table { border-collapse: separate; border-spacing: 0; width: 100%; }
+.lap-table thead th { background: var(--lap-brand); color: #fff; font-size: .8rem; font-weight: 800; text-transform: none; letter-spacing: 0; padding: .8rem .9rem; border-top: 1px solid var(--lap-border); border-bottom: 1px solid var(--lap-border); white-space: nowrap; }
+.lap-table thead th:first-child { border-left: 1px solid var(--lap-border); border-top-left-radius: .8rem; }
+.lap-table thead th:last-child { border-right: 1px solid var(--lap-border); border-top-right-radius: .8rem; }
+.lap-table tbody td { padding: .85rem .9rem; vertical-align: middle; border-bottom: 1px solid #f4ebe0; font-size: .9rem; color: var(--lap-text); }
+.lap-table thead th, .lap-table thead th:first-child, .lap-table thead th:last-child { border-color: var(--lap-brand); }
+.lap-table tbody tr:nth-child(odd) td { background: #ffffff; }
+.lap-table tbody tr:nth-child(even) td { background: #fbf3ec; }
+.lap-table tbody tr:hover td { background:  #f5e6d8; }
+.lap-table tbody tr.lap-empty-row td { background: #ffffff; }
+.lap-money { font-weight: 800; color: var(--lap-brand); }
+.lap-no { color: var(--lap-muted); font-weight: 700; }
+.lap-date { font-weight: 700; line-height: 1.2; }
+.lap-time { font-size: .78rem; color: var(--lap-muted); }
+.lap-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8rem; background: var(--lap-soft); border: 1px solid var(--lap-border); padding: .15rem .5rem; border-radius: .5rem; white-space: nowrap; }
+.lap-order { width: 300px; max-width: 300px; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+.lap-order-item + .lap-order-item { margin-top: .2rem; }
+.lap-qty { display: inline-block; min-width: 2rem; text-align: center; font-weight: 800; background: #fbeee9; color: var(--lap-brand); padding: .1rem .55rem; border-radius: 50rem; }
+.lap-pay { display: inline-block; font-size: .78rem; font-weight: 800; padding: .2rem .7rem; border-radius: 50rem; }
+.lap-pay-cash { background: #e7f5ea; color: #1f7a3a; }
+.lap-pay-qris { background: #e6f0fb; color: #1d5fa8; }
+.lap-pay-paylater { background: #fff1d9; color: #a15f00; }
+.lap-pay-lain { background: var(--lap-soft); color: var(--lap-muted); }
+
+/* ---------- Kondisi kosong ---------- */
+.lap-empty-row td { border-bottom: 0 !important; }
+.lap-empty { text-align: center; padding: 2.5rem 1rem 2rem; }
+.lap-empty-icon { width: 64px; height: 64px; margin: 0 auto .9rem; display: grid; place-items: center; border-radius: 50%; background: #fbeee9; color: var(--lap-brand); font-size: 1.8rem; }
+.lap-empty-title { font-weight: 800; color: var(--lap-text); }
+.lap-empty-hint { font-size: .85rem; color: var(--lap-muted); margin-top: .2rem; }
+
+/* Tombol Reset (satu gaya dengan halaman Riwayat Stok) */
+.btn-reset { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; padding: .6rem 1.2rem; border-radius: 50rem; border: 2px solid var(--lap-brand); background: #fff; color: var(--lap-brand); font-weight: 800; font-size: .88rem; line-height: 1.2; text-decoration: none; white-space: nowrap; transition: background .15s, color .15s; }
+.btn-reset:hover { background: var(--lap-brand); color: #fff; }

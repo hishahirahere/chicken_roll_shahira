@@ -1,0 +1,164 @@
+/* =====================================================================
+   SISTEM KARTU (satu desain untuk semua fitur, Admin & Kasir)
+   - Wadah   : putih, border tipis hangat, sudut 18px, bayangan halus
+   - Judul   : banner merah CCR (class .card-banner ATAU .card-header)
+   - Isi     : padding seragam 1.5rem
+   Dimuat setelah main.css / admin.css / kasir.css. Diawali "body" supaya
+   menang atas aturan CSS tiap halaman yang specificity-nya lebih rendah.
+   ===================================================================== */
+:root {
+  --c-border: #efe3d6;
+  --c-radius: 18px;
+  --c-pad: 1.5rem;
+  --c-shadow: 0 1px 2px rgba(59, 31, 26, .04), 0 8px 22px -12px rgba(156, 29, 29, .16);
+  --c-red: #9c1d1d;
+  --c-red-dark: #6f1212;
+}
+
+/* ---------- Wadah ---------- */
+body:not(.is-dashboard) .card,
+body:not(.is-dashboard) .so-card,
+body:not(.is-dashboard) .sk-panel,
+body:not(.is-dashboard) .lap-export-card,
+body:not(.is-dashboard) .pf-card {
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: var(--c-radius);
+  box-shadow: var(--c-shadow);
+}
+body:not(.is-dashboard) .card { padding: var(--c-pad); margin-bottom: 1.5rem; overflow: hidden; }
+body:not(.is-dashboard) .so-card { padding: var(--c-pad); }
+body:not(.is-dashboard) .card.mb-0 { margin-bottom: 0; }
+
+/* ---------- Judul kartu: banner merah (.card-banner, dipakai halaman fitur) ---------- */
+body:not(.is-dashboard) .card > .card-banner {
+  display: flex !important; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem 1rem;
+  margin: calc(var(--c-pad) * -1) calc(var(--c-pad) * -1) var(--c-pad) !important;
+  padding: 1rem var(--c-pad) !important;
+  background: linear-gradient(135deg, var(--c-red-dark) 0%, var(--c-red) 100%) !important;
+  border: 0 !important; border-radius: 0 !important;
+  color: #fff;
+}
+body:not(.is-dashboard) .card > .card-banner h2 { margin: 0; font-size: 1.05rem; font-weight: 700; letter-spacing: -.005em; color: #fff !important; }
+body:not(.is-dashboard) .card > .card-banner h2 i { opacity: .9; }
+
+/* ---------- Isi kartu: toolbar & tabel ikut seragam ---------- */
+body:not(.is-dashboard) .card .table-card-custom { border: 1px solid var(--c-border); border-radius: 14px; box-shadow: none; }
+body:not(.is-dashboard) .card .card-toolbar { margin-bottom: 1.1rem; }
+
+/* ---------- Kartu ringkasan (stat) ---------- */
+
+@media (max-width: 576px) {
+  :root { --c-pad: 1.1rem; }
+}
+
+
+/* =====================================================================
+   KOMPONEN DI DALAM HALAMAN FITUR (seragam di semua halaman)
+   ===================================================================== */
+body:not(.is-dashboard) { --c-soft: #fbf3ec; --c-tabbg: #f6e7e2; --c-muted: #8a7267; --c-text: #3b1f1a; }
+
+/* ---------- 1. Kartu ringkasan angka ---------- */
+body:not(.is-dashboard) .ms-stats,
+body:not(.is-dashboard) .trx-stats,
+body:not(.is-dashboard) .lap-stats,
+body:not(.is-dashboard) .rt-ringkas {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+  margin-bottom: 1.5rem; background: none; border: 0; box-shadow: none; border-radius: 0; overflow: visible;
+}
+body:not(.is-dashboard) .ms-stat,
+body:not(.is-dashboard) .trx-stat,
+body:not(.is-dashboard) .lap-stat,
+body:not(.is-dashboard) .rt-r {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.1rem 1.25rem !important;
+  background: #fff; border: 1px solid var(--c-border) !important; border-radius: var(--c-radius);
+  box-shadow: var(--c-shadow);
+}
+body:not(.is-dashboard) .ms-stat::before { content: none !important; }
+body:not(.is-dashboard) .ms-stat-icon,
+body:not(.is-dashboard) .trx-stat-icon,
+body:not(.is-dashboard) .lap-stat-icon,
+body:not(.is-dashboard) .rt-r .ico {
+  flex: none; width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 14px; font-size: 1.3rem; color: #fff;
+  background: linear-gradient(135deg, var(--c-red-dark), var(--c-red));
+}
+body:not(.is-dashboard) .ms-stat-label,
+body:not(.is-dashboard) .trx-stat-label,
+body:not(.is-dashboard) .lap-stat-label,
+body:not(.is-dashboard) .rt-r .k { display: block; font-size: .8rem; font-weight: 700; color: var(--c-muted); }
+body:not(.is-dashboard) .ms-stat-value,
+body:not(.is-dashboard) .trx-stat-value,
+body:not(.is-dashboard) .lap-stat-value,
+body:not(.is-dashboard) .rt-r b { display: block; font-size: 1.55rem; font-weight: 800; line-height: 1.2; color: var(--c-text); }
+/* kartu utama (angka uang) = merah penuh */
+body:not(.is-dashboard) .trx-stat.is-main,
+body:not(.is-dashboard) .lap-stat.is-main,
+body:not(.is-dashboard) .rt-r:first-child { background: linear-gradient(135deg, var(--c-red-dark), var(--c-red)); border-color: var(--c-red) !important; }
+body:not(.is-dashboard) .trx-stat.is-main .trx-stat-icon,
+body:not(.is-dashboard) .lap-stat.is-main .lap-stat-icon,
+body:not(.is-dashboard) .rt-r:first-child .ico { background: rgba(255,255,255,.18); }
+body:not(.is-dashboard) .trx-stat.is-main .trx-stat-label, body:not(.is-dashboard) .lap-stat.is-main .lap-stat-label, body:not(.is-dashboard) .rt-r:first-child .k { color: rgba(255,255,255,.82); }
+body:not(.is-dashboard) .trx-stat.is-main .trx-stat-value, body:not(.is-dashboard) .lap-stat.is-main .lap-stat-value, body:not(.is-dashboard) .rt-r:first-child b { color: #fff; }
+/* kartu peringatan (stok menipis) */
+body:not(.is-dashboard) .ms-stat.is-alert { background: #fff5f3; border-color: #f1b6b0 !important; }
+
+/* ---------- 2. Kotak filter / toolbar ---------- */
+body:not(.is-dashboard) .ms-toolbar,
+body:not(.is-dashboard) .rs-toolbar,
+body:not(.is-dashboard) .trx-toolbar,
+body:not(.is-dashboard) .lap-toolbar,
+body:not(.is-dashboard) .rt-toolbar {
+  background: var(--c-soft); border: 1px solid var(--c-border); border-radius: 14px;
+  padding: 1rem 1.1rem; margin-bottom: 1.25rem;
+}
+body:not(.is-dashboard) :is(.ms-toolbar, .rs-toolbar, .trx-toolbar, .lap-toolbar, .rt-toolbar) .form-label { font-size: .8rem; font-weight: 700; color: var(--c-muted); margin-bottom: .3rem; }
+body:not(.is-dashboard) :is(.ms-toolbar, .rs-toolbar, .trx-toolbar, .lap-toolbar, .rt-toolbar) :is(.form-control, .form-select) { background-color: #fff; border-color: var(--c-border); border-radius: .7rem; }
+
+/* ---------- 3. Tab: pil dengan latar lembut, tab aktif merah ---------- */
+body:not(.is-dashboard) .ms-tabs,
+body:not(.is-dashboard) .lap-tabs,
+body:not(.is-dashboard) .ks-tabs {
+  display: flex; gap: .3rem; padding: .35rem; margin: 0 0 1.1rem;
+  background: var(--c-tabbg); border: 0; border-radius: 50rem; overflow-x: auto; scrollbar-width: none;
+}
+body:not(.is-dashboard) .ms-tabs button,
+body:not(.is-dashboard) .lap-tab,
+body:not(.is-dashboard) .ks-tab {
+  flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+  padding: .6rem 1.1rem; margin: 0; border: 0; border-bottom: 0;
+  background: transparent; border-radius: 50rem; white-space: nowrap; cursor: pointer; text-decoration: none;
+  font-size: .88rem; font-weight: 800; color: #7a5a52;
+}
+body:not(.is-dashboard) .ms-tabs button:hover, body:not(.is-dashboard) .lap-tab:hover, body:not(.is-dashboard) .ks-tab:hover { color: #7a1e1e; }
+body:not(.is-dashboard) .ms-tabs button.on,
+body:not(.is-dashboard) .lap-tab.active,
+body:not(.is-dashboard) .ks-tab.on {
+  background: linear-gradient(135deg, #7a1616, #a82424); color: #fff; border: 0;
+  box-shadow: 0 8px 18px -8px rgba(122, 22, 22, .7);
+}
+body:not(.is-dashboard) .ks-tab b { font-size: .72rem; background: rgba(122,30,30,.12); color: #7a1e1e; border-radius: 50rem; padding: .05rem .5rem; }
+body:not(.is-dashboard) .ks-tab.on b { background: rgba(255,255,255,.25); color: #fff; }
+body:not(.is-dashboard) .ks-tab.kosong { opacity: .45; }
+
+/* Filter status kecil (Semua / Aman / Menipis / Habis) */
+body:not(.is-dashboard) .mc-filter { background: var(--c-tabbg); border: 0; padding: .25rem; border-radius: 50rem; }
+body:not(.is-dashboard) .mc-filter button { color: #7a5a52; background: transparent; box-shadow: none; }
+body:not(.is-dashboard) .mc-filter button b { background: none; padding: 0; opacity: .75; color: inherit; }
+body:not(.is-dashboard) .mc-filter button.on { background: linear-gradient(135deg, #7a1616, #a82424); color: #fff; box-shadow: 0 6px 14px -8px rgba(122,22,22,.7); }
+
+/* ---------- 4. Banner peringatan (stok menipis / habis) ---------- */
+body:not(.is-dashboard) .ms-alert,
+body:not(.is-dashboard) .so-warn,
+body:not(.is-dashboard) .ks-alert {
+  display: flex; gap: .9rem; align-items: flex-start; padding: 1rem 1.2rem; margin-bottom: 1.25rem;
+  background: #fff6e8; border: 1px solid #f3d3a0; border-radius: 14px; color: #7a4a00; box-shadow: none;
+}
+body:not(.is-dashboard) .ks-alert > i {
+  flex: none; width: 42px !important; height: 42px !important; display: grid !important; place-items: center;
+  border-radius: 12px !important; background: #f59e0b !important; color: #fff !important; font-size: 1.15rem !important;
+}
+body:not(.is-dashboard) .ks-alert .ks-pill { background: #fff; border: 1px solid #f3d3a0; color: #a15f00; font-weight: 800; }
+body:not(.is-dashboard) .ks-alert b { font-weight: 800; color: #7a4a00; }

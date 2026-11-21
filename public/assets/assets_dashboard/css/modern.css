@@ -1,0 +1,169 @@
+/*
+=====================================================================
+  MODERN THEME - Chicken Crunchy Roll
+  Dimuat SETELAH main.css (admin & kasir), jadi hanya menimpa tampilan.
+  Gaya: hangat, lapang, sudut membulat besar, bayangan lembut,
+  sidebar gradasi dengan menu berbentuk pil, tombol bergradasi.
+=====================================================================
+*/
+:root {
+    --m-red: #9c1d1d;
+    --m-red-dark: #6f1111;
+    --m-red-soft: rgba(156, 29, 29, .08);
+    --m-gold: #e8a33d;
+    --m-cream: #fff8ee;
+    --m-ink: #2f1a16;
+    --m-line: #f1e6d6;
+    --m-shadow: 0 1px 2px rgba(59,31,26,.04), 0 12px 32px -12px rgba(59,31,26,.14);
+    --m-shadow-hover: 0 2px 4px rgba(59,31,26,.05), 0 22px 44px -14px rgba(156,29,29,.22);
+    --m-ease: cubic-bezier(.2,.7,.2,1);
+}
+
+/* ---------- Latar & tipografi ---------- */
+body {
+    background:
+        radial-gradient(900px 500px at 100% -10%, rgba(232,163,61,.16), transparent 60%),
+        radial-gradient(700px 480px at -10% 110%, rgba(156,29,29,.07), transparent 60%),
+        #fbf3e7;
+    background-attachment: fixed;
+}
+h1, h2, h3, h4, h5, h6 { color: var(--m-ink); letter-spacing: -.03em; }
+.page-title { font-size: 1.85rem; font-weight: 800; letter-spacing: -.035em; }
+.page-subtitle { color: var(--text-muted-green); }
+.page-header { margin-bottom: 1.75rem; animation: m-rise .5s var(--m-ease) both; }
+
+@keyframes m-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.card, .promo-banner-card, .table-card-custom { animation: m-rise .55s var(--m-ease) both; }
+.row > *:nth-child(2) > .card { animation-delay: .05s; }
+.row > *:nth-child(3) > .card { animation-delay: .1s; }
+.row > *:nth-child(4) > .card { animation-delay: .15s; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- Sidebar ---------- */
+.sidebar-wrapper {
+    background:
+        radial-gradient(420px 260px at 0% 0%, rgba(255,255,255,.14), transparent 60%),
+        linear-gradient(185deg, #8a1919 0%, #6f1111 55%, #4d0b0b 100%);
+    border-right: 0;
+    box-shadow: 8px 0 40px -16px rgba(60,10,10,.55);
+}
+.sidebar-menu-title { letter-spacing: .12em; font-size: .68rem; text-transform: uppercase; opacity: .55; }
+.sidebar-menu-link {
+    border-radius: 14px;
+    padding: .72rem 1rem;
+    transition: background .2s var(--m-ease), transform .2s var(--m-ease), color .2s;
+}
+.sidebar-menu-link:hover { background: rgba(255,255,255,.10); transform: translateX(3px); }
+.sidebar-menu-link.active {
+    background: linear-gradient(135deg, #ffd58a 0%, #e8a33d 100%);
+    color: #4a1a0b !important;
+    font-weight: 800;
+    box-shadow: 0 10px 22px -8px rgba(232,163,61,.65);
+}
+.sidebar-menu-link.active i { color: #4a1a0b !important; }
+.sidebar-profile { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; backdrop-filter: blur(6px); }
+
+/* ---------- Navbar kaca ---------- */
+.navbar-custom {
+    background: rgba(255,250,242,.72) !important;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid rgba(240,228,211,.8);
+    box-shadow: 0 8px 30px -18px rgba(59,31,26,.25);
+}
+.page-search-input { border-radius: 50rem !important; background: #fff; border: 1px solid var(--m-line); }
+.page-search-input:focus { border-color: var(--m-red); box-shadow: 0 0 0 4px var(--m-red-soft); }
+
+/* ---------- Kartu ---------- */
+.card {
+    border: 1px solid rgba(240,228,211,.7);
+    border-radius: 26px;
+    background: rgba(255,255,255,.92);
+    box-shadow: var(--m-shadow);
+    transition: transform .3s var(--m-ease), box-shadow .3s var(--m-ease);
+}
+.card:hover { box-shadow: var(--m-shadow-hover); }
+.card-title { font-weight: 800; font-size: 1.02rem; }
+.card-banner { background: none !important; padding: 0 !important; margin-bottom: 1.25rem !important; color: var(--m-ink) !important; border-radius: 0 !important; }
+.card-banner h2 { color: var(--m-ink) !important; font-size: 1.1rem; font-weight: 800; }
+
+/* Kartu statistik */
+.card-stat { overflow: hidden; position: relative; }
+.card-stat:hover { transform: translateY(-4px); }
+.stat-icon-circle {
+    width: 46px; height: 46px; border-radius: 15px !important;
+    background: linear-gradient(135deg, #fff1d6, #ffe0a8) !important;
+    color: var(--m-red) !important;
+    box-shadow: inset 0 0 0 1px rgba(232,163,61,.35);
+}
+.stat-value { font-weight: 800; letter-spacing: -.04em; font-size: 1.85rem; }
+.stat-label { font-weight: 700; color: var(--text-muted-green); }
+
+/* Kartu sorotan (gradasi maroon) */
+.stat-highlight-card {
+    background:
+        radial-gradient(320px 200px at 100% 0%, rgba(255,208,120,.35), transparent 60%),
+        linear-gradient(135deg, #b3202f 0%, #7a1616 70%) !important;
+    border: 0 !important;
+    color: #fff;
+    box-shadow: 0 24px 50px -20px rgba(122,22,22,.7) !important;
+}
+.stat-highlight-card:hover { transform: translateY(-4px); }
+.stat-highlight-card .stat-icon-circle { background: rgba(255,255,255,.16) !important; color: #ffe2a8 !important; box-shadow: none; }
+.stat-highlight-card .stat-label { color: rgba(255,255,255,.8); }
+.stat-highlight-card .stat-value { color: #fff; }
+
+.trend-badge { border-radius: 50rem; font-weight: 700; }
+
+/* ---------- Tabel ---------- */
+.table-card-custom { border-radius: 20px; }
+.table-custom th {
+    text-transform: uppercase; font-size: .7rem; letter-spacing: .08em; font-weight: 800;
+    color: var(--text-muted-green); background: transparent; border-bottom: 1px solid var(--m-line);
+    padding-top: .9rem; padding-bottom: .9rem;
+}
+.table-custom td { border-bottom: 1px solid #f7eee1; padding-top: .95rem; padding-bottom: .95rem; }
+.table-custom tbody tr { transition: background .15s; }
+.table-custom tbody tr:hover { background: linear-gradient(90deg, rgba(232,163,61,.10), rgba(232,163,61,.02)); }
+.table-amount { font-weight: 800; color: var(--m-red); }
+.badge-table { border-radius: 50rem; padding: .32rem .8rem; font-weight: 800; font-size: .72rem; letter-spacing: .02em; }
+
+/* ---------- Tombol ---------- */
+.btn-custom { border-radius: 50rem; font-weight: 800; padding: .7rem 1.35rem; transition: transform .2s var(--m-ease), box-shadow .2s var(--m-ease), background .2s; }
+.btn-custom-primary {
+    background: linear-gradient(135deg, #b3202f 0%, #7a1616 100%) !important;
+    border: 0 !important; color: #fff !important;
+    box-shadow: 0 12px 24px -10px rgba(156,29,29,.7);
+}
+.btn-custom-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 30px -10px rgba(156,29,29,.75); color: #fff !important; }
+.btn-custom-secondary { background: #fff !important; border: 1.5px solid var(--m-line) !important; color: var(--m-ink) !important; }
+.btn-custom-secondary:hover { border-color: var(--m-red) !important; color: var(--m-red) !important; transform: translateY(-2px); }
+.btn-icon-action { border-radius: 12px !important; transition: transform .15s var(--m-ease), background .15s; }
+.btn-icon-action:hover { transform: translateY(-2px); }
+
+/* ---------- Form ---------- */
+.form-control, .form-select {
+    border-radius: 14px; border: 1.5px solid var(--m-line); background-color: #fffdf9;
+    padding: .7rem 1rem; transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.form-control:focus, .form-select:focus { border-color: var(--m-red); box-shadow: 0 0 0 4px var(--m-red-soft); background: #fff; }
+.form-label { color: var(--m-ink); }
+
+/* ---------- Daftar & promo ---------- */
+.custom-list-item { border-radius: 16px; transition: background .15s; padding-left: .5rem; padding-right: .5rem; }
+.custom-list-item:hover { background: var(--m-cream); }
+.promo-banner-card {
+    border-radius: 26px !important; border: 0 !important;
+    background: radial-gradient(300px 200px at 100% 0%, rgba(255,208,120,.4), transparent 60%), linear-gradient(135deg, #b3202f, #6f1111) !important;
+    box-shadow: 0 24px 50px -22px rgba(122,22,22,.7);
+}
+
+/* ---------- Dropdown & toast ---------- */
+.dropdown-menu { border: 1px solid var(--m-line); border-radius: 18px; box-shadow: var(--m-shadow-hover); padding: .5rem; }
+.dropdown-item { border-radius: 12px; font-weight: 600; }
+.dropdown-item:hover { background: var(--m-cream); color: var(--m-red); }
+
+/* ---------- Tombol kecil di halaman kasir/laporan ---------- */
+.modal-content { border-radius: 28px !important; box-shadow: 0 40px 80px -30px rgba(59,31,26,.5); }
+.pagination .page-link { border-radius: 12px !important; margin: 0 .15rem; border: 0; font-weight: 700; color: var(--m-ink); }
+.pagination .active .page-link { background: var(--m-red); color: #fff; }

@@ -1,0 +1,19 @@
+/* ===== Permintaan Minyak & Gas (admin) ===== */
+.pm-card { margin-bottom: 1.25rem; }
+.pm-body { padding: 1rem 1.25rem 1.25rem; }
+.pm-error { display: flex; gap: .6rem; padding: .7rem .9rem; margin-bottom: 1rem; border-radius: 12px; background: #fdecec; border: 1px solid #f3c2c2; color: #8a1f1f; font-size: .88rem; }
+.pm-error ul { margin: 0; padding-left: 1rem; }
+.pm-kosong { text-align: center; color: #8a7468; padding: 1rem; font-size: .9rem; }
+.pm-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.pm-table th { text-align: left; background: #7A1E1E; color: #fff; padding: .55rem .75rem; font-weight: 700; font-size: .8rem; white-space: nowrap; }
+.pm-table td { padding: .6rem .75rem; border-bottom: 1px solid #f0e6da; vertical-align: middle; }
+.pm-table tbody tr:nth-child(even) { background: #fbf6f1; }
+.pm-table small { color: #8a7468; display: block; }
+.pm-aksi { display: flex; gap: .4rem; align-items: center; margin: 0; flex-wrap: wrap; }
+.pm-aksi input[type=number] { width: 90px; }
+.pm-badge { display: inline-block; padding: .12rem .6rem; border-radius: 999px; font-size: .74rem; font-weight: 700; }
+.pm-badge.diminta { background: #fff1d1; color: #8a5a00; }
+.pm-badge.dikirim { background: #dbe7ff; color: #1d4ed8; }
+.pm-badge.selesai { background: #e7f3ea; color: #1f6b34; }
+.pm-badge.batal { background: #eee; color: #666; }
+.pm-wrap { overflow-x: auto; }

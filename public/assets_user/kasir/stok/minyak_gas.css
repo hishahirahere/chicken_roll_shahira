@@ -1,0 +1,121 @@
+/* ===== Stok Saya: panel Minyak & Gas (manual) ===== */
+.mg-card { margin-bottom: 1.25rem; }
+.mg-body { padding: 1rem 1.25rem 1.25rem; }
+.mg-error, .mg-warn { display: flex; gap: .6rem; align-items: flex-start; padding: .7rem .9rem; margin-bottom: .9rem; border-radius: 12px; font-size: .88rem; }
+.mg-error { background: #fdecec; border: 1px solid #f3c2c2; color: #8a1f1f; }
+.mg-warn  { background: #fff7e6; border: 1px solid #f1d9a6; color: #7a5200; }
+.mg-error ul { margin: 0; padding-left: 1rem; }
+
+.mg-stok { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin-bottom: 1rem; }
+.mg-tile { display: flex; align-items: center; gap: .8rem; background: #fff; border: 1px solid #e9ddd0; border-radius: 14px; padding: .8rem 1rem; }
+.mg-tile.habis { border-color: #e8b4b4; background: #fff8f8; }
+.mg-tile.menipis { border-color: #f1d9a6; background: #fffcf4; }
+.mg-ic { width: 44px; height: 44px; border-radius: 12px; background: #f6efe8; display: grid; place-items: center; font-size: 1.3rem; color: #5a4339; flex: none; }
+.mg-txt { min-width: 0; }
+.mg-txt small { display: block; color: #8a7468; font-size: .78rem; line-height: 1.2; }
+.mg-tile b.mg-n { font-size: 1.5rem; font-weight: 800; color: #2b1511; line-height: 1.1; }
+.mg-st { margin-left: auto; font-size: .72rem; font-weight: 700; padding: .2rem .65rem; border-radius: 999px; background: #e7f3ea; color: #1f6b34; white-space: nowrap; }
+.mg-tile.habis .mg-st { background: #fdecec; color: #a12727; }
+.mg-tile.menipis .mg-st { background: #fff1d1; color: #8a5a00; }
+.mg-tile .mg-st.wait { background: #fff1d1; color: #8a5a00; }
+.mg-minta-form { margin: 0 0 0 auto; }
+.mg-minta { border: 0; background: #7A1E1E; color: #fff; font-weight: 700; font-size: .8rem; padding: .45rem .8rem; border-radius: 10px; white-space: nowrap; cursor: pointer; }
+.mg-minta:hover { background: #5e1515; }
+
+.mg-req { border: 1px dashed #d9c8b8; border-radius: 14px; padding: .7rem .9rem; margin-bottom: .6rem; display: flex; flex-wrap: wrap; align-items: center; gap: .6rem .9rem; background: #fffdfb; }
+.mg-req.dikirim { border-style: solid; border-color: #b7d7c0; background: #f5fbf7; }
+.mg-req .mg-info { flex: 1 1 220px; font-size: .9rem; color: #3b1f1a; }
+.mg-req .mg-info small { display: block; color: #8a7468; }
+.mg-req form { display: flex; gap: .4rem; align-items: center; margin: 0; }
+.mg-req input[type=number] { width: 80px; }
+
+.mg-pakai { margin-top: 1rem; border: 1px solid #e9ddd0; border-radius: 14px; background: #fff; padding: .9rem 1rem 1rem; }
+.mg-pakai-judul { font-weight: 700; color: #2b1511; margin-bottom: .7rem; display: flex; align-items: center; gap: .5rem; }
+.mg-pakai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; align-items: end; }
+.mg-field label { display: block; font-size: .8rem; font-weight: 600; color: #5a4339; margin-bottom: .25rem; }
+.mg-field label span { font-weight: 400; color: #8a7468; }
+.mg-catatan { grid-column: 1 / 2; }
+.mg-simpan { grid-column: 2 / 3; justify-self: end; min-width: 150px; }
+
+.mg-riwayat { margin-top: .9rem; font-size: .82rem; color: #8a7468; }
+.mg-riwayat span { display: inline-block; background: #f6efe8; border-radius: 999px; padding: .1rem .6rem; margin: .15rem .25rem 0 0; }
+
+@media (max-width: 720px) {
+  .mg-stok, .mg-pakai-grid { grid-template-columns: 1fr; }
+  .mg-catatan, .mg-simpan { grid-column: auto; }
+  .mg-simpan { justify-self: stretch; }
+}
+
+/* ===== Tombol pilih tampilan: Stok | Catat Minyak & Gas ===== */
+.ks-switch { display: flex; gap: .4rem; padding: .4rem; margin-bottom: 1.25rem; background: #f6e6e2; border-radius: 999px; }
+.ks-sw { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem 1rem; border: 0; border-radius: 999px; background: transparent; color: #7a5a52; font-weight: 700; font-size: .95rem; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
+.ks-sw:hover { color: #6f1212; }
+.ks-sw.on { background: linear-gradient(135deg, #7b1616, #a52424); color: #fff; box-shadow: 0 6px 14px rgba(123, 22, 22, .28); }
+.ks-sw-dot { min-width: 20px; height: 20px; padding: 0 .35rem; border-radius: 999px; background: #e0a030; color: #fff; font-size: .72rem; font-weight: 800; display: inline-grid; place-items: center; }
+.ks-sw.on .ks-sw-dot { background: #fff; color: #a52424; }
+[data-pane-body][hidden] { display: none !important; }
+@media (max-width: 520px) { .ks-sw { font-size: .85rem; padding: .7rem .5rem; } .ks-sw i { display: none; } }
+
+/* ===== Halaman Riwayat ===== */
+.ks-layout.solo { grid-template-columns: 1fr; }
+/* Ukuran kartu sama seperti kartu Stok (tinggi tetap), isi tabel discroll di dalam */
+.rw-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1rem 1.25rem 1.25rem; }
+.rw-tabs { flex: none; display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .2rem; scrollbar-width: none; }
+.rw-tabs::-webkit-scrollbar { display: none; }
+.rw-tab { flex: none; border: 1px solid #e9ddd0; background: #fff; color: #7a5a52; font-weight: 700; font-size: .85rem; padding: .5rem 1rem; border-radius: 999px; cursor: pointer; transition: background .15s, color .15s; }
+.rw-tab b { margin-left: .3rem; font-size: .72rem; opacity: .75; }
+.rw-tab:hover { color: #6f1212; }
+.rw-tab.on { background: linear-gradient(135deg, #7b1616, #a52424); border-color: #7b1616; color: #fff; }
+.rw-tools { flex: none; display: flex; justify-content: space-between; align-items: center; gap: .8rem; flex-wrap: wrap; margin: 1rem 0; }
+.rw-filter { background: #fdf3ee; padding: 3px; border-radius: 12px; display: inline-flex; }
+.rw-filter button { border: 0; border-radius: 9px; font-weight: 600; font-size: .82rem; color: #6b5249; background: transparent; padding: .35rem .9rem; cursor: pointer; }
+.rw-filter button.on { background: #9c1d1d; color: #fff; box-shadow: 0 2px 6px rgba(156, 29, 29, .25); }
+.rw-pane { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.rw-pane[hidden] { display: none; }
+.rw-scroll { flex: 1; min-height: 0; overflow: auto; border: 1px solid #efe4d8; border-radius: 14px; }
+.rw-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 640px; font-size: .9rem; }
+.rw-table thead th { position: sticky; top: 0; z-index: 1; background: #7b1616; color: #fff; font-size: .78rem; font-weight: 800; padding: .75rem .9rem; white-space: nowrap; text-align: left; }
+.rw-table tbody td { padding: .75rem .9rem; border-bottom: 1px solid #f4ebe0; color: #2b1511; vertical-align: middle; }
+.rw-table tbody tr:nth-child(even) td { background: #fbf6f1; }
+.rw-table tbody tr:hover td { background: #f7ebe0; }
+.rw-table td small { display: block; color: #9a8579; font-size: .76rem; }
+.rw-table .t-r { text-align: right; white-space: nowrap; }
+.rw-tgl { white-space: nowrap; color: #6b5249; }
+.rw-sisa { color: #6b5249; }
+.rw-jml { font-weight: 800; padding: .15rem .6rem; border-radius: 999px; background: #fdecec; color: #a12727; }
+.rw-jml.masuk { background: #e7f3ea; color: #1f6b34; }
+.rw-table .rw-kosong td { text-align: center; color: #8a7468; padding: 1.5rem; background: #fff !important; }
+.rw-table tr[hidden] { display: none; }
+
+/* ===== Pencatatan Minyak & Gas: satu kartu per bahan, sederhana ===== */
+.mg2-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.mg2 { display: flex; flex-direction: column; gap: 1rem; background: #fff; border: 1px solid #e9ddd0; border-radius: 18px; padding: 1.1rem 1.2rem 1.25rem; }
+.mg2.habis { border-color: #e8b4b4; background: #fffafa; }
+.mg2.menipis { border-color: #f1d9a6; background: #fffdf6; }
+.mg2-head { display: flex; align-items: center; gap: .7rem; }
+.mg2-head h3 { margin: 0; font-size: 1.05rem; font-weight: 800; color: #2b1511; }
+.mg2-ic { width: 42px; height: 42px; border-radius: 12px; background: #f6efe8; display: grid; place-items: center; font-size: 1.25rem; color: #5a4339; flex: none; }
+.mg2-chip { margin-left: auto; font-size: .72rem; font-weight: 700; padding: .2rem .7rem; border-radius: 999px; background: #e7f3ea; color: #1f6b34; }
+.mg2.habis .mg2-chip { background: #fdecec; color: #a12727; }
+.mg2.menipis .mg2-chip { background: #fff1d1; color: #8a5a00; }
+.mg2-stok b { font-size: 2.4rem; font-weight: 800; color: #2b1511; line-height: 1; }
+.mg2-stok span { font-size: 1.05rem; color: #5a4339; font-weight: 600; }
+.mg2-stok small { display: block; color: #8a7468; font-size: .8rem; margin-top: .15rem; }
+.mg2-pakai, .mg2-terima { display: grid; gap: .5rem; padding-top: 1rem; border-top: 1px dashed #e4d6c8; margin: 0; }
+.mg2-pakai label, .mg2-terima > span { font-size: .85rem; font-weight: 700; color: #5a4339; }
+.mg2-baris { display: flex; gap: .6rem; align-items: stretch; }
+.mg2-step { display: inline-flex; align-items: stretch; border: 1px solid #e0d2c4; border-radius: 12px; overflow: hidden; background: #fff; }
+.mg2-step button { width: 44px; border: 0; background: #f6efe8; color: #5a4339; font-size: 1.3rem; font-weight: 700; cursor: pointer; }
+.mg2-step button:hover { background: #efe2d4; }
+.mg2-step input { width: 64px; border: 0; text-align: center; font-size: 1.2rem; font-weight: 800; color: #2b1511; -moz-appearance: textfield; background: #fff; }
+.mg2-step input::-webkit-outer-spin-button, .mg2-step input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.mg2-step input:focus { outline: none; }
+.mg2-btn { flex: 1; border: 0; border-radius: 12px; background: #2b1511; color: #fff; font-weight: 700; padding: .6rem 1rem; cursor: pointer; }
+.mg2-btn:disabled { background: #d9cdc2; color: #fff; cursor: not-allowed; }
+.mg2-btn.hijau { background: #1f7a3a; }
+.mg2-minta { width: 100%; border: 0; border-radius: 14px; background: #7A1E1E; color: #fff; font-weight: 800; font-size: 1rem; padding: .9rem 1rem; cursor: pointer; }
+.mg2-minta:hover { background: #5e1515; }
+.mg2-status { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; padding: .75rem .9rem; border-radius: 12px; background: #fff1d1; color: #7a5200; font-size: .9rem; font-weight: 600; }
+.mg2-status form { margin: 0; }
+.mg2-link { border: 0; background: none; color: #7a5200; text-decoration: underline; font-weight: 700; cursor: pointer; padding: 0; }
+@media (max-width: 720px) { .mg2-grid { grid-template-columns: 1fr; } }

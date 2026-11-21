@@ -1,0 +1,1917 @@
+/*
+========================================================================
+   ADMIN DASHBOARD - CHICKEN CRUNCHY ROLL
+   DESIGN SYSTEM & CUSTOM STYLESHEET
+   (Adapted from the "Spark Admin" base template)
+========================================================================
+*/
+
+/* ---------------------------------------------------------------------
+   1. Google Fonts CDN Import (Plus Jakarta Sans)
+--------------------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* ---------------------------------------------------------------------
+   2. Design System Variables — Chicken Crunchy Roll palette
+--------------------------------------------------------------------- */
+:root {
+    /* Colors */
+    --bs-body-bg: #FBF3E7; /* Canvas background: warm cream, matches login bg */
+    --bs-body-font-family: 'Plus Jakarta Sans', sans-serif;
+
+    --brand-forest-dark: #7a1616;     /* Sidebar background: deep maroon */
+    --brand-forest-medium: #9c1d1d;   /* Buttons / accents: maroon */
+    --brand-forest-light: #b3202f;    /* Interactive elements, hover accents */
+    --brand-lime: #e8a33d;            /* Gold accent highlight (replaces lime) */
+    --brand-lime-hover: #f4c430;
+    --brand-lime-translucent: rgba(232, 163, 61, 0.18);
+
+    --text-main: #3b1f1a;             /* Dark warm brown, headers & main labels */
+    --text-muted-green: #8a7267;      /* Secondary labels, muted details (warm gray-brown) */
+    --text-sidebar-muted: rgba(255, 255, 255, 0.75); /* Sidebar inactive link labels */
+
+    --card-background: #FFFFFF;
+    --border-light: #F0E4D3;
+    --border-dark-green: rgba(255, 255, 255, 0.12);
+
+    /* System Colors */
+    --sys-green: #22C55E;
+    --sys-green-bg: #DCFCE7;
+    --sys-red: #EF4444;
+    --sys-red-bg: #FEE2E2;
+    --sys-orange: #F97316;
+    --sys-orange-bg: #FFEDD5;
+
+    /* Layout Configurations */
+    --sidebar-width: 280px;
+    --navbar-height: 80px;
+
+    /* Border Radii */
+    --radius-xxl: 24px;
+    --radius-xl: 18px;
+    --radius-lg: 14px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
+
+    /* Box Shadows */
+    --shadow-sm: 0 2px 8px rgba(59, 31, 26, 0.04);
+    --shadow-md: 0 10px 30px rgba(59, 31, 26, 0.06);
+    --shadow-lg: 0 20px 50px rgba(59, 31, 26, 0.12);
+}
+
+/* ---------------------------------------------------------------------
+   3. Base Overrides & Typography
+--------------------------------------------------------------------- */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--text-main);
+    font-family: var(--bs-body-font-family);
+    font-size: 0.925rem;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+a {
+    color: var(--brand-forest-medium);
+    text-decoration: none;
+    transition: all 0.25s ease-in-out;
+}
+a:hover {
+    color: var(--brand-lime-hover);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #E7D2B8;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #D8B98F;
+}
+
+/* ---------------------------------------------------------------------
+   4. Sidebar Component (.sidebar-wrapper)
+   Deep maroon sidebar, gradient like the login page
+--------------------------------------------------------------------- */
+.sidebar-wrapper {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #7a1616 0%, #9c1d1d 55%, #b3202f 100%);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border-dark-green);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.15rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 2.5rem;
+    padding-left: 0.5rem;
+    text-decoration: none;
+    transition: color 0.25s ease;
+}
+
+.sidebar-brand:hover {
+    color: #FFFFFF;
+}
+
+.sidebar-brand img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--brand-lime);
+    background-color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.sidebar-brand i {
+    color: var(--brand-lime);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-brand:hover i {
+    transform: scale(1.1) rotate(90deg);
+    color: var(--brand-lime-hover);
+}
+
+.sidebar-menu-section {
+    margin-bottom: 1.75rem;
+}
+
+.sidebar-menu-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-sidebar-muted);
+    padding-left: 0.75rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.75;
+}
+
+.sidebar-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu-item {
+    margin-bottom: 0.35rem;
+}
+
+.sidebar-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text-sidebar-muted);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+.sidebar-menu-link i {
+    font-size: 1.15rem;
+    transition: color 0.2s ease;
+}
+
+/* Hover state */
+.sidebar-menu-link:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Active state: solid gold pill, matches CCR mockup (not a left-border indicator) */
+.sidebar-menu-link.active {
+    color: var(--brand-forest-dark);
+    background-color: var(--brand-lime);
+    font-weight: 700;
+}
+
+.sidebar-menu-link.active i {
+    color: var(--brand-forest-dark);
+}
+
+.sidebar-menu-badge {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background-color: var(--brand-lime);
+    color: var(--brand-forest-dark);
+    padding: 0.15rem 0.5rem;
+    border-radius: 50rem;
+}
+
+/* Dropdown Caret Styling */
+.sidebar-menu-link .dropdown-caret {
+    margin-left: auto;
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-menu-link[aria-expanded="true"] .dropdown-caret {
+    transform: rotate(180deg);
+}
+
+/* Submenu layout */
+.sidebar-submenu {
+    list-style: none;
+    padding-left: 2.5rem;
+    margin: 0.25rem 0 0.5rem 0;
+}
+
+.sidebar-submenu-link {
+    display: block;
+    padding: 0.45rem 0;
+    color: var(--text-sidebar-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.sidebar-submenu-link:hover {
+    color: #FFFFFF;
+}
+
+/* Bottom Profile Card in Sidebar */
+.sidebar-profile {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.85rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+}
+
+.sidebar-profile-img {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    background-color: var(--brand-forest-medium);
+}
+
+.sidebar-profile-info {
+    flex-grow: 1;
+    min-width: 0; /* allows text truncation */
+}
+
+.sidebar-profile-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-profile-email {
+    font-size: 0.75rem;
+    color: var(--text-sidebar-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.85;
+}
+
+/* Minimized Sidebar Adjustments */
+body.sidebar-minimized {
+    --sidebar-width: 80px;
+}
+
+body.sidebar-minimized .sidebar-wrapper {
+    padding: 2rem 0.75rem;
+    align-items: center;
+}
+
+body.sidebar-minimized .sidebar-brand span,
+body.sidebar-minimized .sidebar-menu-title,
+body.sidebar-minimized .sidebar-menu-link span,
+body.sidebar-minimized .sidebar-menu-badge,
+body.sidebar-minimized .dropdown-caret,
+body.sidebar-minimized .sidebar-submenu,
+body.sidebar-minimized .sidebar-profile-info {
+    display: none !important;
+}
+
+body.sidebar-minimized .sidebar-brand {
+    padding-left: 0;
+    justify-content: center;
+    width: 100%;
+}
+
+body.sidebar-minimized .sidebar-menu-link {
+    justify-content: center;
+    padding: 0.75rem;
+}
+
+body.sidebar-minimized .sidebar-menu-link i {
+    font-size: 1.35rem;
+}
+
+body.sidebar-minimized .sidebar-profile {
+    padding: 0.5rem;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+}
+
+/* ---------------------------------------------------------------------
+   5. Main Wrapper Layout
+--------------------------------------------------------------------- */
+.main-wrapper {
+    margin-left: var(--sidebar-width);
+    padding: 2rem 2.5rem;
+    min-height: 100vh;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------------------------------------------------------------------
+   6. Custom Header / Navbar Component
+--------------------------------------------------------------------- */
+.navbar-custom {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(251, 243, 231, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-top: -2rem;
+    margin-left: -2.5rem;
+    margin-right: -2.5rem;
+    padding: 1.25rem 2.5rem;
+    border-bottom: 1px solid rgba(59, 31, 26, 0.06);
+    display: grid !important;
+    grid-template-columns: 1fr 480px 1fr !important;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1.5rem;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Quick Actions Dropdown Button */
+.btn-quick-action {
+    background-color: var(--brand-forest-medium);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 0.5rem 1.15rem;
+    font-size: 0.825rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-quick-action:hover {
+    background-color: var(--brand-forest-dark);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px var(--brand-lime-translucent);
+}
+
+.btn-quick-action:focus {
+    outline: none;
+}
+
+.btn-quick-action.dropdown-toggle::after {
+    display: none !important;
+}
+
+.btn-quick-action i {
+    font-size: 0.85rem;
+    transition: transform 0.25s ease;
+}
+
+.btn-quick-action:hover i {
+    transform: rotate(90deg);
+}
+
+/* Custom Dropdown Menu styles */
+.dropdown-menu-quick-action {
+    background-color: #FFFFFF !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-lg) !important;
+    padding: 0.5rem 0 !important;
+    margin-top: 0.5rem !important;
+    border: none !important;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.dropdown-menu-quick-action .dropdown-header {
+    font-size: 0.725rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted-green);
+    padding: 0.5rem 1.25rem 0.25rem;
+}
+
+.dropdown-menu-quick-action .dropdown-item {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    padding: 0.55rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.dropdown-menu-quick-action .dropdown-item i {
+    font-size: 0.95rem;
+    color: var(--text-muted-green);
+    transition: color 0.2s;
+}
+
+.dropdown-menu-quick-action .dropdown-item:hover {
+    background-color: var(--bs-body-bg);
+    color: var(--brand-forest-medium);
+}
+
+.dropdown-menu-quick-action .dropdown-item:hover i {
+    color: var(--brand-forest-medium);
+}
+
+.dropdown-menu-quick-action .dropdown-divider {
+    border-color: var(--border-light);
+    margin: 0.4rem 0;
+}
+
+.navbar-search-wrapper {
+    width: 480px;
+    max-width: 100%;
+    position: relative;
+    margin: 0 auto;
+}
+
+.navbar-search-input {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 50rem;
+    padding: 0.65rem 1.25rem;
+    padding-right: 2.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+    outline: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-search-input:focus {
+    border-color: rgba(156, 29, 29, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 31, 26, 0.08);
+}
+
+.navbar-search-btn {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted-green);
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.navbar-action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-lg);
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+}
+
+.navbar-action-btn:hover {
+    background-color: var(--border-light);
+    color: var(--brand-forest-medium);
+}
+
+.navbar-action-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 11px;
+    height: 11px;
+    background-color: var(--sys-red);
+    border-radius: 50rem;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    animation: statusPulse 2s infinite;
+}
+
+.navbar-actions .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* Custom Dropdown Notifications */
+.dropdown-menu-notification {
+    width: 320px;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-lg) !important;
+    margin-top: 0.5rem !important;
+    border: none !important;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.notification-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.btn-clear-all {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand-forest-medium);
+    transition: color 0.2s;
+    outline: none;
+}
+
+.btn-clear-all:hover {
+    color: var(--brand-lime-hover);
+}
+
+.notification-list {
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.notification-item:hover {
+    background-color: var(--bs-body-bg);
+}
+
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.notification-text {
+    font-size: 0.8rem;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+    line-height: 1.35;
+}
+
+.notification-time {
+    font-size: 0.725rem;
+    color: var(--text-muted-green);
+}
+
+.notification-unread-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50rem;
+    background-color: var(--sys-green);
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+}
+
+.notification-footer {
+    display: block;
+    text-align: center;
+    padding: 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--brand-forest-medium);
+    text-decoration: none;
+    transition: all 0.25s ease-in-out;
+}
+
+.notification-footer:hover {
+    color: var(--brand-lime-hover);
+}
+
+/* Mobile Sidebar Toggle Button */
+.sidebar-toggle-btn {
+    display: none;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-lg);
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+}
+
+/* Desktop Sidebar Toggle Button */
+.btn-desktop-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-lg);
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+}
+
+.btn-desktop-toggle:hover {
+    background-color: var(--border-light);
+    color: var(--brand-forest-medium);
+}
+
+/* ---------------------------------------------------------------------
+   7. Page Title & Controls Row
+--------------------------------------------------------------------- */
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+    color: var(--brand-forest-medium);
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted-green);
+    margin-bottom: 0;
+}
+
+.btn-date-picker {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-radius: 50rem;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-date-picker:hover {
+    background-color: var(--border-light);
+}
+
+/* ---------------------------------------------------------------------
+   8. Cards & Styling Components
+--------------------------------------------------------------------- */
+.card {
+    background-color: var(--card-background);
+    border: none;
+    border-radius: var(--radius-xxl);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand-forest-medium);
+    margin-bottom: 0;
+}
+
+.card-more-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted-green);
+    font-size: 1.15rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Stat-specific cards */
+.card-stat {
+    height: 100%;
+}
+
+.stat-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--brand-lime-translucent);
+    color: var(--brand-forest-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-muted-green);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--brand-forest-medium);
+    margin-bottom: 0.6rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.trend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.785rem;
+    font-weight: 600;
+}
+
+.trend-up {
+    color: var(--sys-green);
+}
+
+.trend-down {
+    color: var(--sys-orange);
+}
+
+/* Sparkline mounted at the bottom edge of a card (mini trend chart) */
+.sparkline-card-footer {
+    margin-left: -1.75rem;
+    margin-right: -1.75rem;
+    margin-bottom: -1.75rem;
+    margin-top: 1.25rem;
+    overflow: hidden;
+    border-bottom-left-radius: var(--radius-xxl);
+    border-bottom-right-radius: var(--radius-xxl);
+}
+
+/* Highlight Stat Card (maroon, first stat card — "Penjualan Hari Ini") */
+.stat-highlight-card {
+    background: linear-gradient(135deg, #7a1616 0%, #9c1d1d 100%);
+    color: #FFFFFF;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 165px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-highlight-card .stat-icon-circle {
+    background-color: rgba(255, 255, 255, 0.14);
+    color: var(--brand-lime);
+}
+
+.stat-highlight-card .stat-label {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.stat-highlight-card .stat-value {
+    color: #FFFFFF;
+}
+
+.stat-highlight-card .trend-up {
+    color: var(--brand-lime);
+}
+
+/* Decorative spinning asterisk shape, bottom-right of the highlight card */
+.stat-highlight-bg-shape {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 1;
+    transform: rotate(15deg);
+    transition: transform 0.4s ease-in-out;
+}
+
+.stat-highlight-card:hover .stat-highlight-bg-shape {
+    transform: rotate(45deg) scale(1.05);
+}
+
+.btn-highlight-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #FFFFFF;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.55rem 1.1rem;
+    border-radius: 50rem;
+    border: none;
+    margin-top: 1rem;
+    width: fit-content;
+    z-index: 2;
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.btn-highlight-link:hover {
+    background-color: var(--brand-lime);
+    color: var(--brand-forest-dark);
+}
+
+/* ---------------------------------------------------------------------
+   9. Custom List (Transaction / Alert list)
+--------------------------------------------------------------------- */
+.custom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.custom-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem;
+    background-color: var(--bs-body-bg);
+    border-radius: var(--radius-xl);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.custom-list-item:hover {
+    background-color: #F5E7D3;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.item-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 50rem;
+    background-color: var(--brand-lime-translucent);
+    color: var(--brand-forest-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.item-info {
+    min-width: 0;
+}
+
+.item-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted-green);
+    margin-bottom: 0;
+}
+
+.item-status-wrapper {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.item-status {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+}
+
+.item-hash {
+    font-size: 0.75rem;
+    color: var(--text-muted-green);
+    opacity: 0.85;
+    margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------
+   10. Progress bars
+--------------------------------------------------------------------- */
+.progress-container {
+    margin-bottom: 1.25rem;
+}
+
+.progress-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.progress-label {
+    color: var(--text-main);
+}
+
+.progress-value {
+    color: var(--text-muted-green);
+}
+
+.progress {
+    height: 10px !important;
+    background-color: var(--bs-body-bg) !important;
+    border-radius: 50rem !important;
+    overflow: hidden !important;
+}
+
+.progress-bar {
+    height: 100% !important;
+    border-radius: 50rem !important;
+    background-color: var(--brand-lime);
+    transition: width 0.6s ease !important;
+}
+
+.progress-mini {
+    height: 6px !important;
+    margin-top: 0.4rem;
+}
+
+.bg-forest-medium {
+    background-color: var(--brand-forest-medium);
+}
+
+.bg-lime-accent {
+    background-color: var(--brand-lime);
+}
+
+.bg-brand-orange {
+    background-color: var(--sys-orange);
+}
+
+.bg-forest-light {
+    background-color: var(--brand-forest-dark) !important;
+}
+
+.text-lime {
+    color: var(--brand-lime) !important;
+}
+
+/* ---------------------------------------------------------------------
+   11. Right Panel / Chart legend / Rank badge
+--------------------------------------------------------------------- */
+.chart-legends-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bs-body-bg);
+    padding: 0.75rem;
+    border-radius: var(--radius-lg);
+    margin-top: 1.5rem;
+    gap: 0.5rem;
+}
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50rem;
+    display: inline-block;
+}
+
+.chart-legend-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted-green);
+}
+
+.rank-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: var(--brand-forest-medium);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Promo Banner Card */
+.promo-banner-card {
+    background-color: #FBE3C0;
+    border-radius: var(--radius-xxl);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+    min-height: 250px;
+}
+
+.promo-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--brand-forest-dark);
+    margin-bottom: 0.75rem;
+    max-width: 80%;
+    z-index: 2;
+}
+
+.promo-desc {
+    font-size: 0.85rem;
+    color: var(--brand-forest-medium);
+    opacity: 0.9;
+    line-height: 1.4;
+    margin-bottom: auto;
+    max-width: 80%;
+    z-index: 2;
+}
+
+.btn-promo {
+    background-color: var(--brand-forest-dark);
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 50rem;
+    text-align: center;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+    z-index: 2;
+    transition: all 0.25s ease;
+}
+
+.btn-promo:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+.promo-image {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 62%;
+    max-width: 220px;
+    height: auto;
+    border-radius: var(--radius-lg) 0 0 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   12. Responsive Adjustments
+--------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    .sidebar-wrapper {
+        transform: translateX(-100%);
+    }
+
+    .sidebar-wrapper.show {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .main-wrapper {
+        margin-left: 0;
+        padding: 1.5rem 1.5rem;
+    }
+
+    .sidebar-toggle-btn {
+        display: flex;
+    }
+
+    .navbar-search-wrapper {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .navbar-custom {
+        display: flex !important;
+        margin-top: -1.5rem;
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding: 1rem 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-date-picker {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ---------------------------------------------------------------------
+   14. Flatpickr Theme Customization
+--------------------------------------------------------------------- */
+.flatpickr-calendar {
+    background: #FFFFFF !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-lg) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    width: 324px !important;
+    padding: 16px 14px 10px 14px !important;
+}
+
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+    border-bottom-color: #FFFFFF !important;
+}
+
+.flatpickr-months {
+    position: relative !important;
+    height: 40px !important;
+    align-items: center !important;
+}
+
+.flatpickr-month {
+    height: 40px !important;
+    color: var(--text-main) !important;
+}
+
+.flatpickr-current-month {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+    height: 40px !important;
+}
+
+.flatpickr-current-month select.flatpickr-monthDropdown-months {
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 4px 8px !important;
+    font-size: 1.05rem !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+}
+
+.flatpickr-current-month select.flatpickr-monthDropdown-months:hover {
+    background: var(--bs-body-bg) !important;
+}
+
+.flatpickr-current-month input.cur-year {
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    font-size: 1.05rem !important;
+    padding: 4px 6px !important;
+    border-radius: var(--radius-md) !important;
+    width: 55px !important;
+    cursor: pointer !important;
+}
+
+.flatpickr-current-month input.cur-year:hover {
+    background: var(--bs-body-bg) !important;
+}
+
+.numInputWrapper span {
+    display: none !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+    color: var(--text-main) !important;
+    fill: var(--text-main) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    background-color: var(--bs-body-bg) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.flatpickr-weekdays {
+    height: 30px !important;
+    margin-top: 10px !important;
+    margin-bottom: 6px !important;
+}
+
+span.flatpickr-weekday {
+    font-weight: 700 !important;
+    color: var(--text-muted-green) !important;
+    font-size: 0.8rem !important;
+    opacity: 0.85;
+}
+
+.flatpickr-innerContainer {
+    margin-top: 6px !important;
+}
+
+.flatpickr-days {
+    width: 294px !important;
+}
+
+.dayContainer {
+    width: 294px !important;
+    min-width: 294px !important;
+    max-width: 294px !important;
+    gap: 2px 0px !important;
+}
+
+.flatpickr-day {
+    font-weight: 600 !important;
+    color: var(--text-main) !important;
+    border-radius: 50rem !important;
+    height: 38px !important;
+    line-height: 38px !important;
+    max-width: 38px !important;
+    font-size: 0.85rem !important;
+    transition: all 0.15s ease !important;
+    border: none !important;
+    margin: 0 auto !important;
+}
+
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--brand-forest-medium) !important;
+    border-radius: 50rem !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background-color: var(--brand-forest-medium) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(122, 22, 22, 0.3) !important;
+}
+
+.flatpickr-day.startRange {
+    border-radius: 50rem 0 0 50rem !important;
+}
+
+.flatpickr-day.endRange {
+    border-radius: 0 50rem 50rem 0 !important;
+}
+
+.flatpickr-day.startRange.endRange {
+    border-radius: 50rem !important;
+}
+
+.flatpickr-day.inRange,
+.flatpickr-day.prevMonthDay.inRange,
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.today.inRange,
+.flatpickr-day.prevMonthDay.today.inRange,
+.flatpickr-day.nextMonthDay.today.inRange {
+    background-color: #FBE3C0 !important;
+    color: var(--brand-forest-medium) !important;
+    border-radius: 0 !important;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover,
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #E2C7A8 !important;
+    background: transparent !important;
+}
+
+/* ---------------------------------------------------------------------
+   15. Dropdown Component Styles (Reusable)
+--------------------------------------------------------------------- */
+.dropdown-menu-custom {
+    background: #FFFFFF !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-lg) !important;
+    padding: 8px 6px !important;
+    min-width: 170px !important;
+    margin-top: 6px !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid var(--border-light) !important;
+    z-index: 1050 !important;
+}
+
+.dropdown-menu-custom .dropdown-item {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: var(--text-muted-green) !important;
+    padding: 8px 12px !important;
+    border-radius: var(--radius-md) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.15s ease !important;
+}
+
+.dropdown-menu-custom .dropdown-item i {
+    font-size: 1rem !important;
+}
+
+.dropdown-menu-custom .dropdown-item:hover,
+.dropdown-menu-custom .dropdown-item:focus {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--text-main) !important;
+}
+
+.dropdown-menu-custom .dropdown-item.text-danger:hover {
+    background-color: var(--sys-red-bg) !important;
+    color: var(--sys-red) !important;
+}
+
+.dropdown-menu-custom .dropdown-divider {
+    border-top: 1px solid var(--border-light) !important;
+    margin: 6px 0 !important;
+    opacity: 1 !important;
+}
+
+/* ---------------------------------------------------------------------
+   16. Footer Component Styles
+--------------------------------------------------------------------- */
+.footer-custom {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(59, 31, 26, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted-green);
+    transition: all 0.3s ease;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.footer-logo {
+    font-weight: 700;
+    color: var(--brand-forest-medium);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.footer-copy {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.footer-heart {
+    font-size: 0.75rem;
+    display: inline-block;
+    animation: heartBeat 1.5s ease infinite;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footer-link {
+    color: var(--text-muted-green);
+    font-weight: 600;
+    transition: color 0.25s ease-in-out;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: var(--brand-forest-dark);
+    text-decoration: none;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: var(--sys-green);
+    border-radius: 50%;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    box-shadow: 0 0 6px var(--sys-green);
+    animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+@media (max-width: 768px) {
+    .footer-custom {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-top: 1.5rem;
+        gap: 1rem;
+    }
+    .footer-left { flex-direction: column; gap: 0.5rem; align-items: center; }
+    .footer-links { justify-content: center; flex-wrap: wrap; gap: 1rem; }
+}
+
+/* =====================================================================
+   17. Navbar Profile Dropdown Styles
+   ===================================================================== */
+.navbar-profile-btn {
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.navbar-profile-btn:hover {
+    background-color: var(--bs-body-bg);
+}
+
+.navbar-profile-btn:focus {
+    outline: none;
+}
+
+.navbar-profile-btn.dropdown-toggle::after {
+    display: none !important;
+}
+
+.navbar-profile-img {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    transition: border-color 0.2s;
+}
+
+.navbar-profile-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    transition: color 0.2s;
+}
+
+.navbar-profile-btn:hover .navbar-profile-name {
+    color: var(--brand-forest-medium);
+}
+
+.navbar-profile-caret {
+    font-size: 0.75rem;
+    color: var(--text-muted-green);
+    transition: transform 0.2s, color 0.2s;
+}
+
+.navbar-profile-btn[aria-expanded="true"] .navbar-profile-caret {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu-profile {
+    width: 200px;
+    background-color: #FFFFFF !important;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-lg) !important;
+    padding: 0.5rem 0 !important;
+    margin-top: 0.5rem !important;
+    border: none !important;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.dropdown-menu-profile .dropdown-header {
+    font-size: 0.725rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted-green);
+    padding: 0.65rem 1.25rem 0.35rem;
+}
+
+.dropdown-menu-profile .dropdown-item {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    padding: 0.65rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.dropdown-menu-profile .dropdown-item i {
+    font-size: 1.05rem;
+    color: var(--text-muted-green);
+    transition: color 0.2s;
+}
+
+.dropdown-menu-profile .dropdown-item:hover {
+    background-color: var(--bs-body-bg);
+    color: var(--brand-forest-medium);
+}
+
+.dropdown-menu-profile .dropdown-item:hover i {
+    color: var(--brand-forest-medium);
+}
+
+.dropdown-menu-profile .dropdown-divider {
+    border-color: var(--border-light);
+    margin: 0.4rem 0;
+}
+
+/* ---------------------------------------------------------------------
+   18. Reusable Premium Table Component
+--------------------------------------------------------------------- */
+.table-card-custom {
+    background-color: #FFFFFF;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: 1.25rem !important;
+    width: 100%;
+}
+
+.table-custom {
+    width: 100%;
+    margin-bottom: 0;
+    vertical-align: middle;
+    border-collapse: collapse;
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+}
+
+.table-custom th {
+    color: var(--text-muted-green);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.table-custom tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.table-custom tbody tr:hover {
+    background-color: rgba(232, 163, 61, 0.06);
+}
+
+.table-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.badge-table {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 50rem;
+}
+
+.badge-table::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50rem;
+}
+
+.badge-table.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: var(--sys-green);
+}
+.badge-table.success::before { background-color: var(--sys-green); }
+
+.badge-table.pending {
+    background-color: rgba(249, 115, 22, 0.1);
+    color: var(--sys-orange);
+}
+.badge-table.pending::before { background-color: var(--sys-orange); }
+
+.badge-table.failed {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--sys-red);
+}
+.badge-table.failed::before { background-color: var(--sys-red); }
+
+.table-order-id {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.table-amount {
+    font-weight: 700;
+    color: var(--brand-forest-medium);
+}
+
+/* ---------------------------------------------------------------------
+   19-20. Forms / Buttons (kept structurally identical, recolored via variables)
+--------------------------------------------------------------------- */
+.btn-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+.btn-custom-primary {
+    background-color: var(--brand-forest-medium);
+    border-color: var(--brand-forest-medium);
+    color: #FFFFFF;
+}
+.btn-custom-primary:hover {
+    background-color: var(--brand-forest-dark);
+    border-color: var(--brand-forest-dark);
+    color: #FFFFFF;
+}
+
+.btn-custom-secondary {
+    background-color: var(--brand-lime);
+    border-color: var(--brand-lime);
+    color: #FFFFFF;
+}
+.btn-custom-secondary:hover {
+    background-color: var(--brand-lime-hover);
+    border-color: var(--brand-lime-hover);
+    color: #FFFFFF;
+}
+
+/* ---------------------------------------------------------------------
+   23. Utility Classes
+--------------------------------------------------------------------- */
+.z-index-2 { z-index: 2 !important; }
+.fs-xs { font-size: 0.75rem !important; }
+.text-muted-green { color: var(--text-muted-green) !important; }
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(59, 31, 26, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1025;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ---------------------------------------------------------------------
+   24. Transaction List Component
+--------------------------------------------------------------------- */
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background-color: var(--bs-body-bg);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease-in-out;
+}
+
+.transaction-item:hover {
+    background-color: #F5E7D3;
+}
+
+.transaction-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-right: 0.85rem;
+}
+
+.transaction-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.transaction-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.transaction-date {
+    font-size: 0.75rem;
+    color: var(--text-muted-green);
+    margin-bottom: 0;
+}
+
+.transaction-amount {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 0.85rem;
+}

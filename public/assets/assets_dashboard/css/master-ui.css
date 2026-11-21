@@ -1,0 +1,100 @@
+/*
+=====================================================================
+  MASTER UI - Chicken Crunchy Roll
+  Gaya halaman Data Master, Manajemen Stok, dan Data Kasir:
+  kartu berfoto, toolbar kapsul, form dengan pratinjau langsung.
+  Dimuat setelah app-ui.css.
+=====================================================================
+*/
+:root { --mu-red: #a51d24; --mu-ink: #2a1512; --mu-mute: #8b7468; --mu-line: #f0e4d3; --mu-cream: #fff7ea; }
+
+/* ---------- Toolbar ---------- */
+.mu-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+.mu-search { position: relative; flex: 1 1 260px; max-width: 420px; }
+.mu-search input { width: 100%; height: 48px; border: 0; border-radius: 50rem; background: #fff; padding: 0 1.2rem 0 2.9rem; font-weight: 600; outline: 0; box-shadow: 0 1px 1px rgba(42,21,18,.03), 0 10px 24px -16px rgba(42,21,18,.3); transition: box-shadow .15s; }
+.mu-search input:focus { box-shadow: 0 0 0 4px rgba(165,29,36,.12), 0 10px 24px -16px rgba(42,21,18,.3); }
+.mu-search i { position: absolute; left: 1.05rem; top: 50%; transform: translateY(-50%); color: var(--mu-mute); }
+.mu-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.mu-stat { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem 1rem; border-radius: 50rem; background: #fff; font-weight: 800; font-size: .82rem; color: var(--mu-mute); box-shadow: 0 8px 18px -14px rgba(42,21,18,.4); }
+.mu-stat b { color: var(--mu-red); }
+
+/* ---------- Grid kartu berfoto ---------- */
+.mu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+.mu-card { position: relative; background: #fff; border-radius: 28px; padding: .7rem .7rem 1.1rem; box-shadow: 0 1px 1px rgba(42,21,18,.03), 0 14px 30px -20px rgba(42,21,18,.4); transition: transform .25s, box-shadow .25s; animation: u-rise .5s both; }
+.mu-card:hover { transform: translateY(-5px); box-shadow: 0 2px 4px rgba(42,21,18,.04), 0 30px 44px -22px rgba(165,29,36,.45); }
+.mu-photo { aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fff 0%, var(--mu-cream) 70%, #fdeccd 100%); display: flex; align-items: center; justify-content: center; color: #d9b98a; font-size: 2.6rem; }
+.mu-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.mu-card:hover .mu-photo img { transform: scale(1.06); }
+.mu-body { padding: .85rem .5rem 0; }
+.mu-name { font-weight: 800; font-size: 1rem; letter-spacing: -.02em; line-height: 1.25; color: var(--mu-ink); }
+.mu-pill { display: inline-block; margin-top: .45rem; padding: .25rem .75rem; border-radius: 12px; background: #ffe9bf; color: #7a3d00; font-weight: 800; font-size: .78rem; }
+.mu-tools { position: absolute; top: 1.15rem; right: 1.15rem; display: flex; gap: .35rem; opacity: 0; transform: translateY(-4px); transition: all .2s; }
+.mu-card:hover .mu-tools, .mu-card:focus-within .mu-tools { opacity: 1; transform: none; }
+.mu-tool { width: 38px; height: 38px; border: 0; border-radius: 13px; background: rgba(255,255,255,.94); color: var(--mu-ink); display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px -8px rgba(0,0,0,.45); backdrop-filter: blur(6px); transition: all .15s; text-decoration: none; }
+.mu-tool:hover { background: var(--mu-red); color: #fff; }
+.mu-tool.del:hover { background: #dc2626; }
+@media (hover: none) { .mu-tools { opacity: 1; transform: none; } }
+.mu-empty { grid-column: 1 / -1; text-align: center; padding: 3.5rem 1rem; color: var(--mu-mute); background: #fff; border-radius: 28px; }
+.mu-empty i { font-size: 3rem; display: block; color: #e3cba5; margin-bottom: .6rem; }
+
+/* ---------- Form + pratinjau ---------- */
+.mf { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 1.5rem; align-items: start; }
+.mf-card { background: #fff; border-radius: 30px; padding: 1.75rem; box-shadow: 0 1px 1px rgba(42,21,18,.03), 0 14px 34px -20px rgba(42,21,18,.35); }
+.mf-card h2 { font-size: 1.05rem; font-weight: 800; margin: 0 0 1.25rem; display: flex; align-items: center; gap: .6rem; }
+.mf-card h2 i { width: 34px; height: 34px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ffe7b8, #ffc766); color: #7a3d00; font-size: 1rem; }
+.mf-drop { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 22px; border: 2px dashed #e6d3b6; background: #fffaf2; cursor: pointer; transition: border-color .15s, background .15s; }
+.mf-drop:hover { border-color: var(--mu-red); background: #fff3e0; }
+.mf-drop .th { width: 64px; height: 64px; border-radius: 18px; background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #d9b98a; font-size: 1.6rem; flex-shrink: 0; box-shadow: 0 8px 16px -10px rgba(42,21,18,.4); }
+.mf-drop .th img { width: 100%; height: 100%; object-fit: cover; }
+.mf-drop b { display: block; font-size: .9rem; }
+.mf-drop small { color: var(--mu-mute); }
+.mf-actions { display: flex; gap: .6rem; margin-top: 1.5rem; }
+.mf-actions > * { flex: 1; justify-content: center; }
+.mf-preview { position: sticky; top: 14px; border-radius: 30px; padding: 1.1rem; color: #fff; background: radial-gradient(300px 220px at 100% 0%, rgba(255,210,122,.4), transparent 65%), linear-gradient(170deg, #b3202a, #5a0a10); box-shadow: 0 30px 50px -28px rgba(90,10,16,.9); }
+.mf-preview small { display: block; text-align: center; font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: .7; margin-bottom: .8rem; }
+.mf-preview .ph { aspect-ratio: 1 / 1; border-radius: 24px; overflow: hidden; background: #fff7ea; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: #d9b98a; box-shadow: 0 24px 36px -20px rgba(0,0,0,.6); }
+.mf-preview .ph img { width: 100%; height: 100%; object-fit: cover; }
+.mf-preview .nm { margin: 1rem .4rem .1rem; font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; word-break: break-word; }
+.mf-preview .pr { margin: 0 .4rem .4rem; font-size: 1.05rem; font-weight: 800; color: #ffd27a; }
+@media (max-width: 991.98px) { .mf { grid-template-columns: 1fr; } .mf-preview { position: static; order: -1; } .mf-preview .ph { max-width: 240px; margin: 0 auto; } }
+
+/* ---------- Kartu bahan baku (stok) ---------- */
+.sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; }
+.sk-card { position: relative; background: #fff; border-radius: 26px; padding: 1.25rem 1.3rem 1.1rem; box-shadow: 0 1px 1px rgba(42,21,18,.03), 0 12px 28px -20px rgba(42,21,18,.4); transition: transform .25s, box-shadow .25s; overflow: hidden; }
+.sk-card:hover { transform: translateY(-4px); box-shadow: 0 26px 40px -24px rgba(42,21,18,.5); }
+.sk-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #22c55e; }
+.sk-card.menipis::before { background: #f59e0b; }
+.sk-card.habis::before { background: #ef4444; }
+.sk-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
+.sk-name { font-weight: 800; font-size: 1rem; letter-spacing: -.02em; }
+.sk-qty { margin: .7rem 0 .25rem; font-size: 1.7rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+.sk-qty small { font-size: .8rem; font-weight: 700; color: var(--mu-mute); letter-spacing: 0; }
+.sk-bar { height: 8px; border-radius: 50rem; background: #f6ebd9; overflow: hidden; margin: .6rem 0 .45rem; }
+.sk-bar i { display: block; height: 100%; border-radius: 50rem; background: linear-gradient(90deg, #4ade80, #22c55e); }
+.sk-card.menipis .sk-bar i { background: linear-gradient(90deg, #fcd34d, #f59e0b); }
+.sk-card.habis .sk-bar i { background: #ef4444; }
+.sk-min { font-size: .76rem; color: var(--mu-mute); font-weight: 600; }
+.sk-foot { display: flex; justify-content: flex-end; gap: .35rem; margin-top: .6rem; }
+.sk-foot .mu-tool { background: #fff7ea; box-shadow: none; width: 34px; height: 34px; border-radius: 12px; }
+.sk-foot .mu-tool:hover { background: var(--mu-red); }
+.sk-foot .mu-tool.del:hover { background: #dc2626; }
+
+/* ---------- Kartu kasir ---------- */
+.ks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.ks-card { position: relative; background: #fff; border-radius: 28px; padding: 1.4rem; text-align: center; box-shadow: 0 1px 1px rgba(42,21,18,.03), 0 14px 30px -20px rgba(42,21,18,.4); transition: transform .25s, box-shadow .25s; animation: u-rise .5s both; }
+.ks-card:hover { transform: translateY(-5px); box-shadow: 0 30px 44px -22px rgba(165,29,36,.4); }
+.ks-av { width: 92px; height: 92px; border-radius: 30px; margin: 0 auto .9rem; overflow: hidden; background: linear-gradient(135deg, #ffe7b8, #ffc766); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: #7a3d00; font-weight: 800; box-shadow: 0 16px 26px -14px rgba(122,61,0,.7); }
+.ks-av img { width: 100%; height: 100%; object-fit: cover; }
+.ks-name { font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; }
+.ks-mail { color: var(--mu-mute); font-size: .82rem; word-break: break-all; }
+.ks-meta { display: flex; justify-content: center; gap: .5rem; flex-wrap: wrap; margin: .8rem 0 1rem; }
+.ks-actions { display: flex; gap: .5rem; justify-content: center; }
+.ks-actions .mu-tool { background: #fff7ea; box-shadow: none; }
+.ks-actions .mu-tool:hover { background: var(--mu-red); }
+.ks-actions .mu-tool.del:hover { background: #dc2626; }
+.ks-actions form { display: inline; }
+
+/* ---------- Riwayat stok & halaman lama: rapikan kartu dan tabel ---------- */
+.card-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.card-banner h2 { display: flex; align-items: center; gap: .5rem; }
+.badge-table.success::before, .badge-table.pending::before, .badge-table.failed::before { box-shadow: none; }

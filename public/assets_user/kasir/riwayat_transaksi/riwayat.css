@@ -1,0 +1,67 @@
+/* Asal: resources/views/kasir/riwayat_transaksi/index.blade.php */
+:root {
+  --rt-brand: var(--brand-forest-medium, #9c1d1d);
+  --rt-border: var(--border-light, #F0E4D3);
+  --rt-muted: var(--text-muted-green, #8a7267);
+  --rt-text: var(--text-main, #3b1f1a);
+  --rt-soft: #fbf3ec;
+}
+
+/* ---------- Ringkasan ---------- */
+.rt-ringkas { display: grid; grid-template-columns: repeat(3, 1fr); background: #fff; border: 1px solid var(--rt-border); border-radius: 1.25rem; box-shadow: 0 2px 8px rgba(156,29,29,.06); margin-bottom: 1.5rem; overflow: hidden; }
+.rt-r { display: flex; align-items: center; gap: .9rem; padding: 1.05rem 1.3rem; }
+.rt-r + .rt-r { border-left: 1px dashed var(--rt-border); }
+.rt-r .ico { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: .9rem; background: var(--rt-brand); color: #fff; font-size: 1.25rem; }
+.rt-r .k { display: block; font-size: .78rem; font-weight: 700; color: var(--rt-muted); }
+.rt-r b { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1.2; color: var(--rt-text); }
+.rt-r:first-child b { color: var(--rt-brand); }
+@media (max-width: 768px) {
+  .rt-ringkas { grid-template-columns: 1fr; }
+  .rt-r + .rt-r { border-left: 0; border-top: 1px dashed var(--rt-border); }
+}
+
+/* ---------- Filter ---------- */
+.rt-toolbar { background: var(--rt-soft); border: 1px solid var(--rt-border); border-radius: 1rem; padding: 1rem 1.1rem 1.1rem; margin-bottom: 1.5rem; }
+.rt-toolbar .form-label { font-size: .8rem; font-weight: 700; color: var(--rt-muted); margin-bottom: .3rem; }
+.rt-toolbar .form-control, .rt-toolbar .form-select { background-color: #fff; border-color: var(--rt-border); border-radius: .7rem; }
+
+/* ---------- Tabel (halaman data: header merah + zebra) ---------- */
+.rt-scroll { overflow-x: auto; }
+.rt-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px; }
+.rt-table thead th { background: var(--rt-brand); color: #fff; font-size: .8rem; font-weight: 800; text-transform: none; letter-spacing: 0; padding: .8rem .9rem; border-top: 1px solid var(--rt-brand); border-bottom: 1px solid var(--rt-brand); white-space: nowrap; }
+.rt-table thead th:first-child { border-left: 1px solid var(--rt-brand); border-top-left-radius: .8rem; }
+.rt-table thead th:last-child { border-right: 1px solid var(--rt-brand); border-top-right-radius: .8rem; }
+.rt-table tbody td { padding: .85rem .9rem; vertical-align: middle; border-bottom: 1px solid #f4ebe0; font-size: .9rem; color: var(--rt-text); }
+.rt-table tbody tr:nth-child(odd) td { background: #ffffff; }
+.rt-table tbody tr:nth-child(even) td { background: #fbf3ec; }
+.rt-table tbody tr:hover td { background: #f5e6d8; }
+.rt-table tbody tr.rt-empty-row td { background: #ffffff; border-bottom: 0; }
+
+.rt-struk { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .95rem; border-radius: 50rem; border: 1.5px solid var(--rt-brand); background: #fff; color: var(--rt-brand); font-size: .8rem; font-weight: 800; text-decoration: none; transition: all .15s ease; }
+.rt-struk:hover { background: var(--rt-brand); color: #fff; }
+
+.rt-empty { text-align: center; padding: 2.5rem 1rem 2rem; }
+.rt-empty-icon { width: 64px; height: 64px; margin: 0 auto .9rem; display: grid; place-items: center; border-radius: 50%; background: #fbeee9; color: var(--rt-brand); font-size: 1.8rem; }
+.rt-empty-title { font-weight: 800; color: var(--rt-text); }
+.rt-empty-hint { font-size: .85rem; color: var(--rt-muted); margin-top: .2rem; }
+
+/* ---------- Modal struk ---------- */
+.modal-backdrop.show { opacity: .35; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#modalStruk .modal-content { border: 0; border-radius: 22px; overflow: hidden; }
+.st-dialog { max-width: 460px; }
+.st-head { display: flex; align-items: center; justify-content: space-between; padding: 1.05rem 1.4rem; color: #fff; background: linear-gradient(135deg, #7a1616 0%, #9c1d1d 100%); }
+.st-head h5 { margin: 0; font-weight: 700; font-size: 1.02rem; }
+.st-head h5 span { font-weight: 800; opacity: .9; margin-left: .25rem; }
+.st-body { background: var(--rt-soft); padding: 1.6rem 1.2rem 1.4rem; }
+.st-body .struk { max-width: 380px; margin: 12px auto; }
+.st-foot { display: flex; gap: .75rem; padding: 1rem 1.2rem 1.2rem; background: #fff; border-top: 1px solid var(--rt-border); }
+.st-load { text-align: center; padding: 3rem 1rem; color: var(--rt-muted); font-weight: 700; }
+.st-load .spinner-border { color: var(--rt-brand); margin-bottom: .7rem; }
+.st-err { text-align: center; padding: 2.5rem 1rem; color: var(--rt-muted); }
+.st-err i { display: block; font-size: 2.2rem; color: #d9b98a; margin-bottom: .5rem; }
+.st-err a { color: var(--rt-brand); font-weight: 800; }
+
+/* Tombol cetak semua transaksi di dalam banner tabel */
+.rt-banner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .6rem; }
+.rt-cetak { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem 1.05rem; border-radius: 50rem; background: #fff; color: var(--rt-brand); font-size: .85rem; font-weight: 800; text-decoration: none; transition: all .15s; }
+.rt-cetak:hover { background: #fdeee8; color: #6f1212; }

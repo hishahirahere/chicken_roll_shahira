@@ -1,0 +1,86 @@
+/* Asal: resources/views/admin/dashboard.blade.php */
+
+/* ---------- Kartu tinggi tetap + scroll di dalam kartu ----------
+   Kartu tidak ikut memanjang kalau isinya banyak: daftarnya yang di-scroll. */
+.dash-card-fixed { height: 430px; display: flex; flex-direction: column; }
+.dash-card-fixed > .card-header { flex: none; }
+.dash-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: auto; padding-right: .4rem; }
+.dash-scroll.custom-list { overflow-x: hidden; }
+.trx-terbaru-scroll thead th { position: sticky; top: 0; z-index: 1; background: var(--bs-body-bg, #fff); }
+.dash-count { margin-left: .5rem; font-size: .72rem; font-weight: 800; color: var(--brand-forest-medium, #9c1d1d); background: #fbeee9; padding: .15rem .6rem; border-radius: 50rem; vertical-align: middle; }
+
+/* scrollbar tipis berwarna brand (dipakai semua area scroll di dashboard) */
+.dash-scroll, .fav-grid { scrollbar-width: thin; scrollbar-color: #d9a39b #f6ece6; }
+.dash-scroll::-webkit-scrollbar, .fav-grid::-webkit-scrollbar { width: 8px; height: 10px; }
+.dash-scroll::-webkit-scrollbar-track, .fav-grid::-webkit-scrollbar-track { background: #f6ece6; border-radius: 50rem; }
+.dash-scroll::-webkit-scrollbar-thumb, .fav-grid::-webkit-scrollbar-thumb { background: #d9a39b; border-radius: 50rem; }
+.dash-scroll::-webkit-scrollbar-thumb:hover, .fav-grid::-webkit-scrollbar-thumb:hover { background: var(--brand-forest-medium, #9c1d1d); }
+
+/* ---------- Menu Favorit Pelanggan ---------- */
+.fav-tabs { display: flex; gap: .35rem; flex-wrap: wrap; }
+.fav-tab { border: 1px solid var(--border-light, #F0E4D3); background: #fff; color: var(--text-muted-green, #8a7267); border-radius: 50rem; padding: .3rem .95rem; font-size: .8rem; font-weight: 700; cursor: pointer; transition: all .15s; }
+.fav-tab:hover { border-color: var(--brand-forest-medium, #9c1d1d); color: var(--brand-forest-medium, #9c1d1d); }
+.fav-tab.active { background: var(--brand-forest-medium, #9c1d1d); border-color: var(--brand-forest-medium, #9c1d1d); color: #fff; }
+
+/* Top 5 berjajar ke samping (1 baris), digeser dengan scrollbar horizontal */
+.fav-grid { display: flex; flex-wrap: nowrap; gap: 1rem; margin-top: .5rem; padding: .35rem .15rem 1rem; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; }
+.fav-grid > .fav-item { flex: 0 0 220px; scroll-snap-align: start; }
+.fav-item { position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border-light, #F0E4D3); border-radius: 1.1rem; overflow: hidden; transition: transform .15s ease, box-shadow .15s ease; }
+.fav-item:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(156, 29, 29, .10); }
+.fav-item.is-top { border-color: var(--brand-forest-medium, #9c1d1d); box-shadow: 0 6px 18px rgba(156, 29, 29, .12); }
+
+/* foto */
+.fav-thumb { position: relative; aspect-ratio: 1 / 1; background: #fbf3ec; overflow: hidden; }
+.fav-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.fav-empty { width: 100%; height: 100%; display: grid; place-items: center; color: #d9b98a; font-size: 2.4rem; }
+.fav-rank { position: absolute; top: .65rem; left: .65rem; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--brand-forest-medium, #9c1d1d); font-weight: 800; font-size: .85rem; box-shadow: 0 2px 8px rgba(59, 31, 26, .18); }
+.fav-item.is-top .fav-rank { background: var(--brand-forest-medium, #9c1d1d); color: #fff; }
+.fav-crown { position: absolute; top: .65rem; right: .65rem; display: inline-flex; align-items: center; gap: .3rem; padding: .22rem .7rem; border-radius: 50rem; background: #e8a33d; color: #3b2300; font-size: .72rem; font-weight: 800; box-shadow: 0 2px 8px rgba(59, 31, 26, .18); }
+
+/* info */
+.fav-info { padding: .85rem 1rem 1rem; display: flex; flex-direction: column; flex: 1; }
+.fav-name { font-weight: 800; font-size: .95rem; line-height: 1.25; color: var(--text-main, #3b1f1a); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fav-sub { margin-top: .2rem; font-size: .78rem; font-weight: 600; color: var(--text-muted-green, #8a7267); }
+.fav-bar { height: 6px; border-radius: 50rem; background: var(--border-light, #F0E4D3); margin-top: .8rem; overflow: hidden; }
+.fav-bar > i { display: block; height: 100%; border-radius: 50rem; background: var(--brand-forest-medium, #9c1d1d); }
+.fav-meta { display: flex; justify-content: space-between; align-items: flex-end; margin-top: .6rem; }
+.fav-count { line-height: 1.1; }
+.fav-count b { font-size: 1.3rem; color: var(--brand-forest-medium, #9c1d1d); }
+.fav-count span { font-size: .72rem; color: var(--text-muted-green, #8a7267); margin-left: .2rem; }
+.fav-share { font-size: .72rem; font-weight: 800; color: var(--brand-forest-medium, #9c1d1d); background: #fbeee9; padding: .15rem .6rem; border-radius: 50rem; }
+
+/* tombol lihat selengkapnya */
+.fav-more { margin-top: .85rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; padding: .45rem .8rem; border-radius: 50rem; border: 1.5px solid var(--brand-forest-medium, #9c1d1d); background: #fff; color: var(--brand-forest-medium, #9c1d1d); font-size: .8rem; font-weight: 800; cursor: pointer; transition: all .15s; }
+.fav-more:hover { background: var(--brand-forest-medium, #9c1d1d); color: #fff; }
+
+/* modal detail menu favorit */
+#modalFavorit .modal-content { border: 0; border-radius: 20px; overflow: hidden; }
+.modal-backdrop.show { opacity: .35; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.fm-header { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; color: #fff; background: linear-gradient(135deg, #7f1717 0%, #9c1d1d 100%); }
+.fm-header h5 { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.fm-body { display: flex; gap: 1.5rem; padding: 1.5rem; align-items: flex-start; }
+.fm-photo { flex: none; width: 240px; aspect-ratio: 1 / 1; border-radius: 1rem; overflow: hidden; background: #fbf3ec; border: 1px solid var(--border-light, #F0E4D3); }
+.fm-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.fm-photo .fav-empty { font-size: 3.5rem; }
+.fm-info { flex: 1; min-width: 0; }
+.fm-badge { display: inline-block; font-size: .72rem; font-weight: 800; color: var(--brand-forest-medium, #9c1d1d); background: #fbeee9; padding: .2rem .75rem; border-radius: 50rem; }
+.fm-name { margin-top: .6rem; font-size: 1.35rem; font-weight: 800; line-height: 1.2; color: var(--text-main, #3b1f1a); }
+.fm-sub { margin-top: .2rem; font-size: .9rem; font-weight: 600; color: var(--text-muted-green, #8a7267); }
+.fm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-top: 1rem; }
+.fm-stat { background: #fbf3ec; border: 1px solid var(--border-light, #F0E4D3); border-radius: .8rem; padding: .6rem .5rem; text-align: center; }
+.fm-stat b { display: block; font-size: 1.15rem; color: var(--brand-forest-medium, #9c1d1d); line-height: 1.2; }
+.fm-stat span { font-size: .7rem; font-weight: 700; color: var(--text-muted-green, #8a7267); }
+.fm-detail { margin-top: 1.1rem; }
+.fm-detail-title { font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand-forest-medium, #9c1d1d); margin-bottom: .4rem; }
+.fm-row { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; border-bottom: 1px dashed var(--border-light, #F0E4D3); font-size: .9rem; }
+.fm-row:last-child { border-bottom: 0; }
+.fm-row span { color: var(--text-muted-green, #8a7267); font-weight: 600; }
+.fm-row b { color: var(--text-main, #3b1f1a); text-align: right; }
+.fm-foot { padding: 0 1.5rem 1.5rem; }
+@media (max-width: 640px) { .fm-body { flex-direction: column; align-items: stretch; } .fm-photo { width: 100%; } }
+
+/* kosong */
+.fav-none { text-align: center; padding: 2rem 1rem 1.5rem; }
+.fav-none-icon { width: 60px; height: 60px; margin: 0 auto .8rem; display: grid; place-items: center; border-radius: 50%; background: #fbeee9; color: var(--brand-forest-medium, #9c1d1d); font-size: 1.7rem; }
+.fav-none-title { font-weight: 800; }
+.fav-none-hint { font-size: .85rem; color: var(--text-muted-green, #8a7267); margin-top: .15rem; }

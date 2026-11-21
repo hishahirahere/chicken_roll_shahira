@@ -1,0 +1,56 @@
+/* Asal: resources/views/layouts/kasir.blade.php */
+/* Notifikasi tengah layar (sama seperti panel admin) */
+.notif-overlay { position: fixed; inset: 0; background-color: rgba(59, 31, 26, 0.45); backdrop-filter: blur(4px); z-index: 2050; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .25s ease; padding: 1.5rem; }
+.notif-overlay.show { opacity: 1; }
+.notif-overlay.hide { opacity: 0; }
+.notif-box { background: #fff; border-radius: 24px; box-shadow: 0 20px 50px rgba(59, 31, 26, .2); padding: 2.5rem 2rem 2rem; max-width: 360px; width: 100%; text-align: center; transform: scale(.85); transition: transform .3s cubic-bezier(.34, 1.56, .64, 1); }
+.notif-overlay.show .notif-box { transform: scale(1); }
+.notif-icon-circle { width: 76px; height: 76px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.25rem; margin: 0 auto 1.25rem; background: var(--sys-green-bg, #DCFCE7); color: var(--sys-green, #22C55E); }
+.notif-box.notif-error .notif-icon-circle { background: var(--sys-red-bg, #FEE2E2); color: var(--sys-red, #EF4444); }
+.notif-box.notif-warning .notif-icon-circle { background: var(--sys-orange-bg, #FFEDD5); color: var(--sys-orange, #F97316); }
+.notif-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main, #3b1f1a); margin-bottom: .4rem; }
+.notif-message { font-size: .9rem; color: var(--text-muted-green, #8a7267); line-height: 1.5; margin-bottom: 1.5rem; }
+.notif-btn-ok { background: var(--brand-forest-medium, #9c1d1d); color: #fff; border: 0; font-weight: 700; font-size: .875rem; padding: .7rem 2rem; border-radius: 50rem; cursor: pointer; }
+.notif-box.notif-error .notif-btn-ok { background: var(--sys-red, #EF4444); }
+.notif-box.notif-warning .notif-btn-ok { background: var(--sys-orange, #F97316); }
+
+/* Navbar frosted glass (sama seperti admin) */
+.navbar-custom {
+    grid-template-columns: auto 1fr auto !important;
+    background-color: rgba(255, 255, 255, 0.32) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border-bottom: 1px solid rgba(122, 22, 22, 0.1) !important;
+    box-shadow: 0 4px 20px rgba(59, 31, 26, 0.06) !important;
+}
+.navbar-center { padding: 0 1.25rem; display: flex; align-items: center; }
+.navbar-greeting { display: flex; align-items: center; gap: .6rem; padding-left: 1.25rem; margin-left: .5rem; border-left: 1px solid rgba(59, 31, 26, .08); color: var(--text-main, #3b1f1a); font-size: .9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.navbar-greeting .greeting-emoji { font-size: 1.1rem; }
+.page-search-wrapper { position: relative; flex-grow: 1; max-width: 340px; width: 100%; }
+.page-search-input { width: 100%; background: #fff; border: 1px solid var(--border-light, #F0E4D3); border-radius: 50rem; padding: .6rem 1.1rem; padding-right: 2.6rem; font-size: .85rem; font-weight: 500; color: var(--text-main, #3b1f1a); outline: none; box-shadow: var(--shadow-sm, 0 2px 8px rgba(59, 31, 26, .04)); }
+.page-search-input:focus { border-color: rgba(156, 29, 29, .3); }
+.page-search-wrapper i { position: absolute; right: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted-green, #8a7267); font-size: .9rem; pointer-events: none; }
+
+/* Breadcrumb */
+.breadcrumb-custom { display: flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 600; color: var(--text-muted-green, #8a7267); margin-bottom: 1.25rem; }
+.breadcrumb-custom a { display: inline-flex; align-items: center; gap: .35rem; color: var(--text-muted-green, #8a7267); }
+.breadcrumb-custom a:hover { color: var(--brand-forest-medium, #9c1d1d); }
+.breadcrumb-sep { opacity: .5; }
+.breadcrumb-current { color: var(--brand-forest-medium, #9c1d1d); font-weight: 700; }
+
+.card-banner { background: linear-gradient(135deg, var(--brand-forest-dark, #7a1616) 0%, var(--brand-forest-medium, #9c1d1d) 100%); color: #fff; margin: -1.75rem -1.75rem 1.5rem; padding: 1.1rem 1.75rem; border-radius: 24px 24px 0 0; }
+.card-banner h2 { color: #fff; font-size: 1.05rem; font-weight: 700; margin-bottom: 0; }
+.page-title { font-size: 2.1rem; }
+.page-subtitle { font-size: 1rem; }
+
+.btn-icon-action { width: 38px; height: 38px; border-radius: 10px; background: #fff; border: 1px solid var(--border-light, #F0E4D3); display: inline-flex; align-items: center; justify-content: center; font-size: .95rem; transition: all .2s; cursor: pointer; color: var(--brand-forest-medium, #9c1d1d); }
+.btn-icon-action:hover { background: var(--brand-forest-medium, #9c1d1d); border-color: var(--brand-forest-medium, #9c1d1d); color: #fff; }
+
+/* Tombol Logout di sidebar */
+.sidebar-menu-link.as-button { background: none; border: 0; width: 100%; text-align: left; cursor: pointer; font: inherit; }
+
+@media (max-width: 992px) { .navbar-center { display: none; } }
+
+/* Lencana stok menipis / habis di menu kasir */
+.stok-badge { margin-left: auto; min-width: 22px; height: 22px; padding: 0 .45rem; display: inline-grid; place-items: center; border-radius: 50rem; background: #f59e0b; color: #fff; font-size: .72rem; font-weight: 800; }
+.stok-badge.bad { background: #ef4444; }

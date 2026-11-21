@@ -1,0 +1,22 @@
+/* Pindah halaman lebih halus (tanpa kedip putih).
+   - Sidebar & navbar dibiarkan diam, hanya isi halaman yang cross-fade.
+   - Animasi "naik" saat halaman muncul dimatikan, karena itu yang terlihat seperti kedip.
+   Didukung Chrome/Edge terbaru; browser lain tetap jalan normal tanpa efek ini. */
+@view-transition { navigation: auto; }
+
+.sidebar-wrapper { view-transition-name: sidebar; }
+.navbar-custom   { view-transition-name: navbar; }
+
+::view-transition-group(sidebar),
+::view-transition-group(navbar) { animation-duration: 0s; }
+::view-transition-old(sidebar),
+::view-transition-new(sidebar),
+::view-transition-old(navbar),
+::view-transition-new(navbar) { animation: none; mix-blend-mode: normal; }
+
+::view-transition-old(root) { animation: 120ms ease-out both vt-keluar; }
+::view-transition-new(root) { animation: 180ms ease-in both vt-masuk; }
+@keyframes vt-keluar { to { opacity: 0; } }
+@keyframes vt-masuk { from { opacity: 0; } }
+
+.page-header, .card, .table-card-custom, .hero { animation: none !important; }
