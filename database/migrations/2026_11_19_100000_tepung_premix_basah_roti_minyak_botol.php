@@ -3,17 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Penyesuaian bahan baku utama:
- *  - Tepung Premix Basah : satuan BOTOL, 1 botol = 1 liter, kebutuhan 1 paket (60 pcs) = 2 botol (2 liter)
- *  - Tepung Roti         : satuan BUNGKUS, 1 bungkus = 1 kg, kebutuhan 1 paket (60 pcs) = 1 bungkus (1 kg)
- *    (menggantikan Tepung Terigu & Tepung Premix lama)
- *  - Minyak goreng       : satuan BOTOL (sebelumnya jerigen). Minyak & gas dikirim sebagai JATAH tetap
- *    untuk beberapa hari, dikirim lagi saat stok kasir habis. Jumlah jatah diatur di Pengaturan Stok.
- *
- * Yang diubah hanya nama, satuan, dan peran bahan. Angka stok TIDAK dikonversi (satuan lama dan baru
- * tidak setara), jadi setelah migrate, sesuaikan stok sebenarnya lewat menu Manajemen Stok.
- */
 return new class extends Migration
 {
     public function up(): void

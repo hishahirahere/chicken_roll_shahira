@@ -16,6 +16,13 @@ use Illuminate\Validation\ValidationException;
  */
 class StokOtomatisService
 {
+    /**
+     * Batas menipis di tangan kasir (satu aturan sederhana):
+     *  - pcs, kali pakai, kemasan : menipis kalau sisa <= 10, habis kalau 0
+     *  - minyak & gas (manual)    : tidak ada menipis, hanya aman / habis (habis = 0, lalu kasir minta ke admin)
+     */
+    private const BATAS_MENIPIS = 10;
+
     /** Pengaturan umum (nilai awal + yang sudah diubah admin). */
     public function pengaturan(): array
     {
@@ -834,8 +841,8 @@ class StokOtomatisService
             $out->push((object) [
                 'kategori' => 'produk', 'peran' => 'produk', 'nama' => $u->nama_ukuran, 'foto' => $u->foto ?? null,
                 'ikon' => 'bi-egg-fried', 'jumlah' => $pcs, 'satuan' => 'pcs',
-                'detail' => $acuan > 0 ? 'Dari paket terakhir: ' . $acuan . ' pcs' : 'Belum menerima paket',
-                'status' => PerhitunganStok::statusPersen($pcs, $acuan, $persen),
+                'detail' => '',
+                'status' => PerhitunganStok::statusStok((float) $pcs, (float) self::BATAS_MENIPIS),
                 'persen' => $this->persenBar($pcs, $acuan),
             ]);
         }
@@ -872,25 +879,25 @@ class StokOtomatisService
                 $item += [
                     'kategori' => 'porsi', 'ikon' => ['filling' => 'bi-egg-fried', 'saus' => 'bi-droplet-fill', 'bumbu' => 'bi-stars'][$b->peran],
                     'jumlah' => $porsi, 'satuan' => 'kali pakai',
-                    'detail' => $this->angka($stok) . ' bungkus utuh' . ($sisa > 0 ? ' + sisa ' . $this->angka($sisa) . '/' . $this->angka($kap) . ' di bungkus berjalan' : ''),
+                    'detail' => '',
                 ];
             } elseif ($b->peran === 'kemasan') {
                 $setara = $stok;
-                $item += ['kategori' => 'kemasan', 'ikon' => 'bi-box2', 'jumlah' => (int) floor($stok + 1e-9), 'satuan' => 'pcs', 'detail' => 'Kemasan / dus'];
+                $item += ['kategori' => 'kemasan', 'ikon' => 'bi-box2', 'jumlah' => (int) floor($stok + 1e-9), 'satuan' => 'pcs', 'detail' => ''];
             } else { // minyak & gas: stok dicatat manual (kasir mencatat pemakaian, admin mengirim lewat permintaan)
                 $setara = $stok;
                 $item += [
                     'kategori' => 'manual', 'ikon' => $b->peran === 'gas' ? 'bi-fire' : 'bi-droplet-half',
                     'jumlah' => (int) floor($stok + 1e-9), 'satuan' => $b->satuan,
-                    'detail' => 'Dicatat manual · kalau sudah habis, minta ke admin',
+                    'detail' => '',
                 ];
             }
 
-            if ($acuan > 0) {
-                $status = PerhitunganStok::statusPersen($setara, $acuan, $persen);
+            if ($item['kategori'] === 'manual') {
+                // Minyak & gas: hanya aman / habis (kasir minta ke admin kalau sudah habis, tidak ada status menipis)
+                $status = $setara <= 0.00001 ? 'habis' : 'aman';
             } else {
-                $minKasir = $this->minimumKasir($b);
-                $status = PerhitunganStok::statusStok($setara, $minKasir);
+                $status = PerhitunganStok::statusStok((float) ($item['kategori'] === 'porsi' ? $item['jumlah'] : $setara), (float) self::BATAS_MENIPIS);
             }
             $item['status'] = $status;
             $item['persen'] = $this->persenBar($setara, $acuan);

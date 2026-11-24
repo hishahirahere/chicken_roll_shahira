@@ -156,13 +156,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -----------------------------------------------------------------
-    // 2b. Mini Sparkline Charts (Jumlah Transaksi & Stok Menipis/Habis)
+    // 2b. Mini Sparkline Charts (Jumlah Transaksi & Porsi Terjual)
     //     - Transaksi: pakai deret 7 hari asli (dataTransaksi), jadi
     //       kalau memang belum ada transaksi, garisnya datar di 0 —
     //       itu representasi jujur, bukan bug.
-    //     - Stok: belum ada tabel riwayat status stok per hari, jadi
-    //       ditampilkan sebagai garis datar sesuai jumlah stok
-    //       bermasalah SAAT INI (stokBermasalahSaatIni).
+    //     - Porsi: deret 7 hari asli dari item_pesanan (1 baris = 1 porsi).
     // -----------------------------------------------------------------
     const sparklineBaseOptions = {
         chart: {
@@ -190,14 +188,13 @@ document.addEventListener('DOMContentLoaded', function () {
         transaksiSpark.render();
     }
 
-    const stokSparkEl = document.querySelector('#stok-sparkline');
-    if (stokSparkEl && window.dashboardData) {
-        const nilaiSaatIni = window.dashboardData.stokBermasalahSaatIni;
-        const stokSpark = new ApexCharts(stokSparkEl, Object.assign({}, sparklineBaseOptions, {
-            series: [{ name: 'Stok Menipis/Habis', data: Array(7).fill(nilaiSaatIni) }],
+    const porsiSparkEl = document.querySelector('#porsi-sparkline');
+    if (porsiSparkEl && window.dashboardData) {
+        const porsiSpark = new ApexCharts(porsiSparkEl, Object.assign({}, sparklineBaseOptions, {
+            series: [{ name: 'Porsi Terjual', data: window.dashboardData.dataPorsi }],
             colors: ['#e8a33d']
         }));
-        stokSpark.render();
+        porsiSpark.render();
     }
 
     // Date picker dihapus: tanggal di header sekarang label biasa (dashboard selalu hari ini).

@@ -17,9 +17,6 @@ class StokOtomatisController extends Controller
     {
     }
 
-    // ================================================================
-    // PENGATURAN STOK
-    // ================================================================
     public function pengaturan()
     {
         $bahan   = DB::table('bahan_baku')->orderBy('nama_bahan')->get();
@@ -84,8 +81,7 @@ class StokOtomatisController extends Controller
                 );
             }
 
-            // 2) Hasil pcs per 1 kg ayam per ukuran (bilangan bulat, dipakai saat memberi paket).
-            //    Tepung tidak dihitung dari ayam: premix basah (botol) & tepung roti (bungkus) = isi paket tetap.
+            // 2) Hasil pcs per kg per ukuran
             foreach (($v['hasil_pcs_per_kg'] ?? []) as $ukuranId => $pcs) {
                 if (! DB::table('ukuran')->where('id', $ukuranId)->exists()) {
                     continue;

@@ -4,13 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Minyak & gas dikelola MANUAL:
- *  - pemakaian_kasir : kasir mencatat pemakaian harian (mis. 1 tabung gas, 3 liter minyak)
- *  - permintaan_stok : kasir minta ke admin -> admin kirim -> kasir konfirmasi diterima
- *    Stok gudang baru berkurang setelah kasir mengonfirmasi barangnya sudah sampai.
- *    status: diminta | dikirim | selesai | batal
- */
+
 return new class extends Migration
 {
     public function up(): void

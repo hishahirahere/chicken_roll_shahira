@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\BumbuTabur;
+use App\Http\Controllers\Concerns\CekRiwayatStokMaster;
 use App\Models\ItemPesanan;
 use Illuminate\Http\Request;
+use App\Services\StokOtomatis\SinkronFotoMaster;
 use Illuminate\Support\Facades\Storage;
 
 class BumbuTaburController extends Controller
 {
+    use CekRiwayatStokMaster;
+
     /**
      * Display a listing of the resource.
      */
@@ -41,6 +45,7 @@ class BumbuTaburController extends Controller
         }
 
         BumbuTabur::create($validated);
+        $this->sinkronFoto();
 
         return redirect()->route('bumbu_tabur.index')->with('success', 'Bumbu Tabur berhasil ditambahkan.');
     }
@@ -67,6 +72,7 @@ class BumbuTaburController extends Controller
        }
 
         $bumbuTabur->update($validated);
+        $this->sinkronFoto();
 
         return redirect() ->route('bumbu_tabur.index') ->with('success', 'Bumbu Tabur berhasil diperbarui.');
     }
@@ -82,11 +88,25 @@ class BumbuTaburController extends Controller
                 'Bumbu Tabur "' . $bumbuTabur->nama_bumbu . '" sudah dipakai di transaksi, jadi tidak bisa dihapus.');
         }
 
+        // Sudah punya stok / riwayat stok (masuk, keluar, diberikan ke kasir) -> jangan dihapus, nonaktifkan saja.
+        if ($this->sudahPunyaJejakStok($bumbuTabur->bahan_baku_id ?? null)) {
+            return redirect()->route('bumbu_tabur.index')->with('error',
+                'Bumbu Tabur "' . $bumbuTabur->nama_bumbu . '" sudah punya stok atau riwayat stok, jadi tidak bisa dihapus. Nonaktifkan saja.');
+        }
+
         if ($bumbuTabur->foto) {
             Storage::disk('public')->delete($bumbuTabur->foto);
         }
+        $bahanBakuId = $bumbuTabur->bahan_baku_id ?? null;
         $bumbuTabur->delete();
+        $this->bersihkanBahanBakuKosong($bahanBakuId);
 
         return redirect()->route('bumbu_tabur.index')->with('success', 'Bumbu Tabur berhasil dihapus.');
+    }
+
+    /** Salin foto master ke bahan baku yang sudah terhubung. Item baru ikut saat Manajemen Stok dibuka. */
+    private function sinkronFoto(): void
+    {
+        SinkronFotoMaster::semua();
     }
 }

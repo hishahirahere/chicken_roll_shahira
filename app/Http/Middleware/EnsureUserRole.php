@@ -9,14 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserRole
 {
-    /**
-     * Pakai: ->middleware('role:admin')  atau  ->middleware('role:kasir,admin')
-     *
-     * - Belum login            -> ke halaman login
-     * - Akun nonaktif          -> di-logout paksa
-     * - Role tidak sesuai      -> dikembalikan ke halaman "rumah" role-nya
-     *                             (kasir -> dashboard kasir, admin -> dashboard)
-     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();

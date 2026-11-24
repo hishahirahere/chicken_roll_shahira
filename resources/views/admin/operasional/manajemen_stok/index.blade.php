@@ -383,7 +383,7 @@
             <div class="pk-rows">
               @foreach ([['premix_basah', 'Tepung premix basah', $premixBasah ?? null, 'botol', 'liter'], ['tepung_roti', 'Tepung roti', $tepungRoti ?? null, 'bungkus', 'kg']] as [$namaInput, $judulTepung, $bhn, $satTepung, $satIsi])
                 <div class="pk-row" data-tepung="{{ $namaInput }}" data-isi="1" data-unit="{{ $satIsi }}">
-                  <span class="pk-foto"><i class="bi bi-basket"></i></span>
+                  <span class="pk-foto">@if (!empty($bhn->foto))<img src="{{ asset('storage/' . $bhn->foto) }}" alt="">@else<i class="bi bi-basket"></i>@endif</span>
                   <div class="pk-nama"><b>{{ $judulTepung }}</b>
                     <small>tersedia: {{ \App\Models\BahanBaku::formatAngka($bhn->stok_saat_ini ?? 0) }} {{ $bhn->satuan ?? $satTepung }}</small></div>
                   <div class="input-group pk-input">
@@ -402,7 +402,7 @@
             <div class="pk-rows">
               @foreach ($ukuranPaket as $u)
                 <div class="pk-row" data-kemasan-ukuran="{{ $u->id }}">
-                  <span class="pk-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-box2"></i>@endif</span>
+                  <span class="pk-foto">@if (!empty($fotoKemasan[$u->id]))<img src="{{ asset('storage/' . $fotoKemasan[$u->id]) }}" alt="">@else<i class="bi bi-box2"></i>@endif</span>
                   <div class="pk-nama"><b>Kemasan {{ $u->nama_ukuran }}</b>
                     <small>tersedia: {{ \App\Models\BahanBaku::formatAngka($stokKemasan[$u->id] ?? 0) }} pcs</small></div>
                   <div class="input-group pk-input">

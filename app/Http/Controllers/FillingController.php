@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Filling;
+use App\Http\Controllers\Concerns\CekRiwayatStokMaster;
 use App\Models\ItemPesanan;
 use Illuminate\Http\Request;
+use App\Services\StokOtomatis\SinkronFotoMaster;
 use Illuminate\Support\Facades\Storage;
 
 class FillingController extends Controller
 {
+    use CekRiwayatStokMaster;
+
     /**
      * Display a listing of the resource.
      */
@@ -41,6 +45,7 @@ class FillingController extends Controller
         }
 
         Filling::create($validated);
+        $this->sinkronFoto();
 
         return redirect()->route('filling.index')->with('success', 'Filling berhasil ditambahkan.');
     }
@@ -67,6 +72,7 @@ class FillingController extends Controller
        }
 
         $filling->update($validated);
+        $this->sinkronFoto();
 
         return redirect() ->route('filling.index') ->with('success', 'Filling berhasil diperbarui.');
     }
@@ -82,11 +88,25 @@ class FillingController extends Controller
                 'Filling "' . $filling->nama_filling . '" sudah dipakai di transaksi, jadi tidak bisa dihapus.');
         }
 
+        // Sudah punya stok / riwayat stok (masuk, keluar, diberikan ke kasir) -> jangan dihapus, nonaktifkan saja.
+        if ($this->sudahPunyaJejakStok($filling->bahan_baku_id ?? null)) {
+            return redirect()->route('filling.index')->with('error',
+                'Filling "' . $filling->nama_filling . '" sudah punya stok atau riwayat stok, jadi tidak bisa dihapus. Nonaktifkan saja.');
+        }
+
         if ($filling->foto) {
             Storage::disk('public')->delete($filling->foto);
         }
+        $bahanBakuId = $filling->bahan_baku_id ?? null;
         $filling->delete();
+        $this->bersihkanBahanBakuKosong($bahanBakuId);
 
         return redirect()->route('filling.index')->with('success', 'Filling berhasil dihapus.');
+    }
+
+    /** Salin foto master ke bahan baku yang sudah terhubung. Item baru ikut saat Manajemen Stok dibuka. */
+    private function sinkronFoto(): void
+    {
+        SinkronFotoMaster::semua();
     }
 }

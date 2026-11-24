@@ -35,6 +35,25 @@ class DashboardController extends Controller
         $stokHabis = BahanBaku::where('status_stok', 'habis')->count();
         $totalStokItem = $stokAman + $stokMenipis + $stokHabis;
 
+        // Card 3: Porsi Terjual Hari Ini
+        // 1 baris item_pesanan = 1 porsi, jadi jumlah porsi = jumlah baris item pada transaksi hari itu.
+        // Satu query untuk 7 hari (hasilnya juga dipakai sparkline kartu).
+        $porsiPerHari = ItemPesanan::query()
+            ->join('transaksi', 'transaksi.id', '=', 'item_pesanan.transaksi_id')
+            ->whereDate('transaksi.tanggal', '>=', Carbon::today()->subDays(6))
+            ->selectRaw('DATE(transaksi.tanggal) as hari, COUNT(*) as total')
+            ->groupBy('hari')
+            ->pluck('total', 'hari');
+        $dataPorsi = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $dataPorsi[] = (int) ($porsiPerHari[Carbon::today()->subDays($i)->toDateString()] ?? 0);
+        }
+        $porsiHariIni = $dataPorsi[6];
+        $porsiKemarin = $dataPorsi[5];
+        $trendPorsi = $porsiKemarin > 0
+            ? round((($porsiHariIni - $porsiKemarin) / $porsiKemarin) * 100, 1)
+            : 0;
+
         // Chart: Penjualan 7 Hari Terakhir
         $labelHari = [];
         $dataPenjualan = [];
@@ -68,6 +87,7 @@ class DashboardController extends Controller
             'transaksiHariIni', 'trendTransaksi',
             'stokAman', 'stokMenipis', 'stokHabis', 'totalStokItem',
             'labelHari', 'dataPenjualan', 'dataTransaksi',
+            'porsiHariIni', 'trendPorsi', 'dataPorsi',
             'peringatanStok', 'transaksiTerbaru', 'favorit'
         ));
     }

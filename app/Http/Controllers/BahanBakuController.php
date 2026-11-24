@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BahanBaku;
 use App\Models\RiwayatStok;
 use App\Models\User;
+use App\Services\StokOtomatis\SinkronFotoMaster;
 use App\Services\StokOtomatis\StokOtomatisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,13 @@ use Illuminate\Validation\ValidationException;
 
 class BahanBakuController extends Controller
 {
-    /**
-     * Halaman Manajemen Stok: daftar bahan baku + tombol catat masuk/keluar.
-     */
     public function index()
     {
         // Kenali bahan utama & hubungkan filling/saus/bumbu otomatis (tanpa menu pengaturan)
         app(StokOtomatisService::class)->siapkan((int) auth()->id());
+
+        // Foto filling / saus celup / bumbu tabur diambil dari Data Master (tidak perlu diisi manual)
+        SinkronFotoMaster::semua();
 
         $bahanBaku = BahanBaku::orderBy('nama_bahan')->get();
 
@@ -50,6 +51,10 @@ class BahanBakuController extends Controller
         $stokKemasan = DB::table('ukuran')->join('bahan_baku', 'bahan_baku.id', '=', 'ukuran.bahan_baku_id')
             ->pluck('bahan_baku.stok_saat_ini', 'ukuran.id')->all();
 
+        // Foto kemasan tiap ukuran: [ukuran_id => foto] diambil dari foto BAHAN BAKU kemasan (bukan foto produk ukuran)
+        $fotoKemasan = DB::table('ukuran')->join('bahan_baku', 'bahan_baku.id', '=', 'ukuran.bahan_baku_id')
+            ->pluck('bahan_baku.foto', 'ukuran.id')->all();
+
         $premixBasah = DB::table('bahan_baku')->where('peran', 'tepung_premix_basah')->orderBy('id')->first();
         $tepungRoti  = DB::table('bahan_baku')->where('peran', 'tepung_roti')->orderBy('id')->first();
 
@@ -69,7 +74,7 @@ class BahanBakuController extends Controller
                 return $out;
             })->all();
         return view('admin.operasional.manajemen_stok.index', compact(
-            'kirimStandar', 'permintaanKasir', 'kgPerPaket', 'bahanBaku', 'kasirList', 'set', 'ukuranPaket', 'standarPaket', 'bahanPaket', 'gasBahan', 'minyakBahan', 'stokKemasan', 'premixBasah', 'tepungRoti'
+            'kirimStandar', 'permintaanKasir', 'kgPerPaket', 'bahanBaku', 'kasirList', 'set', 'ukuranPaket', 'standarPaket', 'bahanPaket', 'gasBahan', 'minyakBahan', 'stokKemasan', 'fotoKemasan', 'premixBasah', 'tepungRoti'
         ));
     }
 
@@ -149,7 +154,7 @@ class BahanBakuController extends Controller
         }
 
         $bahanBaku->update($data);
-        if ($fotoLama && array_key_exists('foto', $data)) {
+        if ($fotoLama && array_key_exists('foto', $data) && ! SinkronFotoMaster::dipakaiMaster($fotoLama)) {
             Storage::disk('public')->delete($fotoLama);
         }
         $bahanBaku->sinkronStatus();
@@ -163,7 +168,7 @@ class BahanBakuController extends Controller
         // Riwayat stok bahan ini ikut terhapus (cascade di database)
         $foto = $bahanBaku->foto;
         $bahanBaku->delete();
-        if ($foto) {
+        if ($foto && ! SinkronFotoMaster::dipakaiMaster($foto)) {
             Storage::disk('public')->delete($foto);
         }
 
@@ -183,10 +188,6 @@ class BahanBakuController extends Controller
         return $this->catatStok($request, 'keluar');
     }
 
-    /**
-     * Satu-satunya tempat stok berubah. Dipakai stok masuk & keluar:
-     * ubah stok_saat_ini + tulis 1 baris riwayat dalam satu transaksi.
-     */
     private function catatStok(Request $request, string $jenis)
     {
         $masuk = $jenis === 'masuk';
@@ -242,12 +243,6 @@ class BahanBakuController extends Controller
         );
     }
 
-    /**
-     * Beri PAKET AYAM ke kasir: ayam per ukuran (kg, total kelipatan 1 paket), tepung premix basah (botol 1 liter),
-     * tepung roti (bungkus 1 kg), dan kemasan per ukuran. Semua bilangan bulat.
-     * Filling/saus/bumbu TIDAK ikut paket (lihat beriBahanPendukung); minyak & gas lewat alur permintaan.
-     * Gudang berkurang per bahan; stok kasir bertambah dalam pcs per ukuran.
-     */
     public function beriPaket(Request $request, StokOtomatisService $stok)
     {
         $v = $request->validate([
@@ -277,10 +272,6 @@ class BahanBakuController extends Controller
         );
     }
 
-    /**
-     * Beri BAHAN PENDUKUNG ke kasir: filling, saus celup, bumbu tabur, bebas per rasa dan per bungkus.
-     * Gudang berkurang dalam bungkus, stok kasir bertambah dalam kali pakai.
-     */
     public function beriBahanPendukung(Request $request, StokOtomatisService $stok)
     {
         $v = $request->validate([
@@ -302,10 +293,6 @@ class BahanBakuController extends Controller
         );
     }
 
-    /**
-     * Kirim MINYAK & GAS ke kasir (jatah tetap: pilih minyak dan/atau gas). Kasir harus mengonfirmasi "Sudah Diterima"
-     * dulu, baru stok gudang berkurang dan tercatat di Riwayat Stok.
-     */
     public function kirimMinyakGas(Request $request, StokOtomatisService $stok)
     {
         $v = $request->validate([

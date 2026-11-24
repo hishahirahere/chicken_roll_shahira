@@ -157,6 +157,7 @@
               <button type="button" class="pf-toggle" data-target="password" aria-label="Tampilkan password"><i class="bi bi-eye"></i></button>
             </div>
             @if ($errPw->has('password')) <div class="invalid-feedback">{{ $errPw->first('password') }}</div> @endif
+            <div class="form-text">Minimal 8 karakter, kombinasi huruf, angka, dan simbol.</div>
           </div>
 
           <div class="col-12 col-md-4">

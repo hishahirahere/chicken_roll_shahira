@@ -8,7 +8,7 @@
 
 @section('content')
 
-  <!-- START: Dashboard Header Banner -->
+
   <div class="page-header">
     <div class="page-header-icon"><i class="bi bi-speedometer2"></i></div>
     <div>
@@ -20,7 +20,7 @@
       <span>{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
     </div>
   </div>
-  <!-- END: Dashboard Header Banner -->
+
 
   <div class="row g-4">
 
@@ -73,20 +73,20 @@
           </div>
         </div>
 
-        <!-- Card 3: Stok Menipis / Habis (sparkline sesuai jumlah bermasalah saat ini) -->
+        <!-- Card 3: Porsi Terjual Hari Ini (sparkline dari data 7 hari asli) -->
         <div class="col-md-4">
           <div class="card card-stat d-flex flex-column justify-content-between">
             <div>
-              <div class="stat-icon-circle"><i class="bi bi-exclamation-triangle-fill"></i></div>
-              <span class="stat-label">Stok Menipis / Habis</span>
-              <div class="stat-value">{{ $stokMenipis + $stokHabis }} item</div>
-              <div class="trend-badge trend-down">
-                <i class="bi bi-arrow-down-left"></i>
-                <span>Perlu diperhatikan</span>
+              <div class="stat-icon-circle"><i class="bi bi-egg-fried"></i></div>
+              <span class="stat-label">Porsi Terjual Hari Ini</span>
+              <div class="stat-value">{{ $porsiHariIni }} porsi</div>
+              <div class="trend-badge {{ $trendPorsi >= 0 ? 'trend-up' : 'trend-down' }}">
+                <i class="bi bi-arrow-{{ $trendPorsi >= 0 ? 'up' : 'down' }}-right"></i>
+                <span>{{ abs($trendPorsi) }}% dari kemarin</span>
               </div>
             </div>
             <div class="sparkline-container sparkline-card-footer">
-              <div id="stok-sparkline"></div>
+              <div id="porsi-sparkline"></div>
             </div>
           </div>
         </div>
@@ -354,8 +354,8 @@
       labelHari: @json($labelHari),
       dataPenjualan: @json($dataPenjualan),
       dataTransaksi: @json($dataTransaksi),
-      stok: [{{ $stokAman }}, {{ $stokMenipis }}, {{ $stokHabis }}],
-      stokBermasalahSaatIni: {{ $stokMenipis + $stokHabis }}
+      dataPorsi: @json($dataPorsi),
+      stok: [{{ $stokAman }}, {{ $stokMenipis }}, {{ $stokHabis }}]
     };
   </script>
 

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Aturan password baku (reset / ganti password): min 8 karakter, ada huruf, angka, dan simbol
+        Password::defaults(fn () => Password::min(8)->letters()->numbers()->symbols());
+
         // Isi $notifikasi (lonceng di navbar) dari data asli di database,
         // setiap kali layouts/admin ditampilkan.
         View::composer('layouts.admin', function ($view) {

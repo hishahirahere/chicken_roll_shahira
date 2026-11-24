@@ -6,18 +6,32 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
 {
     /**
-     * Update the user's password.
+     * Ganti password akun sendiri (admin & kasir, lewat Profil Saya).
+     * Password baru: minimal 8 karakter, ada huruf, angka, dan simbol.
+     * (Password awal kasir yang dibuat admin di Data Master tetap minimal 6 karakter.)
      */
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password' => [
+                'required', 'string', 'min:8', 'max:100',
+                'regex:/[A-Za-z]/',        // ada huruf
+                'regex:/[0-9]/',           // ada angka
+                'regex:/[^A-Za-z0-9]/',    // ada simbol
+                'confirmed',
+            ],
+        ], [
+            'current_password.required'         => 'Password lama wajib diisi.',
+            'current_password.current_password' => 'Password lama salah.',
+            'password.required'  => 'Password baru wajib diisi.',
+            'password.min'       => 'Password baru minimal 8 karakter.',
+            'password.regex'     => 'Password baru harus mengandung huruf, angka, dan simbol (contoh: Kasir#2026).',
+            'password.confirmed' => 'Konfirmasi password tidak sama.',
         ]);
 
         $request->user()->update([

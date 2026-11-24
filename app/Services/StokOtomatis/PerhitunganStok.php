@@ -2,13 +2,7 @@
 
 namespace App\Services\StokOtomatis;
 
-/**
- * Rumus-rumus stok otomatis. Kelas ini MURNI hitungan (tidak menyentuh database),
- * jadi mudah dites dan mudah dijelaskan di laporan.
- *
- * Semua angka standar (hasil per kg, kapasitas bungkus, isi paket, dst.)
- * dikirim dari luar (diambil dari tabel pengaturan), tidak ditulis mati di sini.
- */
+
 class PerhitunganStok
 {
     /** Nilai awal (data simulasi). Dipakai sebagai standar pemakaian bawaan aplikasi. */

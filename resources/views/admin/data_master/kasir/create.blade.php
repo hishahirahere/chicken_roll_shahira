@@ -101,11 +101,19 @@
 
             <div class="mb-3">
               <label class="form-label fw-bold">Password</label>
-              <input type="password" name="password"
-                class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 6 karakter">
-              @error('password')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
+              <div class="input-group has-validation">
+                <input type="password" name="password" id="kasir-password" autocomplete="new-password"
+                  class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 8 karakter">
+                <button type="button" id="kasir-password-toggle" class="btn btn-outline-secondary"
+                  aria-label="Tampilkan password" title="Tampilkan / sembunyikan password"
+                  style="border-color:#ced4da;background:#fff;color:#6b7280;">
+                  <i class="bi bi-eye" id="kasir-password-icon"></i>
+                </button>
+                @error('password')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="form-text">Minimal 8 karakter, kombinasi huruf, angka, dan simbol.</div>
             </div>
 
             <div class="mb-4">
@@ -184,5 +192,19 @@
 @endsection
 
 @push('scripts')
+  <script>
+    (function () {
+      var input = document.getElementById('kasir-password');
+      var tombol = document.getElementById('kasir-password-toggle');
+      var ikon = document.getElementById('kasir-password-icon');
+      if (!input || !tombol) return;
+      tombol.addEventListener('click', function () {
+        var tampil = input.type === 'password';
+        input.type = tampil ? 'text' : 'password';
+        ikon.className = tampil ? 'bi bi-eye-slash' : 'bi bi-eye';
+        tombol.setAttribute('aria-label', tampil ? 'Sembunyikan password' : 'Tampilkan password');
+      });
+    })();
+  </script>
   <script src="{{ asset('assets_user/admin/data_master/kasir.js') }}"></script>
 @endpush

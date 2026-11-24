@@ -27,7 +27,6 @@
       @endphp
       @include('admin.data_master._kartu', [
         'tipe' => 'kasir', 'item' => $item, 'nama' => $item->name, 'chip' => 'Kasir',
-        'desc' => ($item->status ?? 'aktif') === 'nonaktif' ? 'Akun dinonaktifkan, tidak bisa login' : 'Bisa login ke sistem kasir',
         'tags' => $tags, 'bulat' => true, 'ikonKosong' => null,
         'lihat' => route('kasir.show', $item),
         'edit' => route('kasir.edit', $item), 'hapus' => route('kasir.destroy', $item),

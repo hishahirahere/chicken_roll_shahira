@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\SausCelup;
+use App\Http\Controllers\Concerns\CekRiwayatStokMaster;
 use App\Models\ItemPesanan;
 use Illuminate\Http\Request;
+use App\Services\StokOtomatis\SinkronFotoMaster;
 use Illuminate\Support\Facades\Storage;
 
 class SausCelupController extends Controller
 {
+    use CekRiwayatStokMaster;
+
     /**
      * Display a listing of the resource.
      */
@@ -41,6 +45,7 @@ class SausCelupController extends Controller
         }
 
         SausCelup::create($validated);
+        $this->sinkronFoto();
 
         return redirect()->route('saus_celup.index')->with('success', 'Saus Celup berhasil ditambahkan.');
     }
@@ -67,6 +72,7 @@ class SausCelupController extends Controller
        }
 
         $sausCelup->update($validated);
+        $this->sinkronFoto();
 
         return redirect() ->route('saus_celup.index') ->with('success', 'Saus Celup berhasil diperbarui.');
     }
@@ -82,11 +88,25 @@ class SausCelupController extends Controller
                 'Saus Celup "' . $sausCelup->nama_saus . '" sudah dipakai di transaksi, jadi tidak bisa dihapus.');
         }
 
+        // Sudah punya stok / riwayat stok (masuk, keluar, diberikan ke kasir) -> jangan dihapus, nonaktifkan saja.
+        if ($this->sudahPunyaJejakStok($sausCelup->bahan_baku_id ?? null)) {
+            return redirect()->route('saus_celup.index')->with('error',
+                'Saus Celup "' . $sausCelup->nama_saus . '" sudah punya stok atau riwayat stok, jadi tidak bisa dihapus. Nonaktifkan saja.');
+        }
+
         if ($sausCelup->foto) {
             Storage::disk('public')->delete($sausCelup->foto);
         }
+        $bahanBakuId = $sausCelup->bahan_baku_id ?? null;
         $sausCelup->delete();
+        $this->bersihkanBahanBakuKosong($bahanBakuId);
 
         return redirect()->route('saus_celup.index')->with('success', 'Saus Celup berhasil dihapus.');
+    }
+
+    /** Salin foto master ke bahan baku yang sudah terhubung. Item baru ikut saat Manajemen Stok dibuka. */
+    private function sinkronFoto(): void
+    {
+        SinkronFotoMaster::semua();
     }
 }
