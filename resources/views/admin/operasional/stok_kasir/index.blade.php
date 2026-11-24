@@ -126,7 +126,7 @@
                 <tr class="sk-rrow" data-kasir="{{ $k->id }}">
                   <td>
                     <div class="sk-who">
-                      <span class="sk-avatar"><i class="bi bi-person-fill"></i></span>
+                      <span class="sk-avatar" style="position:relative;overflow:hidden;aspect-ratio:1/1;min-width:38px;">@if (!empty($k->foto))<img src="{{ asset('storage/' . $k->foto) }}" alt="{{ $k->name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;max-width:none;">@else<i class="bi bi-person-fill"></i>@endif</span>
                       <div class="sk-who-text">
                         <b title="{{ $k->name }}">{{ $k->name }}</b>
                         @if (($k->status ?? 'aktif') !== 'aktif')<small class="sk-off">nonaktif</small>@endif
@@ -162,7 +162,7 @@
         <section class="sk-panel" data-kasir="{{ $k->id }}">
           <header class="sk-panel-head">
             <div class="sk-who">
-              <span class="sk-avatar"><i class="bi bi-person-fill"></i></span>
+              <span class="sk-avatar" style="position:relative;overflow:hidden;aspect-ratio:1/1;min-width:38px;">@if (!empty($k->foto))<img src="{{ asset('storage/' . $k->foto) }}" alt="{{ $k->name }}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;border-radius:50%;max-width:none;">@else<i class="bi bi-person-fill"></i>@endif</span>
               <div class="sk-who-text">
                 <b>{{ $k->name }}</b>
                 @if (($k->status ?? 'aktif') !== 'aktif')<small class="sk-off">nonaktif</small>@endif
