@@ -59,7 +59,7 @@
 .modal-header-stok { color: #fff; padding: 1.1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
 .modal-header-stok.masuk { background: linear-gradient(135deg, #15803d 0%, #22C55E 100%); }
 .modal-header-stok.keluar { background: linear-gradient(135deg, #b45309 0%, #F59E0B 100%); }
-.modal-header-stok h5 { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.modal-header-stok h5 { margin: 0; font-weight: 700; font-size: 1.05rem; color: #fff; }
 #modalStok .form-label { font-size: .85rem; font-weight: 700; color: var(--ms-text); }
 #modalStok .form-control, #modalStok .form-select, #modalStok .input-group-text { border-color: var(--ms-border); }
 #modalStok .form-control, #modalStok .form-select { border-radius: .7rem; }

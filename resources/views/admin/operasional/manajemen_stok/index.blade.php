@@ -363,7 +363,7 @@
                 <div class="pk-row" data-ukuran="{{ $u->id }}">
                   <span class="pk-foto">@if ($u->foto)<img src="{{ asset('storage/' . $u->foto) }}" alt="">@else<i class="bi bi-egg-fried"></i>@endif</span>
                   <div class="pk-nama"><b>{{ $u->nama_ukuran }}</b>
-                    <small>1 kg = {{ $st ? rtrim(rtrim(number_format($st['hasil_pcs_per_kg'], 2, '.', ''), '0'), '.') : '?' }} pcs</small></div>
+                    <small>1 kg = {{ $st ? (int) $st['hasil_pcs_per_kg'] : '?' }} pcs</small></div>
                   <div class="input-group pk-input">
                     <input type="number" step="1" min="0" name="kg[{{ $u->id }}]" value="{{ old("kg.$u->id") }}" class="form-control" placeholder="0">
                     <span class="input-group-text">kg</span>
@@ -591,7 +591,7 @@
     $paketUkuran = $ukuranPaket->map(function ($u) use ($standarPaket) {
       return [
         'id'     => $u->id,
-        'hasil'  => (float) ($standarPaket[$u->id]['hasil_pcs_per_kg'] ?? 0),
+        'hasil'  => (int) ($standarPaket[$u->id]['hasil_pcs_per_kg'] ?? 0),
       ];
     })->values()->all();
   @endphp

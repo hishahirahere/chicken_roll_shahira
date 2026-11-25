@@ -14,13 +14,13 @@ class RiwayatStok extends Model
     protected $fillable = [
         'bahan_baku_id', 'jenis', 'jumlah', 'tanggal', 'user_id',
         'supplier', 'kasir_id', 'stok_sesudah', 'keterangan',
-        'sumber', 'transaksi_id', 'produksi_id', 'rincian',
+        'sumber', 'transaksi_id', 'rincian',
     ];
 
     protected $casts = [
         'tanggal'      => 'date',
-        'jumlah'       => 'decimal:4',
-        'stok_sesudah' => 'decimal:4',
+        'jumlah'       => 'integer',
+        'stok_sesudah' => 'integer',
     ];
 
     public function bahan()

@@ -18,8 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('bahan_baku_id')->constrained('bahan_baku')->cascadeOnDelete();
-            $table->decimal('stok', 12, 4)->default(0);              // bungkus utuh / kg / liter / pcs
-            $table->decimal('sisa_porsi_aktif', 10, 2)->default(0);  // khusus bungkus: sisa porsi di bungkus berjalan
+            $table->unsignedInteger('stok')->default(0);             // filling / saus / bumbu = kali pakai; kemasan = pcs; minyak = jerigen; gas = tabung
             $table->timestamps();
             $table->unique(['user_id', 'bahan_baku_id']);
         });

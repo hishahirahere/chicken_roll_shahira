@@ -74,11 +74,10 @@ class UkuranController extends Controller
                 'Ukuran "' . $ukuran->nama_ukuran . '" sudah dipakai di transaksi, jadi tidak bisa dihapus.');
         }
 
-        // Sudah punya stok / riwayat stok (kemasan, stok kasir, produksi) -> nonaktifkan saja.
+        // Sudah punya stok / riwayat stok (kemasan, stok kasir) -> nonaktifkan saja.
         $adaJejak = $this->sudahPunyaJejakStok($ukuran->bahan_baku_id ?? null)
             || DB::table('stok_kasir_produk')->where('ukuran_id', $ukuran->id)->exists()
-            || DB::table('riwayat_stok_produk')->where('ukuran_id', $ukuran->id)->exists()
-            || DB::table('produksi_item')->where('ukuran_id', $ukuran->id)->exists();
+            || DB::table('riwayat_stok_produk')->where('ukuran_id', $ukuran->id)->exists();
         if ($adaJejak) {
             return redirect()->route('ukuran.index')->with('error',
                 'Ukuran "' . $ukuran->nama_ukuran . '" sudah punya stok atau riwayat stok, jadi tidak bisa dihapus. Nonaktifkan saja.');

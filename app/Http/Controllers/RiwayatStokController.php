@@ -25,7 +25,7 @@ class RiwayatStokController extends Controller
     {
         $request->validate([
             'jenis'         => 'nullable|in:masuk,keluar',
-            'sumber'        => 'nullable|in:manual,paket,kirim,produksi',
+            'sumber'        => 'nullable|in:manual,paket,kirim',
             'bahan_baku_id' => 'nullable|integer',
             'dari'          => 'nullable|date',
             'sampai'        => 'nullable|date',
@@ -68,9 +68,8 @@ class RiwayatStokController extends Controller
                 ->groupBy('grup');
         }
 
-        $set = $stok->pengaturan();
-        $entri = $kejadian->getCollection()->map(function ($g) use ($baris, $stok, $set) {
-            $isi = ($baris->get($g->grup) ?? collect())->each(fn ($r) => $this->siapkanTampilan($r, $stok, $set))->values();
+        $entri = $kejadian->getCollection()->map(function ($g) use ($baris, $stok) {
+            $isi = ($baris->get($g->grup) ?? collect())->each(fn ($r) => $this->siapkanTampilan($r, $stok))->values();
 
             return (object) [
                 'kunci'  => $g->grup,
@@ -110,35 +109,28 @@ class RiwayatStokController extends Controller
     }
 
     /**
-     * Angka yang tampil di layar. Aturannya:
-     *  - Penjualan bahan berbungkus (filling / saus / bumbu) ditulis dalam PORSI, bukan pecahan bungkus
-     *    (tadinya "0,0833 bungkus"; sekarang "1 porsi").
-     *  - Selain itu angka dibulatkan maksimal 3 desimal dan nol di belakang koma dibuang.
-     *  - Penjualan tidak mengubah stok gudang, jadi "stok sesudah"-nya adalah sisa di KASIR.
+     * Angka yang tampil di layar (semua bilangan bulat).
+     * Penjualan bahan berbungkus (filling / saus / bumbu) ditulis dalam kali pakai.
+     * Penjualan tidak mengubah stok gudang, jadi "stok sesudah"-nya adalah sisa di KASIR.
      */
-    private function siapkanTampilan(RiwayatStok $r, StokOtomatisService $stok, array $set): void
+    private function siapkanTampilan(RiwayatStok $r, StokOtomatisService $stok): void
     {
         $bahan  = $r->bahan;
         $satuan = $bahan->satuan ?? '';
-        $jumlah = (float) $r->jumlah;
         $penjualan = $r->sumber === 'penjualan';
 
-        $r->t_jumlah = self::angka($jumlah) . ' ' . $satuan;
-
         if ($bahan && $penjualan && $stok->bahanBerbungkus($bahan)) {
-            $kap = $stok->kapasitasBungkus($bahan, $set);
-            if ($kap > 0) {
-                $r->t_jumlah = self::angka(round($jumlah * $kap, 2)) . ' porsi';
-            }
+            $satuan = 'kali pakai';
         }
 
+        $r->t_jumlah = self::angka((int) $r->jumlah) . ' ' . $satuan;
         $r->t_sisa_label = $penjualan ? 'Sisa di kasir' : 'Stok gudang';
-        $r->t_sisa = $r->stok_sesudah === null ? null : self::angka((float) $r->stok_sesudah) . ' ' . $satuan;
+        $r->t_sisa = $r->stok_sesudah === null ? null : self::angka((int) $r->stok_sesudah) . ' ' . $satuan;
     }
 
-    /** 1.35 -> "1,35" | 12 -> "12" | 1000 -> "1.000" | 0.0833333 -> "0,083" */
-    private static function angka(float $v): string
+    /** 1000 -> "1.000" */
+    private static function angka(int $v): string
     {
-        return rtrim(rtrim(number_format($v, 3, ',', '.'), '0'), ',');
+        return number_format($v, 0, ',', '.');
     }
 }

@@ -7,8 +7,8 @@
 
   const set = cfg.set;
   const perPaket = Math.max(1, parseInt(cfg.kgPerPaket, 10) || 3);
-  const num = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
-  const fmt = (n, d = 2) => (Math.round(n * Math.pow(10, d)) / Math.pow(10, d)).toLocaleString('id-ID', { maximumFractionDigits: d });
+  const num = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
+  const fmt = (n) => Math.round(n).toLocaleString('id-ID');
   const plain = (n) => String(Math.round(n));
 
   function isiTanggal(id) {
@@ -32,12 +32,12 @@
 
     // Tepung & kemasan terkunci: selalu mengikuti jumlah paket dan ayam per ukuran
     function sinkron() {
-      const paket = Math.floor(totalKg() / perPaket + 1e-9);
+      const paket = Math.floor(totalKg() / perPaket);
       const auto = (el, v) => { if (el) el.value = v > 0 ? plain(v) : ''; };
       auto(premix, paket * num(set.paket_premix_basah_botol));
       auto(roti, paket * num(set.paket_tepung_roti_bungkus));
       cfg.ukuran.forEach((u) => {
-        auto(form.querySelector('input[name="kemasan[' + u.id + ']"]'), Math.floor(num(kgInput(u.id) ? kgInput(u.id).value : 0) * u.hasil + 1e-9));
+        auto(form.querySelector('input[name="kemasan[' + u.id + ']"]'), num(kgInput(u.id) ? kgInput(u.id).value : 0) * u.hasil);
       });
     }
 
@@ -45,12 +45,12 @@
       let kg = 0, pcs = 0;
       cfg.ukuran.forEach((u) => {
         const v = kgInput(u.id) ? num(kgInput(u.id).value) : 0;
-        const p = Math.floor(v * u.hasil + 1e-9);
+        const p = v * u.hasil;
         kg += v; pcs += p;
         const out = form.querySelector('[data-hasil="' + u.id + '"]');
         if (out) out.textContent = '= ' + p + ' pcs';
       });
-      document.getElementById('paket-total-ayam').textContent = 'Total: ' + fmt(kg, 0) + ' kg ayam · ' + pcs + ' pcs';
+      document.getElementById('paket-total-ayam').textContent = 'Total: ' + fmt(kg) + ' kg ayam · ' + pcs + ' pcs';
 
       // Cek kelipatan paket
       const cek = document.getElementById('paket-cek');
@@ -72,7 +72,7 @@
       form.querySelectorAll('[data-tepung]').forEach((row) => {
         const v = num(row.querySelector('input').value);
         const out = row.querySelector('[data-hasil-tepung]');
-        if (out) out.textContent = '= ' + fmt(v * num(row.dataset.isi || 1), 1) + ' ' + (row.dataset.unit || '');
+        if (out) out.textContent = '= ' + fmt(v * num(row.dataset.isi || 1)) + ' ' + (row.dataset.unit || '');
       });
     }
 
@@ -111,7 +111,7 @@
       fp.querySelectorAll('[data-bahan]').forEach((row) => {
         const v = num(row.querySelector('input').value);
         const out = row.querySelector('[data-hasil-bahan]');
-        if (out) out.textContent = '= ' + fmt(v * num(row.dataset.kap), 0) + ' kali pakai';
+        if (out) out.textContent = '= ' + fmt(v * num(row.dataset.kap)) + ' kali pakai';
       });
     }
 

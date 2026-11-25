@@ -43,7 +43,6 @@
             <option value="manual" @selected(request('sumber') == 'manual')>Manual</option>
             <option value="paket" @selected(request('sumber') == 'paket')>Paket ke kasir</option>
             <option value="kirim" @selected(request('sumber') == 'kirim')>Kirim minyak &amp; gas</option>
-            <option value="produksi" @selected(request('sumber') == 'produksi')>Produksi (lama)</option>
           </select>
         </div>
         <div class="col-6 col-md">
@@ -96,8 +95,8 @@
                 $sumber = $e->sumber;
                 $masuk = $e->jenis === 'masuk';
                 $namaKasir = $p->kasir->name ?? null;
-                $ikonSumber = $sumber === 'paket' ? 'bi-send-fill' : ($sumber === 'kirim' ? 'bi-fuel-pump-fill' : ($sumber === 'produksi' ? 'bi-fire' : 'bi-pencil-square'));
-                $namaSumber = ['paket' => 'Paket', 'kirim' => 'Kirim', 'produksi' => 'Produksi'][$sumber] ?? 'Manual';
+                $ikonSumber = $sumber === 'paket' ? 'bi-send-fill' : ($sumber === 'kirim' ? 'bi-fuel-pump-fill' : 'bi-pencil-square');
+                $namaSumber = ['paket' => 'Paket', 'kirim' => 'Kirim'][$sumber] ?? 'Manual';
                 $dicatat = $sumber === 'manual' ? ($p->admin->name ?? '-') : ($p->admin->name ?? 'Admin');
                 $jam = $p->created_at ? $p->created_at->format('H:i') : null;
               @endphp

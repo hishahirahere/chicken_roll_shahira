@@ -50,7 +50,7 @@
 #modalStruk .modal-content { border: 0; border-radius: 22px; overflow: hidden; }
 .st-dialog { max-width: 460px; }
 .st-head { display: flex; align-items: center; justify-content: space-between; padding: 1.05rem 1.4rem; color: #fff; background: linear-gradient(135deg, #7a1616 0%, #9c1d1d 100%); }
-.st-head h5 { margin: 0; font-weight: 700; font-size: 1.02rem; }
+.st-head h5 { margin: 0; font-weight: 700; font-size: 1.02rem; color: #fff; }
 .st-head h5 span { font-weight: 800; opacity: .9; margin-left: .25rem; }
 .st-body { background: var(--rt-soft); padding: 1.6rem 1.2rem 1.4rem; }
 .st-body .struk { max-width: 380px; margin: 12px auto; }

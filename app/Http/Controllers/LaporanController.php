@@ -273,17 +273,17 @@ class LaporanController extends Controller
             }
 
             $g = $dalam->get($b->id, collect());
-            $masuk  = (float) ($g->firstWhere('jenis', 'masuk')->total ?? 0);
-            $keluar = (float) ($g->firstWhere('jenis', 'keluar')->total ?? 0);
+            $masuk  = (int) ($g->firstWhere('jenis', 'masuk')->total ?? 0);
+            $keluar = (int) ($g->firstWhere('jenis', 'keluar')->total ?? 0);
 
             $s = $sesudah->get($b->id, collect());
-            $bersihSesudah = (float) ($s->firstWhere('jenis', 'masuk')->total ?? 0)
-                           - (float) ($s->firstWhere('jenis', 'keluar')->total ?? 0);
+            $bersihSesudah = (int) ($s->firstWhere('jenis', 'masuk')->total ?? 0)
+                           - (int) ($s->firstWhere('jenis', 'keluar')->total ?? 0);
 
-            $stokAkhir = round((float) $b->stok_saat_ini - $bersihSesudah, 3);
-            $stokAwal  = round($stokAkhir - $masuk + $keluar, 3);
+            $stokAkhir = (int) $b->stok_saat_ini - $bersihSesudah;
+            $stokAwal  = $stokAkhir - $masuk + $keluar;
 
-            $status = $stokAkhir <= 0 ? 'Habis' : ($stokAkhir <= (float) $b->stok_minimum ? 'Menipis' : 'Aman');
+            $status = $stokAkhir <= 0 ? 'Habis' : ($stokAkhir <= (int) $b->stok_minimum ? 'Menipis' : 'Aman');
 
             $baris[] = [
                 ++$no,
@@ -306,7 +306,7 @@ class LaporanController extends Controller
                 ['Stok Habis', $jumlahStatus['Habis'] ?? 0, 'angka'],
             ],
             'kolom'  => ['No', 'Bahan Baku', 'Satuan', 'Stok Awal', 'Stok Masuk', 'Stok Keluar', 'Stok Akhir', 'Status'],
-            'tipe'   => ['no', 'teks', 'teks', 'desimal', 'desimal', 'desimal', 'desimal', 'status'],
+            'tipe'   => ['no', 'teks', 'teks', 'angka', 'angka', 'angka', 'angka', 'status'],
             'baris'  => $baris,
             'kosong' => 'Belum ada data stok pada periode ini.',
             'catatan' => 'Ini stok gudang. Stok Keluar = paket ke kasir + stok keluar manual. Penjualan tidak dihitung karena memakai stok yang sudah dipegang kasir (lihat menu Stok Kasir). Stok awal & akhir dihitung dari riwayat stok pada periode terpilih.',

@@ -17,15 +17,16 @@ class BahanBakuController extends Controller
 {
     public function index()
     {
-        // Kenali bahan utama & hubungkan filling/saus/bumbu otomatis (tanpa menu pengaturan)
+        // mengenali bahan utama dan menghubungkan filling/saus/bumbu secara otomatis
         app(StokOtomatisService::class)->siapkan((int) auth()->id());
 
-        // Foto filling / saus celup / bumbu tabur diambil dari Data Master (tidak perlu diisi manual)
+        // menyamakan foto dari Data Master ke Manajemen Stok, jadi tidak diisi dua kali
         SinkronFotoMaster::semua();
 
+        //  daftar semua bahan baku untuk tabel di halaman
         $bahanBaku = BahanBaku::orderBy('nama_bahan')->get();
 
-        // Kasir aktif buat pilihan "diambil oleh" di form stok keluar
+        // pilihan kasir di form "Beri Paket" dan "Beri Bahan Pendukung" dan "Kirim Minyak & Gas"
         $kasirList = User::where('role', 'kasir')
             ->where('status', 'aktif')
             ->orderBy('name')
@@ -33,7 +34,7 @@ class BahanBakuController extends Controller
 
         // Bahan untuk form "Beri Paket"
         $svc = app(StokOtomatisService::class);
-        $set = $svc->pengaturan();
+        $set = $svc->pengaturan(); // angka pengaturan stok (kali pakai, kemasan, dan lain-lain)
         $ukuranPaket = DB::table('ukuran')->where('status', 'aktif')->orderBy('harga')->get();
         $standarPaket = $svc->standar();
         $kgPerPaket = $svc->kgPerPaket($set);
@@ -93,7 +94,7 @@ class BahanBakuController extends Controller
             'foto'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $stokAwal = round((float) ($validated['stok_awal'] ?? 0), 4);
+        $stokAwal = (int) ($validated['stok_awal'] ?? 0);
         $foto = $request->hasFile('foto') ? $request->file('foto')->store('bahan_baku', 'public') : null;
 
         DB::transaction(function () use ($validated, $stokAwal, $foto) {
@@ -204,20 +205,20 @@ class BahanBakuController extends Controller
             : [];
 
         $validated = $request->validate($rules);
-        $jumlah    = (float) $validated['jumlah'];
+        $jumlah    = (int) $validated['jumlah'];
 
         $bahan = DB::transaction(function () use ($validated, $jumlah, $masuk, $jenis) {
             $bahan = BahanBaku::lockForUpdate()->findOrFail($validated['bahan_baku_id']);
 
             // Stok keluar tidak boleh melebihi stok yang ada
-            if (! $masuk && $jumlah > (float) $bahan->stok_saat_ini) {
+            if (! $masuk && $jumlah > (int) $bahan->stok_saat_ini) {
                 throw ValidationException::withMessages([
                     'jumlah' => 'Stok ' . $bahan->nama_bahan . ' hanya tersisa ' .
                         $bahan->stok_format . ' ' . $bahan->satuan . '.',
                 ]);
             }
 
-            $stokBaru = round((float) $bahan->stok_saat_ini + ($masuk ? $jumlah : -$jumlah), 4);
+            $stokBaru = (int) $bahan->stok_saat_ini + ($masuk ? $jumlah : -$jumlah);
             $bahan->stok_saat_ini = $stokBaru;
             $bahan->sinkronStatus();
 
@@ -251,17 +252,12 @@ class BahanBakuController extends Controller
             'catatan'   => 'nullable|string|max:150',
             'kg'        => 'nullable|array',
             'kg.*'      => 'nullable|integer|min:0|max:9999',
-            'premix_basah' => 'nullable|integer|min:0|max:9999',
-            'tepung_roti'  => 'nullable|integer|min:0|max:9999',
-            'kemasan'   => 'nullable|array',
-            'kemasan.*' => 'nullable|integer|min:0|max:99999',
         ]);
 
         try {
             $hasil = $stok->beriPaketAyam(
-                (int) $v['kasir_id'], $v['tanggal'], $v['kg'] ?? [], $v['kemasan'] ?? [],
-                (int) auth()->id(), $v['catatan'] ?? null,
-                ['premix_basah' => (int) ($v['premix_basah'] ?? 0), 'tepung_roti' => (int) ($v['tepung_roti'] ?? 0)]
+                (int) $v['kasir_id'], $v['tanggal'], $v['kg'] ?? [],
+                (int) auth()->id(), $v['catatan'] ?? null
             );
         } catch (ValidationException $e) {
             return back()->withInput(array_merge($request->all(), ['_modal' => 'paket']))->withErrors($e->errors());

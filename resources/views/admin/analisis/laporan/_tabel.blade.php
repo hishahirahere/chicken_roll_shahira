@@ -3,11 +3,9 @@
   $fmt = function ($v, $t) {
       if ($t === 'rupiah') return 'Rp ' . number_format((int) $v, 0, ',', '.');
       if ($t === 'angka' && is_numeric($v)) return number_format((float) $v, 0, ',', '.');
-      // desimal: maksimal 3 angka di belakang koma, nol berlebih dibuang (12 -> "12", 1,35 -> "1,35", 1000 -> "1.000")
-      if ($t === 'desimal' && is_numeric($v)) return rtrim(rtrim(number_format((float) $v, 3, ',', '.'), '0'), ',');
       return $v;
   };
-  $rata  = fn ($t) => in_array($t, ['rupiah', 'angka', 'desimal'], true) ? 'right' : ($t === 'no' ? 'center' : 'left');
+  $rata  = fn ($t) => in_array($t, ['rupiah', 'angka'], true) ? 'right' : ($t === 'no' ? 'center' : 'left');
   $kelas = fn ($t) => $rata($t) === 'right' ? 'text-end' : ($rata($t) === 'center' ? 'text-center' : '');
 @endphp
 

@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const notifBadge = document.querySelector('#btn-notifications .navbar-action-badge');
     const clearAllBtn = document.querySelector('.btn-clear-all');
     const notifItems = document.querySelectorAll('.notification-item[data-key]');
+    const notifKosong = document.querySelector('.notification-empty-baru');
 
     if (notifList) {
         const storageKey = 'ccr_notif_dibaca_' + (notifList.dataset.user || '0');
@@ -119,12 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             notifItems.forEach(function (item) {
                 const sudah = dibaca.indexOf(item.dataset.key) !== -1;
-                const dot = item.querySelector('.notification-unread-dot');
-                if (dot) dot.style.display = sudah ? 'none' : '';
+                // Notifikasi yang sudah dibaca langsung disembunyikan dari daftar
+                item.style.display = sudah ? 'none' : '';
                 if (!sudah) belumDibaca++;
             });
 
             if (notifBadge) notifBadge.style.display = belumDibaca > 0 ? '' : 'none';
+            if (clearAllBtn) clearAllBtn.style.display = belumDibaca > 0 ? '' : 'none';
+            if (notifKosong) notifKosong.style.display = belumDibaca > 0 ? 'none' : '';
         };
 
         // Klik satu notifikasi = tandai yang itu sudah dibaca (lalu pindah halaman seperti biasa)

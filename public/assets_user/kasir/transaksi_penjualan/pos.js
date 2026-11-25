@@ -34,6 +34,73 @@
   try { cart = (JSON.parse(localStorage.getItem(KEY) || '[]') || []).filter(validItem); } catch (e) { cart = []; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} };
 
+  // ---------- stok ----------
+  // item.stok = sisa stok di tangan kasir saat halaman dibuka (null = tidak dibatasi).
+  // Jenis stok: 'ukuran' | 'filling' | 'saus' | 'bumbu'.
+  let notice = null; // pesan singkat untuk kasir (mis. stok tidak cukup)
+
+  const jenisRasa = cara => cara === 'saus_celup' ? 'saus' : 'bumbu';
+
+  // Jumlah porsi menu ini yang sudah ada di keranjang
+  function pakaiDiKeranjang(jenis, id) {
+    return cart.reduce((n, i) => {
+      const cocok = jenis === 'ukuran' ? i.ukuran_id === id
+        : jenis === 'filling' ? i.filling_id === id
+        : jenisRasa(i.cara_luar) === jenis && i.rasa_id === id;
+      return cocok ? n + i.qty : n;
+    }, 0);
+  }
+
+  // Sisa yang masih boleh ditambahkan ke pesanan (stok dikurangi yang sudah ada di keranjang)
+  function sisaStok(jenis, item) {
+    return item.stok == null ? Infinity : item.stok - pakaiDiKeranjang(jenis, item.id);
+  }
+
+  // Sisa porsi yang masih bisa dibuat untuk satu racikan (ukuran + filling + rasa), ambil yang paling sedikit
+  function sisaRacikan(i) {
+    return Math.min(
+      sisaStok('ukuran', byId(DATA.ukuran, i.ukuran_id)),
+      sisaStok('filling', byId(DATA.filling, i.filling_id)),
+      sisaStok(jenisRasa(i.cara_luar), byId(rasaList(i.cara_luar), i.rasa_id))
+    );
+  }
+
+  // Nama menu penyebab racikan tidak bisa ditambah
+  function namaKurang(i) {
+    return [
+      ['ukuran', byId(DATA.ukuran, i.ukuran_id)],
+      ['filling', byId(DATA.filling, i.filling_id)],
+      [jenisRasa(i.cara_luar), byId(rasaList(i.cara_luar), i.rasa_id)],
+    ].filter(([j, m]) => sisaStok(j, m) < 1).map(([, m]) => m.nama).join(', ');
+  }
+
+  // Keranjang lama (tersimpan di browser) bisa melebihi stok terbaru: kurangi jumlahnya, hapus kalau stok habis
+  function sesuaikanKeranjang() {
+    const dipakai = {};
+    let berubah = false;
+    cart = cart.filter(i => {
+      const kunci = [
+        ['ukuran', byId(DATA.ukuran, i.ukuran_id)],
+        ['filling', byId(DATA.filling, i.filling_id)],
+        [jenisRasa(i.cara_luar), byId(rasaList(i.cara_luar), i.rasa_id)],
+      ];
+      let maks = i.qty;
+      kunci.forEach(([j, m]) => {
+        if (m.stok != null) maks = Math.min(maks, m.stok - (dipakai[j + ':' + m.id] || 0));
+      });
+      maks = Math.max(0, maks);
+      if (maks < i.qty) berubah = true;
+      i.qty = maks;
+      kunci.forEach(([j, m]) => { dipakai[j + ':' + m.id] = (dipakai[j + ':' + m.id] || 0) + maks; });
+      return maks > 0;
+    });
+    if (berubah) {
+      notice = 'Pesanan disesuaikan dengan stok terbaru. Ada menu yang stoknya sudah habis atau berkurang.';
+      save();
+    }
+  }
+  sesuaikanKeranjang();
+
   // Jenis topping awalnya kosong: kasir memilih dulu saus celup atau bubuk tabur
   const freshDraft = () => ({ ukuran: null, filling: null, cara: null, rasa: null });
 
@@ -53,13 +120,37 @@
     return !!draft.rasa;
   }
 
+  // Pilihan yang stoknya baru saja habis (mis. terpakai pesanan lain di keranjang) tidak boleh tetap terpilih
+  function bersihkanDraft() {
+    const u = draft.ukuran && byId(DATA.ukuran, draft.ukuran);
+    const f = draft.filling && byId(DATA.filling, draft.filling);
+    const r = draft.rasa && byId(rasaList(draft.cara), draft.rasa);
+    if (u && sisaStok('ukuran', u) < 1) draft.ukuran = null;
+    if (f && sisaStok('filling', f) < 1) draft.filling = null;
+    if (r && sisaStok(jenisRasa(draft.cara), r) < 1) draft.rasa = null;
+  }
+
   // ---------- render ----------
-  function optCard(kind, item, selected, extra) {
-    return `<div class="opt-card ${selected ? 'selected' : ''}" data-act="pick" data-kind="${kind}" data-id="${item.id}" data-name="${esc(item.nama.toLowerCase())}">
+  // jenis = jenis stok menu ini ('ukuran' | 'filling' | 'saus' | 'bumbu')
+  function optCard(kind, item, selected, extra, jenis) {
+    const habis = item.stok != null && item.stok <= 0;     // stok kasir memang kosong
+    const sisa = sisaStok(jenis, item);
+    const penuh = !habis && sisa <= 0;                      // stok ada, tapi semuanya sudah masuk pesanan
+    const kunci = habis || penuh;
+
+    let badge = '';
+    if (habis) badge = '<div class="opt-stok habis"><i class="bi bi-slash-circle"></i> Stok habis</div>';
+    else if (penuh) badge = '<div class="opt-stok habis"><i class="bi bi-slash-circle"></i> Semua sudah di pesanan</div>';
+    else if (item.stok != null && sisa <= 10) badge = `<div class="opt-stok low"><i class="bi bi-exclamation-triangle-fill"></i> Sisa ${sisa}</div>`;
+
+    // Kartu yang habis tidak punya data-act, jadi klik tidak melakukan apa pun
+    const aksi = kunci ? 'aria-disabled="true"' : `data-act="pick" data-kind="${kind}" data-id="${item.id}"`;
+    return `<div class="opt-card ${selected ? 'selected' : ''} ${kunci ? 'habis' : ''}" ${aksi} data-name="${esc(item.nama.toLowerCase())}">
       <span class="check"><i class="bi bi-check-lg"></i></span>
       ${img(item.foto, 'bi-image', 'opt-img')}
       <div class="opt-name">${esc(item.nama)}</div>
       ${extra || ''}
+      ${badge}
     </div>`;
   }
 
@@ -79,10 +170,10 @@
 
     if (page === 1) {
       head = secHead('bi-rulers', 'Pilih Ukuran', 'Tentukan ukuran chicken roll yang diinginkan.', u && u.nama);
-      body = `<div class="opt-grid">${DATA.ukuran.map(x => optCard('ukuran', x, draft.ukuran === x.id, `<div class="opt-price">${rp(x.harga)}</div>`)).join('')}</div>`;
+      body = `<div class="opt-grid">${DATA.ukuran.map(x => optCard('ukuran', x, draft.ukuran === x.id, `<div class="opt-price">${rp(x.harga)}</div>`, 'ukuran')).join('')}</div>`;
     } else if (page === 2) {
       head = secHead('bi-egg-fried', 'Pilih Filling', 'Pilih isian di dalam chicken roll.', f && f.nama);
-      body = `<div class="opt-grid compact">${DATA.filling.map(x => optCard('filling', x, draft.filling === x.id)).join('')}</div>`;
+      body = `<div class="opt-grid compact">${DATA.filling.map(x => optCard('filling', x, draft.filling === x.id, '', 'filling')).join('')}</div>`;
     } else if (!draft.cara) {
       // Langkah 3a: pilih jenis topping dulu
       head = secHead('bi-droplet-fill', 'Pilih Topping Luar', 'Mau pakai saus celup atau bubuk tabur?', null);
@@ -110,7 +201,7 @@
       const list = rasaList(draft.cara);
       head = secHead('bi-droplet-fill', 'Pilih Rasa ' + caraLabel(draft.cara), 'Pilih rasa yang diinginkan.', r && (caraLabel(draft.cara) + ': ' + r.nama));
       body = `<div class="seg">${tabs}</div>` + (list.length
-        ? `<div class="opt-grid compact">${list.map(x => optCard('rasa', x, draft.rasa === x.id)).join('')}</div>`
+        ? `<div class="opt-grid compact">${list.map(x => optCard('rasa', x, draft.rasa === x.id, '', jenisRasa(draft.cara))).join('')}</div>`
         : `<div class="none-note">Belum ada pilihan untuk ${caraLabel(draft.cara)}.</div>`);
     }
 
@@ -141,7 +232,7 @@
           <div class="qty-box">
             <button type="button" class="qty-btn" data-act="qty" data-i="${idx}" data-d="-1">&minus;</button>
             <span class="qty-num">${i.qty}</span>
-            <button type="button" class="qty-btn" data-act="qty" data-i="${idx}" data-d="1">+</button>
+            <button type="button" class="qty-btn" data-act="qty" data-i="${idx}" data-d="1" ${sisaRacikan(i) < 1 ? 'disabled title="Stok tidak cukup untuk ditambah"' : ''}>+</button>
           </div>
           <button type="button" class="op-remove" title="Hapus" data-act="remove" data-i="${idx}"><i class="bi bi-trash-fill"></i> Hapus</button>
         </div>
@@ -195,11 +286,13 @@
   }
 
   function render() {
+    bersihkanDraft();
     root.innerHTML = `
       <div class="pos-head">
         <h1>Transaksi Penjualan</h1>
         <p>Pilih menu satu per satu, lalu tambahkan ke pesanan.</p>
       </div>
+      ${notice ? `<div class="pos-notice"><i class="bi bi-exclamation-triangle-fill"></i><span>${esc(notice)}</span></div>` : ''}
       <div class="row g-4">
         <div class="col-lg-8">${stageHTML()}</div>
         <div class="col-lg-4">${panelHTML()}</div>
@@ -220,6 +313,11 @@
 
   function addDraftToCart() {
     const item = { ukuran_id: draft.ukuran, filling_id: draft.filling, cara_luar: draft.cara, rasa_id: draft.rasa, qty: 1 };
+    // Stok tidak cukup: racikan TIDAK boleh masuk ke pesanan
+    if (sisaRacikan(item) < 1) {
+      notice = 'Stok ' + namaKurang(item) + ' habis, tidak bisa ditambahkan ke pesanan.';
+      return false;
+    }
     const sameIdx = cart.findIndex(i => i.ukuran_id === item.ukuran_id && i.filling_id === item.filling_id && i.cara_luar === item.cara_luar && i.rasa_id === item.rasa_id);
     if (sameIdx >= 0) {
       cart[sameIdx].qty = Math.min(50, cart[sameIdx].qty + 1);
@@ -230,6 +328,7 @@
     }
     save();
     draft = freshDraft();
+    return true;
   }
 
   // ---------- klik ----------
@@ -237,6 +336,7 @@
     const el = e.target.closest('[data-act]');
     if (!el) return;
     const act = el.dataset.act;
+    notice = null;
 
     if (act === 'pick') {
       const kind = el.dataset.kind;
@@ -252,9 +352,10 @@
       if (!canNext()) return;
       if (page < 3) {
         go(page + 1);
-      } else {
-        addDraftToCart();
+      } else if (addDraftToCart()) {
         go(1); // selesai satu racikan: kembali ke Ukuran untuk pesanan berikutnya
+      } else {
+        render(); // stok tidak cukup: tetap di halaman ini, tampilkan pesan
       }
     } else if (act === 'prev') {
       if (page === 3 && draft.cara) { draft.cara = null; draft.rasa = null; render(); } // balik ke pilihan jenis
@@ -267,6 +368,10 @@
       if (p) p.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (act === 'qty') {
       const i = parseInt(el.dataset.i, 10), d = parseInt(el.dataset.d, 10);
+      if (d > 0 && sisaRacikan(cart[i]) < 1) {
+        notice = 'Stok ' + namaKurang(cart[i]) + ' habis, jumlah tidak bisa ditambah.';
+        render(); return;
+      }
       cart[i].qty = Math.min(50, cart[i].qty + d);
       if (cart[i].qty <= 0) cart.splice(i, 1);
       save(); render();

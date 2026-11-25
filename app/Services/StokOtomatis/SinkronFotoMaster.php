@@ -4,14 +4,7 @@ namespace App\Services\StokOtomatis;
 
 use Illuminate\Support\Facades\DB;
 
-/**
- * Foto Filling, Saus Celup, dan Bumbu Tabur disimpan di tabel masternya (kolom foto),
- * sedangkan Manajemen Stok membaca dari tabel bahan_baku. Class ini menyalin PATH foto
- * dari master ke bahan_baku yang terhubung (bahan_baku_id), jadi foto tidak perlu diisi dua kali.
- *
- * Yang disalin hanya path-nya, file gambarnya tetap satu. Master yang tidak punya foto
- * tidak menimpa foto manual yang sudah ada di bahan baku.
- */
+// Menyamakan foto dari Data Master ke Manajemen Stok, jadi tidak diisi dua kali.
 class SinkronFotoMaster
 {
     private const TABEL_MASTER = ['filling', 'saus_celup', 'bumbu_tabur'];

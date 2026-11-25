@@ -316,6 +316,13 @@
                                     Tidak ada notifikasi. Semua stok aman.
                                 </div>
                             @endforelse
+                            @if ($notifikasi->isNotEmpty())
+                                {{-- Muncul lewat JS kalau semua notifikasi sudah dibaca --}}
+                                <div class="notification-empty notification-empty-baru" style="display:none">
+                                    <i class="bi bi-bell-slash"></i>
+                                    Tidak ada notifikasi baru.
+                                </div>
+                            @endif
                         </div>
                         <a href="{{ route('bahan_baku.index') }}" class="notification-footer">Lihat Manajemen Stok</a>
                     </div>

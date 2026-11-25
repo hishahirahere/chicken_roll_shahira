@@ -21,18 +21,25 @@ class PosController extends Controller
     {
         $foto = fn ($m) => !empty($m->foto) ? asset('storage/' . $m->foto) : null;
 
+        // Sisa stok di tangan kasir yang sedang login (null = tidak dibatasi). Dipakai browser untuk mengunci menu yang habis.
+        $stok = app(StokOtomatisService::class)->ketersediaanKasir((int) auth()->id());
+
         $data = [
             'ukuran' => Ukuran::where('status', 'aktif')->orderBy('harga')->get()->map(fn ($m) => [
                 'id' => $m->id, 'nama' => $m->nama_ukuran ?? $m->nama, 'harga' => (int) $m->harga, 'foto' => $foto($m),
+                'stok' => $stok['ukuran'][$m->id] ?? 0,
             ])->values(),
             'filling' => Filling::where('status', 'aktif')->orderBy('nama_filling')->get()->map(fn ($m) => [
                 'id' => $m->id, 'nama' => $m->nama_filling, 'foto' => $foto($m),
+                'stok' => $stok['filling'][$m->id] ?? null,
             ])->values(),
             'saus' => SausCelup::where('status', 'aktif')->orderBy('nama_saus')->get()->map(fn ($m) => [
                 'id' => $m->id, 'nama' => $m->nama_saus, 'foto' => $foto($m),
+                'stok' => $stok['saus'][$m->id] ?? null,
             ])->values(),
             'bumbu' => BumbuTabur::where('status', 'aktif')->orderBy('nama_bumbu')->get()->map(fn ($m) => [
                 'id' => $m->id, 'nama' => $m->nama_bumbu, 'foto' => $foto($m),
+                'stok' => $stok['bumbu'][$m->id] ?? null,
             ])->values(),
         ];
 
@@ -101,6 +108,10 @@ class PosController extends Controller
                         ];
                     }
                 }
+
+                // Stok habis / tidak cukup -> transaksi DITOLAK (belum ada yang tersimpan, jadi tidak perlu dibatalkan).
+                // Dicek di server juga, bukan hanya di layar, supaya tetap aman walau stok baru berubah atau halaman lama masih terbuka.
+                app(StokOtomatisService::class)->pastikanStokCukup((int) auth()->id(), $baris);
 
                 // Uang tunai yang diterima (kalau diisi) harus cukup
                 if ($v['metode_bayar'] === 'cash' && isset($v['uang_diterima']) && $v['uang_diterima'] > 0 && $v['uang_diterima'] < $total) {

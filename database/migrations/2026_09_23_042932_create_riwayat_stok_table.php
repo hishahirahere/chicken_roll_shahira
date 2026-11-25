@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('bahan_baku_id')->constrained('bahan_baku')->cascadeOnDelete();
             $table->enum('jenis', ['masuk', 'keluar']);
-            $table->decimal('jumlah', 10, 2);
+            $table->unsignedInteger('jumlah');
             $table->date('tanggal');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('keterangan')->nullable();

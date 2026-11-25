@@ -23,6 +23,13 @@
     var status = baca('status') || 'semua';
     var kategori = baca('kategori') || 'semua';
 
+    // Datang dari notifikasi lonceng (?kasir=ID&status=...): langsung buka kasir itu
+    try {
+      var qs = new URLSearchParams(location.search);
+      if (qs.get('kasir')) kasir = qs.get('kasir');
+      if (qs.get('status')) status = qs.get('status');
+    } catch (e) {}
+
     // Pulihkan pilihan terakhir (kalau kasirnya masih ada)
     if (pilihKasir) {
       if (!Array.prototype.some.call(pilihKasir.options, function (o) { return o.value === kasir; })) kasir = 'semua';

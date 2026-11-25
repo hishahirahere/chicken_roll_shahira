@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_bahan', 50);
             $table->string('satuan', 20);
-            $table->decimal('stok_saat_ini', 10, 2)->default(0);
+            $table->unsignedInteger('stok_saat_ini')->default(0);
             $table->enum('status_stok', ['aman', 'menipis', 'habis'])->default('aman');
             $table->timestamps();
         });

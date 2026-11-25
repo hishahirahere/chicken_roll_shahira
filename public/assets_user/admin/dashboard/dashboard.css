@@ -57,7 +57,7 @@
 #modalFavorit .modal-content { border: 0; border-radius: 20px; overflow: hidden; }
 .modal-backdrop.show { opacity: .35; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .fm-header { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; color: #fff; background: linear-gradient(135deg, #7f1717 0%, #9c1d1d 100%); }
-.fm-header h5 { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.fm-header h5 { margin: 0; font-weight: 700; font-size: 1.05rem; color: #fff; }
 .fm-body { display: flex; gap: 1.5rem; padding: 1.5rem; align-items: flex-start; }
 .fm-photo { flex: none; width: 240px; aspect-ratio: 1 / 1; border-radius: 1rem; overflow: hidden; background: #fbf3ec; border: 1px solid var(--border-light, #F0E4D3); }
 .fm-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }

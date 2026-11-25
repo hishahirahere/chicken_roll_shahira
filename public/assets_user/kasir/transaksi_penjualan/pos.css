@@ -153,7 +153,7 @@
 /* ---------- Modal bayar ---------- */
 .modal-content { border-radius: 24px; border: 0; overflow: hidden; }
 .modal-head-pay { background: linear-gradient(135deg, #7a1616 0%, #9c1d1d 100%); color: #fff; padding: 1.15rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-.modal-head-pay h5 { margin: 0; font-weight: 800; font-size: 1.05rem; }
+.modal-head-pay h5 { margin: 0; font-weight: 800; font-size: 1.05rem; color: #fff; }
 .pay-total { background: var(--pos-cream); border-radius: 18px; text-align: center; padding: 1rem; margin-bottom: 1.1rem; }
 .pay-total-k { font-size: .78rem; font-weight: 700; color: var(--pos-muted); }
 .pay-total-v { font-size: 2.1rem; font-weight: 800; color: var(--pos-red); line-height: 1.15; }
@@ -167,3 +167,15 @@
 .quick-cash button { border: 1px solid var(--pos-line); background: #fff; border-radius: 50rem; padding: .3rem .8rem; font-size: .78rem; font-weight: 700; cursor: pointer; }
 .quick-cash button:hover { border-color: var(--pos-red); color: var(--pos-red); }
 .kembalian-box { background: var(--pos-cream); border-radius: 14px; padding: .75rem 1rem; display: flex; justify-content: space-between; font-weight: 700; margin-top: .6rem; }
+
+/* ---- Stok habis: menu tidak bisa dipilih ---- */
+.opt-card.habis { cursor: not-allowed; background: #f3f3f3; border-style: dashed; border-color: #cfcfcf; box-shadow: none; }
+.opt-card.habis:hover, .opt-card.habis:active { transform: none; box-shadow: none; border-color: #cfcfcf; }
+.opt-card.habis .opt-img, .opt-card.habis img { filter: grayscale(1); opacity: .45; }
+.opt-card.habis .opt-name { color: #8a8a8a; text-decoration: line-through; }
+.opt-card.habis .opt-price { background: #e6e6e6; color: #8a8a8a; }
+.opt-stok { display: inline-flex; align-items: center; gap: .3rem; margin-top: .45rem; padding: .2rem .65rem; border-radius: 50rem; font-size: .75rem; font-weight: 800; }
+.opt-stok.habis { background: #e5e5e5; color: #6b6b6b; }
+.opt-stok.low { background: #fff1cf; color: #8a5a00; }
+.qty-btn:disabled { opacity: .35; cursor: not-allowed; }
+.pos-notice { display: flex; align-items: flex-start; gap: .6rem; margin-bottom: 1rem; padding: .75rem 1rem; border-radius: 14px; background: #fff1cf; color: #7a4d00; font-weight: 700; font-size: .9rem; }

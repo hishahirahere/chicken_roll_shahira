@@ -35,8 +35,26 @@ document.addEventListener('DOMContentLoaded', function () {
         status = st;
         tombol.forEach(function (x) { x.classList.toggle('on', x === tombolSt); });
       }
+      // Datang dari notifikasi lonceng (?grup=...&status=...): buka tab & filter yang diminta,
+      // mengalahkan tab terakhir yang tersimpan.
+      const qs = new URLSearchParams(location.search);
+      const grupUrl = qs.get('grup');
+      const statusUrl = qs.get('status');
+      const dariNotif = !!(grupUrl || statusUrl);
+      const tabUrl = Array.from(tabGrup).find(function (t) { return t.dataset.grup === grupUrl; });
+      if (tabUrl) {
+        grup = tabUrl.dataset.grup;
+        simpan('grup', grup);
+        tabGrup.forEach(function (x) { x.classList.toggle('on', x === tabUrl); });
+      }
+      const tombolUrl = Array.from(tombol).find(function (b) { return b.dataset.filter === statusUrl; });
+      if (tombolUrl) {
+        status = statusUrl;
+        simpan('status', status);
+        tombol.forEach(function (x) { x.classList.toggle('on', x === tombolUrl); });
+      }
       document.addEventListener('submit', function () { simpan('scroll', String(window.scrollY)); });
-      const y = parseInt(baca('scroll') || '', 10);
+      const y = dariNotif ? NaN : parseInt(baca('scroll') || '', 10);
       if (!isNaN(y)) {
         try { sessionStorage.removeItem(simpanKey + ':scroll'); } catch (e) {}
         window.addEventListener('load', function () { window.scrollTo(0, y); });

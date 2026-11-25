@@ -10,7 +10,7 @@ return new class extends Migration
     {
         // Batas minimum stok: kalau stok <= angka ini, status jadi "menipis"
         Schema::table('bahan_baku', function (Blueprint $table) {
-            $table->decimal('stok_minimum', 10, 2)->default(0)->after('stok_saat_ini');
+            $table->unsignedInteger('stok_minimum')->default(0)->after('stok_saat_ini');
         });
 
         Schema::table('riwayat_stok', function (Blueprint $table) {
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('kasir_id')->nullable()->after('supplier')
                 ->constrained('users')->nullOnDelete();
             // Snapshot stok setelah transaksi ini (buat audit)
-            $table->decimal('stok_sesudah', 10, 2)->nullable()->after('kasir_id');
+            $table->unsignedInteger('stok_sesudah')->nullable()->after('kasir_id');
         });
     }
 

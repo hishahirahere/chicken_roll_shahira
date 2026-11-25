@@ -134,7 +134,7 @@
   {{-- ===== RIWAYAT: semua pergerakan stok, per jenis ===== --}}
   <div id="pane-riwayat" data-pane-body="riwayat" hidden>
     @php
-      $fmtR = fn ($v) => rtrim(rtrim(number_format((float) $v, 2, ',', '.'), '0'), ',');
+      $fmtR = fn ($v) => number_format((int) $v, 0, ',', '.');
       $tabRiwayat = ['produk' => 'Produk Siap Jual', 'filling' => 'Filling', 'saus' => 'Saus Celup', 'bumbu' => 'Bumbu Tabur', 'kemasan' => 'Kemasan', 'manual' => 'Minyak & Gas'];
       $dataRiwayat = [];
       foreach ($riwayat as $r) {
@@ -219,7 +219,7 @@
         @foreach (['minyak' => ['Minyak goreng', 'bi-droplet-half', 'jerigen'], 'gas' => ['Gas LPG', 'bi-fire', 'tabung']] as $peran => [$namaMg, $ikMg, $satDef])
           @php
             $mg = $manual[$peran] ?? null;
-            $stokMg = $mg ? (float) $mg->jumlah : 0;
+            $stokMg = $mg ? (int) $mg->jumlah : 0;
             $kosong = $stokMg <= 0;
             $aktif = $aktifPer[$peran] ?? null;
             $satMg = $mg->satuan ?? $satDef;

@@ -42,6 +42,20 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $urlStok  = Route::has('bahan_baku.index') ? route('bahan_baku.index') : '#';
+
+            // Tab Manajemen Stok untuk satu bahan (harus sama dengan pengelompokan di halaman Manajemen Stok)
+            $grupBahan = function ($b) {
+                $nama = strtolower($b->nama_bahan);
+                return match (true) {
+                    $b->peran === 'filling', str_contains($nama, 'filling') => 'filling',
+                    $b->peran === 'saus', str_contains($nama, 'saus') => 'saus',
+                    $b->peran === 'bumbu', str_contains($nama, 'bumbu'), str_contains($nama, 'tabur') => 'bumbu',
+                    in_array($b->peran, ['minyak', 'gas', 'kemasan'], true),
+                    str_contains($nama, 'minyak'), str_contains($nama, 'gas'), str_contains($nama, 'lpg'),
+                    str_contains($nama, 'kemasan'), str_contains($nama, 'dus'), str_contains($nama, 'box') => 'operasional',
+                    default => 'utama',
+                };
+            };
             $urlKasir = Route::has('kasir.index') ? route('kasir.index') : '#';
 
             // 0. Permintaan minyak / gas dari kasir (paling penting, tampil paling atas)
@@ -57,12 +71,12 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             }
 
-            // 0b. Kasir mencatat pemakaian minyak / gas (pemberitahuan ke admin, 2 hari terakhir)
+            // 0b. Kasir mencatat pemakaian minyak / gas (pemberitahuan ke admin, 1 hari terakhir)
             try {
                 $pemakaianBaru = \Illuminate\Support\Facades\DB::table('pemakaian_kasir as m')
                     ->join('users as k', 'k.id', '=', 'm.user_id')
                     ->join('bahan_baku as b', 'b.id', '=', 'm.bahan_baku_id')
-                    ->where('m.created_at', '>=', now()->subDays(2))->orderByDesc('m.id')->limit(3)
+                    ->where('m.created_at', '>=', now()->subDay())->orderByDesc('m.id')->limit(3)
                     ->select('m.id', 'm.user_id', 'm.jumlah', 'm.created_at', 'k.name as kasir', 'b.nama_bahan', 'b.satuan')->get();
             } catch (\Throwable $e) {
                 $pemakaianBaru = collect();
@@ -97,7 +111,10 @@ class AppServiceProvider extends ServiceProvider
                     'sorot' => $b->nama_bahan,
                     'akhir' => $habis ? '' : ' (sisa ' . $b->stok_format . ' ' . $b->satuan . ')',
                     'waktu' => optional($b->updated_at)->locale('id')->diffForHumans(),
-                    'url'   => $urlStok,
+                    // langsung ke tab bahan itu + filter menipis / habis
+                    'url'   => Route::has('bahan_baku.index')
+                        ? route('bahan_baku.index', ['grup' => $grupBahan($b), 'status' => $habis ? 'habis' : 'menipis'])
+                        : '#',
                 ]);
             }
 
@@ -119,7 +136,10 @@ class AppServiceProvider extends ServiceProvider
                             'sorot' => $b->nama,
                             'akhir' => '',
                             'waktu' => null,
-                            'url'   => $urlStok,
+                            // stok yang dipegang kasir ada di halaman Stok Kasir
+                            'url'   => Route::has('stok.kasir')
+                                ? route('stok.kasir', ['kasir' => $kasirStok->id, 'status' => $habis ? 'habis' : 'menipis'])
+                                : $urlStok,
                         ]);
                     }
                 }
@@ -127,9 +147,9 @@ class AppServiceProvider extends ServiceProvider
                 // tabel stok_kasir belum dimigrasi: lewati saja
             }
 
-            // 2. Akun kasir yang dibuat dalam 7 hari terakhir
+            // 2. Akun kasir yang dibuat dalam 2 hari terakhir
             $kasirBaru = User::where('role', 'kasir')
-                ->where('created_at', '>=', now()->subDays(7))
+                ->where('created_at', '>=', now()->subDays(2))
                 ->latest()
                 ->limit(3)
                 ->get();
