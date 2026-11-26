@@ -20,7 +20,7 @@ class PosController extends Controller
     {
         $foto = fn ($m) => !empty($m->foto) ? asset('storage/' . $m->foto) : null;
 
-        // Sisa stok di tangan kasir yang sedang login (null = tidak dibatasi). 
+        // Sisa stok di tangan kasir yang sedang login (null = tidak dibatasi).
         $stok = app(PenjualanStokService::class)->ketersediaanKasir((int) auth()->id());
 
         $data = [
