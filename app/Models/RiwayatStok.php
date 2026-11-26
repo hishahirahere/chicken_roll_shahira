@@ -28,13 +28,13 @@ class RiwayatStok extends Model
         return $this->belongsTo(BahanBaku::class, 'bahan_baku_id');
     }
 
-    /** Admin yang mencatat */
+    // Admin yang mencatat
     public function admin()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /** Kasir yang mengambil bahan (khusus stok keluar) */
+    //Kasir yang mengambil bahan (khusus stok keluar) 
     public function kasir()
     {
         return $this->belongsTo(User::class, 'kasir_id');

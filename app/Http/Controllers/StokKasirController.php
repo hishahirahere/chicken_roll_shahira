@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\MinyakGasService;
+use App\Services\StokOtomatis\StokKasirQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,21 +15,21 @@ use Illuminate\Validation\ValidationException;
  */
 class StokKasirController extends Controller
 {
-    public function index(StokOtomatisService $stok)
+    public function index(StokKasirQuery $query, MinyakGasService $minyakGas)
     {
         $id = (int) auth()->id();
-        $item = $stok->stokKasirUntuk($id);
+        $item = $query->stokKasirUntuk($id);
 
         return view('kasir.stok.index', [
             'item'    => $item,
-            'porsi'   => $stok->porsiKirim(),
+            'porsi'   => $minyakGas->porsiKirim(),
             'ringkas' => [
                 'aman'    => $item->where('status', 'aman')->count(),
                 'menipis' => $item->where('status', 'menipis')->count(),
                 'habis'   => $item->where('status', 'habis')->count(),
             ],
-            'riwayat' => $stok->riwayatProduk($id, 60),
-            'riwayatBahan' => $stok->riwayatBahanKasir($id, 60),
+            'riwayat' => $query->riwayatProduk($id, 60),
+            'riwayatBahan' => $query->riwayatBahanKasir($id, 60),
             'manual'  => $item->where('kategori', 'manual')->keyBy('peran'),
             'permintaanAktif' => DB::table('permintaan_stok as p')->join('bahan_baku as b', 'b.id', '=', 'p.bahan_baku_id')
                 ->where('p.kasir_id', $id)->whereIn('p.status', ['diminta', 'dikirim'])
@@ -40,7 +41,7 @@ class StokKasirController extends Controller
     }
 
     /** Kasir mencatat pemakaian manual hari ini (minyak / gas). */
-    public function catatPemakaian(Request $request, StokOtomatisService $stok)
+    public function catatPemakaian(Request $request, MinyakGasService $minyakGas)
     {
         $this->khususKasir();
         $v = $request->validate([
@@ -50,7 +51,7 @@ class StokKasirController extends Controller
         ]);
 
         try {
-            $hasil = $stok->catatPemakaian((int) auth()->id(), ['minyak' => $v['minyak'] ?? 0, 'gas' => $v['gas'] ?? 0], now()->toDateString(), $v['catatan'] ?? null);
+            $hasil = $minyakGas->catatPemakaian((int) auth()->id(), ['minyak' => $v['minyak'] ?? 0, 'gas' => $v['gas'] ?? 0], now()->toDateString(), $v['catatan'] ?? null);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
@@ -60,7 +61,7 @@ class StokKasirController extends Controller
     }
 
     /** Kasir minta minyak / gas ke admin. */
-    public function minta(Request $request, StokOtomatisService $stok)
+    public function minta(Request $request, MinyakGasService $minyakGas)
     {
         $this->khususKasir();
         $v = $request->validate([
@@ -76,7 +77,7 @@ class StokKasirController extends Controller
         }
 
         try {
-            $stok->buatPermintaan((int) auth()->id(), $jumlah, $v['catatan'] ?? null);
+            $minyakGas->buatPermintaan((int) auth()->id(), $jumlah, $v['catatan'] ?? null);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
@@ -85,13 +86,13 @@ class StokKasirController extends Controller
     }
 
     /** Kasir mengonfirmasi minyak / gas sudah diterima (baru di sini stok gudang berkurang). */
-    public function terima(Request $request, int $id, StokOtomatisService $stok)
+    public function terima(Request $request, int $id, MinyakGasService $minyakGas)
     {
         $this->khususKasir();
         $v = $request->validate(['diterima' => 'required|integer|min:1|max:99999']);
 
         try {
-            $stok->konfirmasiTerima($id, (int) auth()->id(), (int) $v['diterima']);
+            $minyakGas->konfirmasiTerima($id, (int) auth()->id(), (int) $v['diterima']);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());
         }
@@ -99,12 +100,12 @@ class StokKasirController extends Controller
         return back()->with('success', 'Terima kasih, stok minyak/gas kamu sudah ditambah.');
     }
 
-    public function batal(int $id, StokOtomatisService $stok)
+    public function batal(int $id, MinyakGasService $minyakGas)
     {
         $this->khususKasir();
 
         try {
-            $stok->batalPermintaan($id, (int) auth()->id(), false);
+            $minyakGas->batalPermintaan($id, (int) auth()->id(), false);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());
         }

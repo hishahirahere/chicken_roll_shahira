@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\StokKasirQuery;
 
 /**
  * Halaman admin "Stok Kasir": memantau stok yang sedang dipegang tiap kasir
@@ -11,15 +11,15 @@ use App\Services\StokOtomatis\StokOtomatisService;
  */
 class StokKasirAdminController extends Controller
 {
-    public function index(StokOtomatisService $stok)
+    public function index(StokKasirQuery $query)
     {
-        $daftarKasir = $stok->stokKasirSemua()->map(function ($kasir) use ($stok) {
+        $daftarKasir = $query->stokKasirSemua()->map(function ($kasir) use ($query) {
             $kasir->ringkas = [
                 'aman'    => $kasir->bahan->where('status', 'aman')->count(),
                 'menipis' => $kasir->bahan->where('status', 'menipis')->count(),
                 'habis'   => $kasir->bahan->where('status', 'habis')->count(),
             ];
-            $kasir->riwayat = $stok->riwayatProduk((int) $kasir->id, 8);
+            $kasir->riwayat = $query->riwayatProduk((int) $kasir->id, 8);
 
             return $kasir;
         });

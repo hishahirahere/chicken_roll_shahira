@@ -29,7 +29,6 @@
   @php
     // Modal dibuka otomatis kalau: ada error validasi (old) atau datang dari menu (?aksi=masuk|keluar)
     $jenisAwal = old('_modal', request('aksi'));
-    $svc = app(\App\Services\StokOtomatis\StokOtomatisService::class);
     $paketTerbuka = old('_modal') === 'paket' || request('aksi') === 'paket';
     $pendukungTerbuka = old('_modal') === 'pendukung' || request('aksi') === 'pendukung';
     $kirimTerbuka = old('_modal') === 'kirim' || request('aksi') === 'kirim';

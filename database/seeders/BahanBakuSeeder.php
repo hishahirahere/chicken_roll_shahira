@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\DataAwalStokService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -51,7 +51,7 @@ class BahanBakuSeeder extends Seeder
                 ->update(['bahan_baku_id' => $bahanId]);
         }
 
-        app(StokOtomatisService::class)->segarkanSemuaStatus();
+        app(DataAwalStokService::class)->segarkanSemuaStatus();
     }
 
     private function buatBahan(string $nama, string $satuan, string $peran, int $stok, int $min, ?int $adminId): int

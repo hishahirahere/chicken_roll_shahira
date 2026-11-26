@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\MinyakGasService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -33,12 +33,12 @@ class PermintaanStokController extends Controller
         return view('admin.operasional.permintaan_stok.index', compact('diminta', 'dikirim', 'selesai', 'pemakaian'));
     }
 
-    public function kirim(Request $request, int $id, StokOtomatisService $stok)
+    public function kirim(Request $request, int $id, MinyakGasService $minyakGas)
     {
         $v = $request->validate(['jumlah' => 'required|integer|min:1|max:99999']);
 
         try {
-            $stok->kirimPermintaan($id, (int) $v['jumlah'], (int) auth()->id());
+            $minyakGas->kirimPermintaan($id, (int) $v['jumlah'], (int) auth()->id());
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput(['aksi_id' => $id]);
         }
@@ -46,10 +46,10 @@ class PermintaanStokController extends Controller
         return back()->with('success', 'Ditandai sudah dikirim. Stok gudang akan berkurang setelah kasir mengonfirmasi barangnya diterima.');
     }
 
-    public function batal(int $id, StokOtomatisService $stok)
+    public function batal(int $id, MinyakGasService $minyakGas)
     {
         try {
-            $stok->batalPermintaan($id, (int) auth()->id(), true);
+            $minyakGas->batalPermintaan($id, (int) auth()->id(), true);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors());
         }

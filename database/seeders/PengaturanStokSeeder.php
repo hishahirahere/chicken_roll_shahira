@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\DataAwalStokService;
 use Illuminate\Database\Seeder;
 
 class PengaturanStokSeeder extends Seeder
@@ -12,6 +12,6 @@ class PengaturanStokSeeder extends Seeder
     {
         $adminId = User::where('role', 'admin')->value('id');
 
-        app(StokOtomatisService::class)->isiDataAwal($adminId);
+        app(DataAwalStokService::class)->isiDataAwal($adminId);
     }
 }

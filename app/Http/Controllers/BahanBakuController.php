@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\BahanBaku;
 use App\Models\RiwayatStok;
 use App\Models\User;
+use App\Services\StokOtomatis\DataAwalStokService;
+use App\Services\StokOtomatis\MinyakGasService;
+use App\Services\StokOtomatis\PaketKasirService;
+use App\Services\StokOtomatis\PengaturanStokService;
 use App\Services\StokOtomatis\SinkronFotoMaster;
-use App\Services\StokOtomatis\StokOtomatisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +21,7 @@ class BahanBakuController extends Controller
     public function index()
     {
         // mengenali bahan utama dan menghubungkan filling/saus/bumbu secara otomatis
-        app(StokOtomatisService::class)->siapkan((int) auth()->id());
+        app(DataAwalStokService::class)->siapkan((int) auth()->id());
 
         // menyamakan foto dari Data Master ke Manajemen Stok, jadi tidak diisi dua kali
         SinkronFotoMaster::semua();
@@ -33,11 +36,13 @@ class BahanBakuController extends Controller
             ->get();
 
         // Bahan untuk form "Beri Paket"
-        $svc = app(StokOtomatisService::class);
-        $set = $svc->pengaturan(); // angka pengaturan stok (kali pakai, kemasan, dan lain-lain)
+        $pengaturanStok = app(PengaturanStokService::class);
+        $paketKasir     = app(PaketKasirService::class);
+        $minyakGas      = app(MinyakGasService::class);
+        $set = $pengaturanStok->pengaturan(); // angka pengaturan stok (kali pakai, kemasan, dan lain-lain)
         $ukuranPaket = DB::table('ukuran')->where('status', 'aktif')->orderBy('harga')->get();
-        $standarPaket = $svc->standar();
-        $kgPerPaket = $svc->kgPerPaket($set);
+        $standarPaket = $pengaturanStok->standar();
+        $kgPerPaket = $paketKasir->kgPerPaket($set);
         $nonaktif = collect()
             ->merge(DB::table('filling')->where('status', 'nonaktif')->pluck('bahan_baku_id'))
             ->merge(DB::table('saus_celup')->where('status', 'nonaktif')->pluck('bahan_baku_id'))
@@ -45,7 +50,7 @@ class BahanBakuController extends Controller
             ->filter()->all();
         $bahanPaket = DB::table('bahan_baku')->whereIn('peran', ['filling', 'saus', 'bumbu'])->orderBy('nama_bahan')->get()
             ->reject(fn ($b) => in_array($b->id, $nonaktif))
-            ->each(fn ($b) => $b->kap = $svc->kapasitasBungkus($b, $set))
+            ->each(fn ($b) => $b->kap = $pengaturanStok->kapasitasBungkus($b, $set))
             ->groupBy('peran');
 
         // Stok gudang kemasan tiap ukuran: [ukuran_id => stok]
@@ -63,7 +68,7 @@ class BahanBakuController extends Controller
         $minyakBahan = DB::table('bahan_baku')->where('peran', 'minyak')->orderBy('id')->first();
 
         // Form Kirim Minyak & Gas: isi awal standar, atau mengikuti permintaan kasir yang masuk
-        $kirimStandar = $svc->porsiKirim($set); // jatah tetap sekali kirim: minyak (jerigen) & gas (tabung) dari Pengaturan Stok
+        $kirimStandar = $minyakGas->porsiKirim($set); // jatah tetap sekali kirim: minyak (jerigen) & gas (tabung) dari Pengaturan Stok
         $permintaanKasir = DB::table('permintaan_stok as p')->join('bahan_baku as b', 'b.id', '=', 'p.bahan_baku_id')
             ->where('p.status', 'diminta')->select('p.kasir_id', 'p.jumlah_diminta', 'p.catatan', 'b.peran')->get()
             ->groupBy('kasir_id')->map(function ($g) use ($kirimStandar) {
@@ -251,7 +256,7 @@ class BahanBakuController extends Controller
         );
     }
 
-    public function beriPaket(Request $request, StokOtomatisService $stok)
+    public function beriPaket(Request $request, PaketKasirService $paket)
     {
         $v = $request->validate([
             'kasir_id'  => ['required', Rule::exists('users', 'id')->where('role', 'kasir')],
@@ -262,7 +267,7 @@ class BahanBakuController extends Controller
         ]);
 
         try {
-            $hasil = $stok->beriPaketAyam(
+            $hasil = $paket->beriPaketAyam(
                 (int) $v['kasir_id'], $v['tanggal'], $v['kg'] ?? [],
                 (int) auth()->id(), $v['catatan'] ?? null
             );
@@ -275,7 +280,7 @@ class BahanBakuController extends Controller
         );
     }
 
-    public function beriBahanPendukung(Request $request, StokOtomatisService $stok)
+    public function beriBahanPendukung(Request $request, PaketKasirService $paket)
     {
         $v = $request->validate([
             'kasir_id'  => ['required', Rule::exists('users', 'id')->where('role', 'kasir')],
@@ -286,7 +291,7 @@ class BahanBakuController extends Controller
         ]);
 
         try {
-            $hasil = $stok->beriBahanPendukung((int) $v['kasir_id'], $v['tanggal'], $v['bungkus'] ?? [], (int) auth()->id(), $v['catatan'] ?? null);
+            $hasil = $paket->beriBahanPendukung((int) $v['kasir_id'], $v['tanggal'], $v['bungkus'] ?? [], (int) auth()->id(), $v['catatan'] ?? null);
         } catch (ValidationException $e) {
             return back()->withInput(array_merge($request->all(), ['_modal' => 'pendukung']))->withErrors($e->errors());
         }
@@ -296,7 +301,7 @@ class BahanBakuController extends Controller
         );
     }
 
-    public function kirimMinyakGas(Request $request, StokOtomatisService $stok)
+    public function kirimMinyakGas(Request $request, MinyakGasService $minyakGas)
     {
         $v = $request->validate([
             'kasir_id' => ['required', Rule::exists('users', 'id')->where('role', 'kasir')],
@@ -306,12 +311,12 @@ class BahanBakuController extends Controller
         ]);
 
         // Jumlah tidak diketik: yang dikirim selalu sebesar jatah tetap (Pengaturan Stok)
-        $porsi = $stok->porsiKirim();
+        $porsi = $minyakGas->porsiKirim();
         $minyak = $request->boolean('minyak') ? $porsi['minyak'] : 0;
         $gas    = $request->boolean('gas') ? $porsi['gas'] : 0;
 
         try {
-            $hasil = $stok->kirimKeKasir(
+            $hasil = $minyakGas->kirimKeKasir(
                 (int) $v['kasir_id'], $minyak, $gas,
                 (int) auth()->id(), $v['catatan'] ?? null
             );

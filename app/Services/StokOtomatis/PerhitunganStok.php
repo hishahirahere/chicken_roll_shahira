@@ -25,26 +25,12 @@ class PerhitunganStok
         'paket_gas_tabung'    => 2,     // jatah gas sekali kirim ke kasir, dalam tabung
     ];
 
-    /**
-     * Standar awal per ukuran: pcs per 1 kg ayam.
-     * Tepung TIDAK dihitung dari ayam: premix basah (botol 1 liter) & tepung roti (bungkus 1 kg) jadi isi paket tetap.
-     */
     public const STANDAR_AWAL = [
         'slim'    => ['hasil_pcs_per_kg' => 25],
         'reguler' => ['hasil_pcs_per_kg' => 20],
         'jumbo'   => ['hasil_pcs_per_kg' => 15],
     ];
 
-    /**
-     * Pemakaian bahan untuk SATU transaksi penjualan. Semua angka bulat.
-     * Ayam & tepung sudah jadi stok PCS saat paket diberikan, minyak & gas dicatat manual oleh kasir,
-     * jadi yang dihitung di sini hanya pcs, filling/saus/bumbu (1 produk = 1 kali pakai) dan kemasan.
-     *
-     * @param  array $items   tiap elemen = 1 produk (1 baris item_pesanan):
-     *                        ['ukuran_id'=>, 'filling_id'=>, 'cara_luar'=>'saus_celup|bumbu_tabur',
-     *                         'saus_celup_id'=>, 'bumbu_tabur_id'=>]
-     * @param  array $set     pengaturan (lihat PENGATURAN_AWAL)
-     */
     public static function pemakaianPenjualan(array $items, array $set): array
     {
         $set = array_merge(self::PENGATURAN_AWAL, $set);
@@ -78,13 +64,6 @@ class PerhitunganStok
         return $hasil;
     }
 
-    /**
-     * Kalkulator paket: kg ayam (bulat) per ukuran -> jumlah pcs produk.
-     * Pembagian kg per ukuran bebas; "1 kg = X pcs" diisi manual di Pengaturan Stok.
-     *
-     * @param array $alokasi [ukuran_id => kg ayam]
-     * @param array $standar [ukuran_id => ['hasil_pcs_per_kg' => int]]
-     */
     public static function hitungProduksi(array $alokasi, array $standar): array
     {
         $total = ['ayam' => 0, 'pcs' => 0];
@@ -105,9 +84,6 @@ class PerhitunganStok
         return ['baris' => $baris, 'total' => $total];
     }
 
-    /**
-     * Status stok: 'aman' (di atas minimum) | 'menipis' (<= minimum) | 'habis' (0).
-     */
     public static function statusStok(int $stok, int $minimum): string
     {
         if ($stok <= 0) {

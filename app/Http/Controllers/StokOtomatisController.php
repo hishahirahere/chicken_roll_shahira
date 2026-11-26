@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\StokOtomatis\PerhitunganStok;
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\DataAwalStokService;
+use App\Services\StokOtomatis\PengaturanStokService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,17 +14,20 @@ use Illuminate\Support\Facades\DB;
  */
 class StokOtomatisController extends Controller
 {
-    public function __construct(private StokOtomatisService $stok)
+    public function __construct(
+        private PengaturanStokService $pengaturan,
+        private DataAwalStokService $dataAwal,
+    )
     {
     }
 
     public function pengaturan()
     {
         return view('admin.operasional.pengaturan_stok.index', [
-            'set'     => $this->stok->pengaturan(),
-            'standar' => $this->stok->standar(),
+            'set'     => $this->pengaturan->pengaturan(),
+            'standar' => $this->pengaturan->standar(),
             'ukuran'  => DB::table('ukuran')->orderBy('harga')->get(),
-            'kurang'  => $this->stok->pemetaanKurang(),
+            'kurang'  => $this->dataAwal->pemetaanKurang(),
         ]);
     }
 
@@ -77,8 +81,8 @@ class StokOtomatisController extends Controller
 
     public function hubungkan(): RedirectResponse
     {
-        $n = $this->stok->hubungkanOtomatis(auth()->id());
-        $this->stok->segarkanSemuaStatus();
+        $n = $this->dataAwal->hubungkanOtomatis(auth()->id());
+        $this->dataAwal->segarkanSemuaStatus();
 
         return redirect()->route('stok.pengaturan')->with('success',
             $n > 0 ? "{$n} item dihubungkan ke bahan baku (bahan baru dibuat bila belum ada, stok awal 0)."

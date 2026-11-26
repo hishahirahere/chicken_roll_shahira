@@ -25,7 +25,7 @@
     @php
         // Jumlah bahan menipis / habis di tangan kasir (lencana di menu Stok Saya)
         try {
-            $stokRingkas = app(\App\Services\StokOtomatis\StokOtomatisService::class)->ringkasKasir((int) auth()->id());
+            $stokRingkas = app(\App\Services\StokOtomatis\StokKasirQuery::class)->ringkasKasir((int) auth()->id());
         } catch (\Throwable $e) {
             $stokRingkas = ['menipis' => 0, 'habis' => 0];
         }

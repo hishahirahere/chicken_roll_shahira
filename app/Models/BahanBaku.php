@@ -25,7 +25,6 @@ class BahanBaku extends Model
         return $this->hasMany(RiwayatStok::class, 'bahan_baku_id');
     }
 
-    /** Status dari stok sekarang: habis (<= 0), menipis (<= stok_minimum), selain itu aman. */
     public function hitungStatus(): string
     {
         return \App\Services\StokOtomatis\PerhitunganStok::statusStok((int) $this->stok_saat_ini, (int) $this->stok_minimum);
@@ -36,14 +35,13 @@ class BahanBaku extends Model
         return $this->foto ? asset('storage/' . $this->foto) : null;
     }
 
-    /** Update kolom status_stok sesuai stok sekarang lalu simpan. */
+
     public function sinkronStatus(): void
     {
         $this->status_stok = $this->hitungStatus();
         $this->save();
     }
 
-    /** 1000 -> "1.000" (semua angka stok bulat) */
     public static function formatAngka($angka): string
     {
         return number_format((int) $angka, 0, ',', '.');

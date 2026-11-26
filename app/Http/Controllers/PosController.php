@@ -10,19 +10,18 @@ use App\Models\Ukuran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\PenjualanStokService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PosController extends Controller
 {
-    /** Halaman Transaksi Penjualan (view: pos/index, memakai variabel $data) */
     public function index()
     {
         $foto = fn ($m) => !empty($m->foto) ? asset('storage/' . $m->foto) : null;
 
-        // Sisa stok di tangan kasir yang sedang login (null = tidak dibatasi). Dipakai browser untuk mengunci menu yang habis.
-        $stok = app(StokOtomatisService::class)->ketersediaanKasir((int) auth()->id());
+        // Sisa stok di tangan kasir yang sedang login (null = tidak dibatasi). 
+        $stok = app(PenjualanStokService::class)->ketersediaanKasir((int) auth()->id());
 
         $data = [
             'ukuran' => Ukuran::where('status', 'aktif')->orderBy('harga')->get()->map(fn ($m) => [
@@ -111,7 +110,7 @@ class PosController extends Controller
 
                 // Stok habis / tidak cukup -> transaksi DITOLAK (belum ada yang tersimpan, jadi tidak perlu dibatalkan).
                 // Dicek di server juga, bukan hanya di layar, supaya tetap aman walau stok baru berubah atau halaman lama masih terbuka.
-                app(StokOtomatisService::class)->pastikanStokCukup((int) auth()->id(), $baris);
+                app(PenjualanStokService::class)->pastikanStokCukup((int) auth()->id(), $baris);
 
                 // Uang tunai yang diterima (kalau diisi) harus cukup
                 if ($v['metode_bayar'] === 'cash' && isset($v['uang_diterima']) && $v['uang_diterima'] > 0 && $v['uang_diterima'] < $total) {
@@ -147,7 +146,7 @@ class PosController extends Controller
         // Stok bahan baku berkurang otomatis sesuai ukuran, filling, dan topping pesanan.
         // Kalau perhitungan stok gagal, transaksi penjualan tetap sah (kesalahan hanya dicatat di log).
         try {
-            $stok = app(StokOtomatisService::class)->kurangiDariTransaksi($trx->id);
+            $stok = app(PenjualanStokService::class)->kurangiDariTransaksi($trx->id);
             $pesan = array_merge($stok['peringatan'] ?? [], $stok['menipis'] ?? []);
             if ($pesan) {
                 // Kasir langsung tahu kalau bahan di tangannya hampir / sudah habis
@@ -209,10 +208,6 @@ class PosController extends Controller
         ]);
     }
 
-    /**
-     * Cetak SELURUH transaksi milik kasir yang sedang login, sesuai filter di halaman Riwayat
-     * (tanggal & metode), tanpa dipotong per halaman.
-     */
     public function cetakRiwayat(Request $request)
     {
         $request->validate([

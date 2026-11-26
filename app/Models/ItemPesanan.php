@@ -26,10 +26,6 @@ class ItemPesanan extends Model
         $this->attributes['harga_item'] = (int) $value;
     }
 
-    /**
-     * Harga per porsi. Kalau tabel item_pesanan tidak punya kolom `harga`,
-     * ambil dari harga ukuran (harga selalu dikelola di tabel ukuran).
-     */
     public function getHargaAttribute($value)
     {
         foreach ([$value, $this->attributes['harga_item'] ?? null, $this->attributes['harga_satuan'] ?? null] as $v) {

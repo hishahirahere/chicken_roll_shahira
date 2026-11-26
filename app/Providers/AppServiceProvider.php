@@ -122,8 +122,8 @@ class AppServiceProvider extends ServiceProvider
 
             // 1b. Stok di tangan kasir yang menipis / habis (admin memantau)
             try {
-                $stokService = app(\App\Services\StokOtomatis\StokOtomatisService::class);
-                foreach ($stokService->stokKasirSemua() as $kasirStok) {
+                $stokKasirQuery = app(\App\Services\StokOtomatis\StokKasirQuery::class);
+                foreach ($stokKasirQuery->stokKasirSemua() as $kasirStok) {
                     // Hanya kasir yang pernah menerima paket
                     if (! \Illuminate\Support\Facades\DB::table('riwayat_stok_produk')->where('user_id', $kasirStok->id)->exists()) {
                         continue;

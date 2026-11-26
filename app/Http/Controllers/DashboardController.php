@@ -92,17 +92,6 @@ class DashboardController extends Controller
         ));
     }
 
-    /**
-     * Analisis menu favorit. 1 baris item_pesanan = 1 porsi terjual.
-     *
-     * Empat tab, semuanya top 5:
-     *  - kombo   : kombinasi Filling + Topping Luar (saus celup ATAU bubuk tabur) paling laku
-     *  - ukuran  : ukuran paling laku
-     *  - filling : filling paling laku
-     *  - topping : topping luar (saus celup + bubuk tabur digabung) paling laku
-     *
-     * Tiap item: nama, sub, foto, total, dan 'detail' (dipakai modal "Lihat selengkapnya").
-     */
     private function favorit(): array
     {
         $foto = fn ($f) => $f ? asset('storage/' . $f) : null;

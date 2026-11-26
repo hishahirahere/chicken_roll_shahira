@@ -16,15 +16,6 @@ class Transaksi extends Model
 
     protected $casts = ['tanggal' => 'datetime'];
 
-    /**
-     * Transaksi yang dihitung sebagai pendapatan.
-     *
-     * Tabel `transaksi` saat ini TIDAK punya kolom status pembayaran, dan POS hanya
-     * menyimpan transaksi setelah kasir menekan Konfirmasi di modal pembayaran.
-     * Jadi semua baris yang tersimpan dianggap sudah dibayar.
-     * Kalau nanti ada kolom status (mis. status_bayar), cukup tambahkan filter di sini
-     * dan dashboard, riwayat, serta laporan ikut menyesuaikan.
-     */
     public function scopeBerhasil($query)
     {
         return $query;

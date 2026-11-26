@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BahanBaku;
 use App\Models\RiwayatStok;
-use App\Services\StokOtomatis\StokOtomatisService;
+use App\Services\StokOtomatis\PengaturanStokService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,15 +13,7 @@ class RiwayatStokController extends Controller
     /** Jumlah "kejadian" (paket / transaksi / catatan manual) per halaman. */
     private const PER_HALAMAN = 15;
 
-    /**
-     * Riwayat stok masuk & keluar, dirapikan per KEJADIAN, bukan per baris bahan:
-     *   - 1 paket ke kasir          = 1 kejadian (isinya ayam, tepung, minyak, filling, ... )
-     *   - 1 stok masuk/keluar manual = 1 kejadian
-     *   - kirim minyak & gas ke kasir = 1 baris per bahan (sumber 'kirim')
-     *
-     * Riwayat sengaja tidak bisa diedit/dihapus supaya data stok tetap bisa diaudit.
-     */
-    public function index(Request $request, StokOtomatisService $stok)
+    public function index(Request $request, PengaturanStokService $pengaturan)
     {
         $request->validate([
             'jenis'         => 'nullable|in:masuk,keluar',
@@ -68,8 +60,8 @@ class RiwayatStokController extends Controller
                 ->groupBy('grup');
         }
 
-        $entri = $kejadian->getCollection()->map(function ($g) use ($baris, $stok) {
-            $isi = ($baris->get($g->grup) ?? collect())->each(fn ($r) => $this->siapkanTampilan($r, $stok))->values();
+        $entri = $kejadian->getCollection()->map(function ($g) use ($baris, $pengaturan) {
+            $isi = ($baris->get($g->grup) ?? collect())->each(fn ($r) => $this->siapkanTampilan($r, $pengaturan))->values();
 
             return (object) [
                 'kunci'  => $g->grup,
@@ -113,13 +105,13 @@ class RiwayatStokController extends Controller
      * Penjualan bahan berbungkus (filling / saus / bumbu) ditulis dalam kali pakai.
      * Penjualan tidak mengubah stok gudang, jadi "stok sesudah"-nya adalah sisa di KASIR.
      */
-    private function siapkanTampilan(RiwayatStok $r, StokOtomatisService $stok): void
+    private function siapkanTampilan(RiwayatStok $r, PengaturanStokService $pengaturan): void
     {
         $bahan  = $r->bahan;
         $satuan = $bahan->satuan ?? '';
         $penjualan = $r->sumber === 'penjualan';
 
-        if ($bahan && $penjualan && $stok->bahanBerbungkus($bahan)) {
+        if ($bahan && $penjualan && $pengaturan->bahanBerbungkus($bahan)) {
             $satuan = 'kali pakai';
         }
 
