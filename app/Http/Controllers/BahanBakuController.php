@@ -142,10 +142,6 @@ class BahanBakuController extends Controller
         return view('admin.operasional.manajemen_stok.edit', compact('bahanBaku'));
     }
 
-    /**
-     * Update data bahan. Jumlah stok TIDAK diubah di sini,
-     * hanya lewat catat stok masuk/keluar biar riwayatnya selalu cocok.
-     */
     public function update(Request $request, BahanBaku $bahanBaku)
     {
         $validated = $request->validate([

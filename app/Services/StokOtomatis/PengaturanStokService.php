@@ -25,7 +25,7 @@ class PengaturanStokService
         return $set;
     }
 
-    /** [ukuran_id => ['hasil_pcs_per_kg'=>]] */
+    // [ukuran_id => ['hasil_pcs_per_kg'=>]] 
     public function standar(): array
     {
         $out = [];

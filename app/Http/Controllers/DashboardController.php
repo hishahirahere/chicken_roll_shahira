@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100, 1)
             : 0;
 
-        // Card 3: Status Stok
+        // Card: Status Stok
         $stokAman = BahanBaku::where('status_stok', 'aman')->count();
         $stokMenipis = BahanBaku::where('status_stok', 'menipis')->count();
         $stokHabis = BahanBaku::where('status_stok', 'habis')->count();
