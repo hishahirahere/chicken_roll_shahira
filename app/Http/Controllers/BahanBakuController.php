@@ -79,9 +79,13 @@ class BahanBakuController extends Controller
         ));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.operasional.manajemen_stok.create');
+        // kelompok awal diambil dari tab yang sedang dibuka di halaman Manajemen Stok
+        $grupAwal = in_array($request->query('grup'), ['utama', 'operasional'], true)
+            ? $request->query('grup') : 'utama';
+
+        return view('admin.operasional.manajemen_stok.create', compact('grupAwal'));
     }
 
     public function store(Request $request)
@@ -89,6 +93,7 @@ class BahanBakuController extends Controller
         $validated = $request->validate([
             'nama_bahan'   => 'required|string|max:50|unique:bahan_baku,nama_bahan',
             'satuan'       => 'required|string|max:20',
+            'kelompok'     => 'required|in:utama,operasional',
             'stok_minimum' => 'required|integer|min:0|max:99999999',
             'stok_awal'    => 'nullable|integer|min:0|max:99999999',
             'foto'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -102,6 +107,7 @@ class BahanBakuController extends Controller
                 'nama_bahan'    => $validated['nama_bahan'],
                 'satuan'        => $validated['satuan'],
                 'foto'          => $foto,
+                'peran'         => $validated['kelompok'], // menentukan tab di Manajemen Stok
                 'stok_minimum'  => $validated['stok_minimum'],
                 'stok_saat_ini' => $stokAwal,
             ]);
@@ -121,7 +127,8 @@ class BahanBakuController extends Controller
             }
         });
 
-        return redirect()->route('bahan_baku.index')
+        // balik ke tab yang sama dengan kelompok bahan yang baru ditambah
+        return redirect()->route('bahan_baku.index', ['grup' => $validated['kelompok']])
             ->with('success', 'Bahan baku berhasil ditambahkan.');
     }
 

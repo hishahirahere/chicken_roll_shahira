@@ -46,6 +46,8 @@
     $grupDari = function ($b) {
       $nama = strtolower($b->nama_bahan);
       return match (true) {
+        $b->peran === 'utama' => 'utama',
+        $b->peran === 'operasional' => 'operasional',
         $b->peran === 'filling', str_contains($nama, 'filling') => 'filling',
         $b->peran === 'saus', str_contains($nama, 'saus') => 'saus',
         $b->peran === 'bumbu', str_contains($nama, 'bumbu'), str_contains($nama, 'tabur') => 'bumbu',
@@ -149,7 +151,7 @@
           style="background:#F59E0B;border:2px solid #F59E0B;color:#3b2300;font-weight:700;">
           <i class="bi bi-box-arrow-up"></i> Stok Keluar Lain
         </button>
-        <a href="{{ route('bahan_baku.create') }}" class="btn-custom"
+        <a href="{{ route('bahan_baku.create') }}" id="btn-tambah-bahan" class="btn-custom"
           style="background:#FFFFFF;border:2px solid var(--brand-forest-medium, #9c1d1d);color:var(--brand-forest-medium, #9c1d1d);font-weight:700;">
           <i class="bi bi-plus-lg"></i> Tambah Bahan Baku
         </a>
@@ -595,6 +597,21 @@
       ];
     })->values()->all();
   @endphp
+  <script>
+    // Tombol "Tambah Bahan Baku" membawa tab yang sedang dibuka, jadi form langsung memilih kelompok itu
+    (function () {
+      const tombol = document.getElementById('btn-tambah-bahan');
+      if (!tombol) return;
+      const dasar = tombol.getAttribute('href');
+      function ikutTab() {
+        const aktif = document.querySelector('.ms-tabs button.on');
+        tombol.setAttribute('href', aktif ? dasar + '?grup=' + encodeURIComponent(aktif.dataset.grup) : dasar);
+      }
+      document.querySelectorAll('.ms-tabs button[data-grup]').forEach(function (t) { t.addEventListener('click', function () { setTimeout(ikutTab, 0); }); });
+      window.addEventListener('load', ikutTab);
+      ikutTab();
+    })();
+  </script>
   <script>
     window.stokConfig = { autoJenis: @json($jenisAwal), bukaPaket: @json($paketTerbuka), bukaPendukung: @json($pendukungTerbuka) };
     window.paketConfig = {

@@ -33,6 +33,19 @@
             @error('nama_bahan')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
 
+          @unless ($edit)
+            <div class="mb-3">
+              <label class="form-label fw-bold">Kelompok Bahan (Tab)</label>
+              <select name="kelompok" class="form-select @error('kelompok') is-invalid @enderror">
+                @foreach (['utama' => 'Bahan Utama', 'operasional' => 'Bahan Operasional'] as $kodeGrup => $namaGrup)
+                  <option value="{{ $kodeGrup }}" @selected(old('kelompok', $grupAwal ?? 'utama') === $kodeGrup)>{{ $namaGrup }}</option>
+                @endforeach
+              </select>
+              <div class="form-text">Menentukan bahan ini muncul di tab mana pada Manajemen Stok.</div>
+              @error('kelompok')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+          @endunless
+
           <div class="mb-3">
             <label class="form-label fw-bold">Satuan</label>
             <input type="text" name="satuan" id="input-satuan" value="{{ $satuanAwal }}" maxlength="20" list="daftar-satuan"

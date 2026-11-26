@@ -47,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
             $grupBahan = function ($b) {
                 $nama = strtolower($b->nama_bahan);
                 return match (true) {
+                    $b->peran === 'utama' => 'utama',
+                    $b->peran === 'operasional' => 'operasional',
                     $b->peran === 'filling', str_contains($nama, 'filling') => 'filling',
                     $b->peran === 'saus', str_contains($nama, 'saus') => 'saus',
                     $b->peran === 'bumbu', str_contains($nama, 'bumbu'), str_contains($nama, 'tabur') => 'bumbu',

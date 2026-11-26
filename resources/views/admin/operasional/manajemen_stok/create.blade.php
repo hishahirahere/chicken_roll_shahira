@@ -13,6 +13,6 @@
     </div>
   </div>
 
-  @include('admin.operasional.manajemen_stok._form', ['mode' => 'create'])
+  @include('admin.operasional.manajemen_stok._form', ['mode' => 'create', 'grupAwal' => $grupAwal ?? 'utama'])
 
 @endsection

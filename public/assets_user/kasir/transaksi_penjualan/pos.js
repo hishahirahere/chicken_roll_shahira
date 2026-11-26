@@ -408,7 +408,6 @@
     metode = m;
     document.querySelectorAll('#metodeGrid .metode-opt').forEach(o => o.classList.toggle('selected', o.dataset.metode === m));
     elCash.style.display = m === 'cash' ? '' : 'none';
-    // QRIS / Paylater: kasir wajib menegaskan pembayaran sudah masuk (tidak otomatis dianggap lunas)
     elKonfirmBox.classList.toggle('d-none', m === 'cash');
     elKonfirm.checked = false;
     elKonfirmLbl.textContent = m === 'qris' ? 'Pembayaran QRIS sudah masuk / terkonfirmasi' : 'Pembayaran Paylater sudah disetujui / diterima';
