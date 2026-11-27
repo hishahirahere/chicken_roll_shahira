@@ -42,11 +42,11 @@ class KasirController extends Controller
         // Password awal: minimal 8 karakter, ada huruf, angka, dan simbol (sama seperti ganti password di Profil Saya)
         $data = $request->validate($this->aturan() + [
             'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
-            'password' => ['required', 'string', 'min:8', 'max:100', 'regex:/[A-Za-z]/', 'regex:/[0-9]/', 'regex:/[^A-Za-z0-9]/'],
+            'password' => ['required', 'string', 'min:8', 'max:100', 'regex:/[A-Za-z]/', 'regex:/[0-9]/', 'regex:/[^A-Za-z0-9]/', 'regex:/^\S+$/' ],
         ], [
             'password.required' => 'Password wajib diisi.',
             'password.min'      => 'Password minimal 8 karakter.',
-            'password.regex'    => 'Password harus mengandung huruf, angka, dan simbol (contoh: Kasir#2026).',
+            'password.regex'    => 'Password harus mengandung huruf, angka, dan simbol dan tidak boleh mengandung spasi.',
         ]);
 
         if ($request->hasFile('foto')) {

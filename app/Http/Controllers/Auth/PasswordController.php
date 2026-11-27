@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class PasswordController extends Controller
 {
-    /**
-     * Ganti password akun sendiri (admin & kasir, lewat Profil Saya).
-     * Password baru: minimal 8 karakter, ada huruf, angka, dan simbol.
-     * (Password awal kasir yang dibuat admin di Data Master tetap minimal 6 karakter.)
-     */
     public function update(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('updatePassword', [
@@ -23,6 +18,7 @@ class PasswordController extends Controller
                 'regex:/[A-Za-z]/',        // ada huruf
                 'regex:/[0-9]/',           // ada angka
                 'regex:/[^A-Za-z0-9]/',    // ada simbol
+                'regex:/^\S+$/',                 // tidak ada spasi
                 'confirmed',
             ],
         ], [
@@ -32,6 +28,7 @@ class PasswordController extends Controller
             'password.min'       => 'Password baru minimal 8 karakter.',
             'password.regex'     => 'Password baru harus mengandung huruf, angka, dan simbol (contoh: Kasir#2026).',
             'password.confirmed' => 'Konfirmasi password tidak sama.',
+            'password.regex'     => 'Password baru tidak boleh mengandung spasi.',
         ]);
 
         $request->user()->update([

@@ -27,7 +27,8 @@ class RiwayatTransaksiController extends Controller
         $dari   = $request->filled('dari') ? Carbon::parse($request->dari) : ($request->filled('sampai') ? Carbon::parse($request->sampai) : today());
         $sampai = $request->filled('sampai') ? Carbon::parse($request->sampai) : $dari->copy();
         if ($dari->gt($sampai)) {
-            [$dari, $sampai] = [$sampai, $dari];
+         return redirect()->route('admin.riwayat-transaksi')
+        ->with('error', 'Tanggal "Sampai" tidak boleh lebih awal dari tanggal "Dari".');
         }
 
         $q = trim((string) $request->input('q', ''));
